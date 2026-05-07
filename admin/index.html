@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 静墨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">静墨</h1>
+                <span class="sidebar-subtitle">管理后台</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                    <span>仪表盘</span>
+                </a>
+                <a href="#" class="nav-item" data-page="articles">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14,2 14,8 20,8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                    <span>文章管理</span>
+                </a>
+                <a href="#" class="nav-item" data-page="settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                    <span>系统设置</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="../index.html" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9,22 9,12 15,12 15,22"/>
+                    </svg>
+                    <span>返回首页</span>
+                </a>
+                <button class="logout-btn" id="logoutBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16,17 21,12 16,7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    <span>退出登录</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div id="loginPage" class="page">
+                <div class="login-card">
+                    <h2 class="login-title">管理员登录</h2>
+                    <form id="loginForm" class="login-form">
+                        <div class="form-group">
+                            <label for="username">用户名</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">密码</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="login-btn">
+                            <span class="btn-text">登 录</span>
+                        </button>
+                    </form>
+                    <p class="login-hint">默认账户: admin / admin123</p>
+                </div>
+            </div>
+
+            <div id="dashboardPage" class="page hidden">
+                <div class="page-header">
+                    <h2>仪表盘</h2>
+                    <p class="page-subtitle">欢迎回来，<span id="adminName">管理员</span></p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="totalArticles">0</span>
+                            <span class="stat-label">文章总数</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22,4 12,14.01 9,11.01"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="publishedArticles">0</span>
+                            <span class="stat-label">已发布</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="draftArticles">0</span>
+                            <span class="stat-label">草稿</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" id="featuredArticles">0</span>
+                            <span class="stat-label">精选文章</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="obsidian-section">
+                    <h3>Obsidian 双向同步</h3>
+                    <div class="sync-grid">
+                        <div class="sync-card">
+                            <h4>导出到 Obsidian</h4>
+                            <p class="sync-desc">将博客文章导出到 Obsidian 知识库</p>
+                            <button class="btn-obsidian-export" id="exportObsidianBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17,8 12,3 7,8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                导出
+                            </button>
+                        </div>
+                        <div class="sync-card">
+                            <h4>从 Obsidian 导入</h4>
+                            <p class="sync-desc">将 Obsidian 笔记导入到博客</p>
+                            <button class="btn-obsidian-import" id="importObsidianBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7,10 12,15 17,10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                导入
+                            </button>
+                        </div>
+                        <div class="sync-card full-width">
+                            <h4>自动同步监控</h4>
+                            <p class="sync-desc">实时监控 Obsidian 文件夹，自动同步更改</p>
+                            <button class="btn-obsidian-watch" id="watchObsidianBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12,6 12,12 16,14"/>
+                                </svg>
+                                启动监控
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="articlesPage" class="page hidden">
+                <div class="page-header">
+                    <div>
+                        <h2>文章管理</h2>
+                        <p class="page-subtitle">管理您的所有文章</p>
+                    </div>
+                    <button class="btn-primary" id="newArticleBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        新建文章
+                    </button>
+                </div>
+                <div class="filters">
+                    <select id="filterStatus" class="filter-select">
+                        <option value="">全部状态</option>
+                        <option value="true">已发布</option>
+                        <option value="false">草稿</option>
+                    </select>
+                    <select id="filterCategory" class="filter-select">
+                        <option value="">全部分类</option>
+                        <option value="设计">设计</option>
+                        <option value="技术">技术</option>
+                        <option value="生活">生活</option>
+                        <option value="随笔">随笔</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                <div class="articles-list" id="articlesList">
+                    <div class="loading">加载中...</div>
+                </div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+
+            <div id="settingsPage" class="page hidden">
+                <div class="page-header">
+                    <h2>系统设置</h2>
+                    <p class="page-subtitle">配置博客基本信息</p>
+                </div>
+                <form id="settingsForm" class="settings-form">
+                    <div class="form-group">
+                        <label>博客名称</label>
+                        <input type="text" name="blogName" value="静墨" required>
+                    </div>
+                    <div class="form-group">
+                        <label>博客描述</label>
+                        <textarea name="blogDescription" rows="3">在纷繁中寻找宁静，在文字里雕刻时光</textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">保存设置</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal" id="articleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">新建文章</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <form id="articleForm" class="article-form">
+                <input type="hidden" id="articleId" name="articleId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>标题 *</label>
+                        <input type="text" name="title" id="articleTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label>URL别名 *</label>
+                        <input type="text" name="slug" id="articleSlug" placeholder="例如: my-first-article" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>摘要 *</label>
+                    <textarea name="excerpt" id="articleExcerpt" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>内容 *</label>
+                    <textarea name="content" id="articleContent" rows="10" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>分类 *</label>
+                        <select name="category" id="articleCategory" required>
+                            <option value="">选择分类</option>
+                            <option value="设计">设计</option>
+                            <option value="技术">技术</option>
+                            <option value="生活">生活</option>
+                            <option value="随笔">随笔</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>标签</label>
+                        <input type="text" name="tags" id="articleTags" placeholder="用逗号分隔，如: 设计,极简">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>封面图片URL</label>
+                        <input type="url" name="coverImage" id="articleCover">
+                    </div>
+                    <div class="form-group">
+                        <label>阅读时间（分钟）</label>
+                        <input type="number" name="readTime" id="articleReadTime" value="5" min="1">
+                    </div>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" name="published" id="articlePublished">
+                        <span>立即发布</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" name="featured" id="articleFeatured">
+                        <span>设为精选</span>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelBtn">取消</button>
+                    <button type="submit" class="btn-primary" id="saveBtn">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <span class="toast-message"></span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

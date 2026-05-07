@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>静墨 - 极简博客</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    
+    <div class="loader">
+        <div class="loader-text">
+            <span class="letter">静</span>
+            <span class="letter">墨</span>
+        </div>
+        <div class="loader-line"></div>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="#" class="logo" data-hover>
+                <span class="logo-text">静墨</span>
+            </a>
+            <div class="nav-links">
+                <a href="#articles" class="nav-link" data-hover data-text="文章">文章</a>
+                <a href="#about" class="nav-link" data-hover data-text="关于">关于</a>
+                <a href="#contact" class="nav-link" data-hover data-text="联系">联系</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="line">
+                        <span class="word" data-delay="0">记录</span>
+                    </span>
+                    <span class="line">
+                        <span class="word" data-delay="1">思考</span>
+                    </span>
+                    <span class="line">
+                        <span class="word" data-delay="2">沉淀</span>
+                    </span>
+                </h1>
+                <p class="hero-subtitle" data-delay="3">
+                    <span class="typing-text">在纷繁中寻找宁静，在文字里雕刻时光</span>
+                </p>
+                <div class="scroll-indicator" data-delay="4">
+                    <div class="scroll-text">向下探索</div>
+                    <div class="scroll-line"></div>
+                </div>
+            </div>
+            <div class="hero-decoration">
+                <div class="floating-shape shape-1"></div>
+                <div class="floating-shape shape-2"></div>
+                <div class="floating-shape shape-3"></div>
+            </div>
+        </section>
+
+        <section id="articles" class="articles">
+            <div class="section-header">
+                <span class="section-tag" data-scroll>01</span>
+                <h2 class="section-title" data-scroll>精选文章</h2>
+            </div>
+
+            <div class="articles-filters" data-scroll>
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="search-icon">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="搜索文章..." class="search-input">
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-category="">全部</button>
+                    <button class="filter-btn" data-category="设计">设计</button>
+                    <button class="filter-btn" data-category="技术">技术</button>
+                    <button class="filter-btn" data-category="生活">生活</button>
+                    <button class="filter-btn" data-category="随笔">随笔</button>
+                </div>
+            </div>
+            
+            <div class="articles-grid">
+                <article class="article-card" data-hover data-scroll>
+                    <div class="card-image">
+                        <div class="image-placeholder" style="--hue: 220"></div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span class="card-date">2024.01.15</span>
+                            <span class="card-tag">设计</span>
+                        </div>
+                        <h3 class="card-title">极简主义的艺术：少即是多</h3>
+                        <p class="card-excerpt">探索极简设计背后的哲学，如何通过减法创造永恒的美学价值。</p>
+                        <div class="card-footer">
+                            <span class="read-time">5 分钟阅读</span>
+                            <div class="card-arrow">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="article-card" data-hover data-scroll>
+                    <div class="card-image">
+                        <div class="image-placeholder" style="--hue: 280"></div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span class="card-date">2024.01.10</span>
+                            <span class="card-tag">技术</span>
+                        </div>
+                        <h3 class="card-title">CSS动画的极致追求</h3>
+                        <p class="card-excerpt">深入探索CSS动画性能优化，创造流畅的用户体验。</p>
+                        <div class="card-footer">
+                            <span class="read-time">8 分钟阅读</span>
+                            <div class="card-arrow">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="article-card" data-hover data-scroll>
+                    <div class="card-image">
+                        <div class="image-placeholder" style="--hue: 340"></div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span class="card-date">2024.01.05</span>
+                            <span class="card-tag">生活</span>
+                        </div>
+                        <h3 class="card-title">数字时代的慢生活</h3>
+                        <p class="card-excerpt">在信息爆炸的时代，如何保持内心的宁静与专注。</p>
+                        <div class="card-footer">
+                            <span class="read-time">6 分钟阅读</span>
+                            <div class="card-arrow">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="article-card" data-hover data-scroll>
+                    <div class="card-image">
+                        <div class="image-placeholder" style="--hue: 30"></div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span class="card-date">2023.12.28</span>
+                            <span class="card-tag">设计</span>
+                        </div>
+                        <h3 class="card-title">留白的美学</h3>
+                        <p class="card-excerpt">空白不是空洞，而是呼吸的空间，是设计中最有力的元素。</p>
+                        <div class="card-footer">
+                            <span class="read-time">4 分钟阅读</span>
+                            <div class="card-arrow">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="more-articles" data-scroll>
+                <button class="btn-outline" data-hover>
+                    <span class="btn-text">查看全部文章</span>
+                    <span class="btn-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+        </section>
+
+        <section id="about" class="about">
+            <div class="about-content">
+                <div class="about-text" data-scroll>
+                    <span class="section-tag" data-scroll>02</span>
+                    <h2 class="section-title" data-scroll>关于我</h2>
+                    <p class="about-description">
+                        一个热爱文字与设计的创作者。在这个快节奏的时代，
+                        选择用最简单的方式记录思考，用最纯粹的形式表达观点。
+                    </p>
+                    <p class="about-description">
+                        相信好的设计是隐形的，而好的文字则是有力的。
+                        致力于在极简中寻找深度，在克制中追求表达。
+                    </p>
+                    <div class="about-stats">
+                        <div class="stat" data-scroll>
+                            <span class="stat-number" data-count="42">0</span>
+                            <span class="stat-label">篇文章</span>
+                        </div>
+                        <div class="stat" data-scroll>
+                            <span class="stat-number" data-count="1280">0</span>
+                            <span class="stat-label">天写作</span>
+                        </div>
+                        <div class="stat" data-scroll>
+                            <span class="stat-number" data-count="999">0</span>
+                            <span class="stat-label">位读者</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-visual" data-scroll>
+                    <div class="visual-container">
+                        <div class="visual-circle"></div>
+                        <div class="visual-line"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <div class="contact-content" data-scroll>
+                <span class="section-tag" data-scroll>03</span>
+                <h2 class="section-title" data-scroll>保持联系</h2>
+                <p class="contact-description">
+                    如果你有任何想法或建议，欢迎与我交流。
+                </p>
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group" data-hover>
+                        <input type="text" class="form-input" placeholder=" " required>
+                        <label class="form-label">你的名字</label>
+                        <div class="form-line"></div>
+                    </div>
+                    <div class="form-group" data-hover>
+                        <input type="email" class="form-input" placeholder=" " required>
+                        <label class="form-label">邮箱地址</label>
+                        <div class="form-line"></div>
+                    </div>
+                    <div class="form-group" data-hover>
+                        <textarea class="form-input form-textarea" placeholder=" " required></textarea>
+                        <label class="form-label">你的留言</label>
+                        <div class="form-line"></div>
+                    </div>
+                    <button type="submit" class="btn-submit" data-hover>
+                        <span class="btn-text">发送消息</span>
+                        <span class="btn-bg"></span>
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-text" data-scroll>
+                <p>© 2024 静墨. 用心书写每一刻。</p>
+            </div>
+            <div class="footer-links">
+                <a href="#" class="footer-link" data-hover data-text="GitHub">GitHub</a>
+                <a href="#" class="footer-link" data-hover data-text="Twitter">Twitter</a>
+                <a href="#" class="footer-link" data-hover data-text="RSS">RSS</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

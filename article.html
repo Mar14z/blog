@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章详情 - 静墨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .loader { display: none !important; }
+        .cursor, .cursor-follower { display: block; }
+
+        .article-detail {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 6rem 1.5rem 4rem;
+        }
+
+        .article-header {
+            margin-bottom: 2rem;
+        }
+
+        .article-category {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .article-title {
+            font-size: clamp(1.75rem, 5vw, 2.5rem);
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .article-meta-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem 0;
+            border-top: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 0.2s forwards;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .meta-divider {
+            width: 3px;
+            height: 3px;
+            background: var(--color-text-muted);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        .article-cover {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 2rem 0;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease-out 0.4s forwards;
+        }
+
+        .article-cover img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .article-cover-placeholder {
+            display: none;
+        }
+
+        .article-content {
+            font-size: 1.0625rem;
+            line-height: 1.9;
+            color: var(--color-text);
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 0.6s forwards;
+        }
+
+        .article-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .article-content h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2.5rem 0 1.25rem;
+            color: var(--color-text);
+        }
+
+        .article-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+        }
+
+        .article-content ul, .article-content ol {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .article-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .article-content blockquote {
+            border-left: 2px solid var(--color-accent);
+            padding: 0.5rem 0 0.5rem 1.5rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: var(--color-text-light);
+        }
+
+        .article-content pre {
+            background-color: var(--color-bg-alt);
+            padding: 1.25rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .article-content code {
+            font-family: var(--font-mono);
+            background-color: var(--color-bg-alt);
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.85em;
+        }
+
+        .article-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .article-footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .article-tag {
+            padding: 0.35rem 0.85rem;
+            background-color: var(--color-bg-alt);
+            color: var(--color-text-light);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            border-radius: 15px;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+        }
+
+        .article-tag:hover {
+            background-color: var(--color-accent);
+            color: white;
+        }
+
+        .article-share {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .share-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--color-border);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            background: transparent;
+        }
+
+        .share-btn:hover {
+            background-color: var(--color-accent);
+            border-color: var(--color-accent);
+        }
+
+        .share-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--color-text-light);
+            transition: stroke var(--transition-fast);
+        }
+
+        .share-btn:hover svg {
+            stroke: white;
+        }
+
+        .article-nav {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .article-nav-item {
+            padding: 1.25rem;
+            background-color: var(--color-bg-alt);
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+        }
+
+        .article-nav-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .article-nav-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.05em;
+        }
+
+        .article-nav-title {
+            font-size: 0.9rem;
+            color: var(--color-text);
+            line-height: 1.4;
+        }
+
+        .article-nav-item.next {
+            text-align: right;
+        }
+
+        .related-articles {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .related-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .related-card {
+            padding: 1.25rem;
+            background-color: var(--color-bg-alt);
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+        }
+
+        .related-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .related-card-title {
+            font-size: 0.9rem;
+            color: var(--color-text);
+            margin-bottom: 0.4rem;
+        }
+
+        .related-card-meta {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--color-text-muted);
+        }
+
+        @media (max-width: 640px) {
+            .article-detail {
+                padding: 5rem 1rem 2rem;
+            }
+
+            .article-meta-bar {
+                gap: 0.75rem;
+            }
+
+            .meta-divider {
+                display: none;
+            }
+
+            .article-meta-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .article-nav {
+                grid-template-columns: 1fr;
+            }
+
+            .article-nav-item.next {
+                text-align: left;
+            }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="logo" data-hover>
+                <span class="logo-text">静墨</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html#articles" class="nav-link" data-hover data-text="文章">文章</a>
+                <a href="index.html#about" class="nav-link" data-hover data-text="关于">关于</a>
+                <a href="index.html#contact" class="nav-link" data-hover data-text="联系">联系</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main">
+        <article class="article-detail" id="articleDetail">
+            <header class="article-header">
+                <div class="article-category" id="articleCategory">分类</div>
+                <h1 class="article-title" id="articleTitle">文章标题</h1>
+                <div class="article-meta-bar">
+                    <div class="meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        <span id="articleDate">2024年1月1日</span>
+                    </div>
+                    <span class="meta-divider"></span>
+                    <div class="meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                        <span id="articleReadTime">5 分钟</span>
+                    </div>
+                    <span class="meta-divider"></span>
+                    <div class="meta-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        <span id="articleViews">0 次</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="article-cover" id="articleCover">
+            </div>
+
+            <div class="article-content" id="articleContent">
+                <p>正在加载文章内容...</p>
+            </div>
+
+            <div class="article-footer">
+                <div class="article-tags" id="articleTags">
+                </div>
+
+                <div class="article-share">
+                    <button class="share-btn" title="分享到微博" onclick="shareToWeibo()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M16 8c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4c.7 0 1.4.2 2 .5"/>
+                            <path d="M8 16c.5 1.5 1.5 3 4 3s3.5-1.5 4-3"/>
+                        </svg>
+                    </button>
+                    <button class="share-btn" title="复制链接" onclick="copyLink()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <nav class="article-nav" id="articleNav">
+                    <a href="#" class="article-nav-item prev" id="prevArticle">
+                        <div class="article-nav-label">← 上一篇</div>
+                        <div class="article-nav-title" id="prevTitle">加载中...</div>
+                    </a>
+                    <a href="#" class="article-nav-item next" id="nextArticle">
+                        <div class="article-nav-label">下一篇 →</div>
+                        <div class="article-nav-title" id="nextTitle">加载中...</div>
+                    </a>
+                </nav>
+            </div>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-text">
+                <p>© 2024 静墨. 用心书写每一刻。</p>
+            </div>
+            <div class="footer-links">
+                <a href="#" class="footer-link" data-hover data-text="GitHub">GitHub</a>
+                <a href="#" class="footer-link" data-hover data-text="Twitter">Twitter</a>
+                <a href="#" class="footer-link" data-hover data-text="RSS">RSS</a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast">
+        <span class="toast-message"></span>
+    </div>
+
+    <script src="article-detail.js"></script>
+</body>
+</html>
