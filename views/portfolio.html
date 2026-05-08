@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="作品集 - 静墨的项目作品展示">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>作品集 - 静墨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Press+Start+2P&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/variables.css">
+    <link rel="stylesheet" href="/public/css/base.css">
+    <link rel="stylesheet" href="/public/css/components.css">
+    <link rel="stylesheet" href="/public/css/portfolio.css">
+</head>
+<body>
+    <nav class="nav">
+        <a href="/" class="logo">静墨</a>
+        <div class="nav-links">
+            <a href="/#articles" class="nav-link">文章</a>
+            <a href="/about" class="nav-link">介绍</a>
+            <a href="/portfolio" class="nav-link active">作品</a>
+            <a href="/links" class="nav-link">友链</a>
+            <a href="/#contact" class="nav-link">联系</a>
+        </div>
+    </nav>
+
+    <main class="page-content">
+        <header class="page-header">
+            <h1 class="page-title">作品集</h1>
+            <p class="page-subtitle">Some of my recent work</p>
+        </header>
+
+        <div class="portfolio-filters">
+            <button class="filter-btn active" data-filter="all">全部</button>
+            <button class="filter-btn" data-filter="web">网站</button>
+            <button class="filter-btn" data-filter="app">应用</button>
+            <button class="filter-btn" data-filter="design">设计</button>
+        </div>
+
+        <div class="portfolio-grid" id="portfolioGrid">
+            <article class="project-card" data-category="web">
+                <div class="project-cover">
+                    <div class="project-placeholder">01</div>
+                </div>
+                <div class="project-info">
+                    <div class="project-meta">
+                        <span class="project-year">2024</span>
+                        <span class="project-type">网站</span>
+                    </div>
+                    <h3 class="project-title">静墨博客系统</h3>
+                    <p class="project-description">
+                        一个极简风格的个人博客系统，采用 Node.js + MongoDB 构建，
+                        支持 Markdown 写作和 Obsidian 双向同步。
+                    </p>
+                    <div class="project-tags">
+                        <span class="project-tag">Node.js</span>
+                        <span class="project-tag">MongoDB</span>
+                        <span class="project-tag">Express</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/Mar14z/blog" target="_blank" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                            源码
+                        </a>
+                        <a href="#" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                                <line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                            演示
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card" data-category="web">
+                <div class="project-cover">
+                    <div class="project-placeholder">02</div>
+                </div>
+                <div class="project-info">
+                    <div class="project-meta">
+                        <span class="project-year">2024</span>
+                        <span class="project-type">网站</span>
+                    </div>
+                    <h3 class="project-title">任务管理平台</h3>
+                    <p class="project-description">
+                        团队协作任务管理工具，支持看板、甘特图、时间追踪，
+                        实时协作和进度可视化。
+                    </p>
+                    <div class="project-tags">
+                        <span class="project-tag">React</span>
+                        <span class="project-tag">TypeScript</span>
+                        <span class="project-tag">Node.js</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="#" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                                <line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                            演示
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card" data-category="app">
+                <div class="project-cover">
+                    <div class="project-placeholder">03</div>
+                </div>
+                <div class="project-info">
+                    <div class="project-meta">
+                        <span class="project-year">2023</span>
+                        <span class="project-type">应用</span>
+                    </div>
+                    <h3 class="project-title">命令行工具集</h3>
+                    <p class="project-description">
+                        一套高效的命令行工具，用于自动化日常开发流程，
+                        包括代码生成、构建优化、文档生成等。
+                    </p>
+                    <div class="project-tags">
+                        <span class="project-tag">Node.js</span>
+                        <span class="project-tag">CLI</span>
+                        <span class="project-tag">Commander</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/Mar14z/cli-tools" target="_blank" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                            源码
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card" data-category="design">
+                <div class="project-cover">
+                    <div class="project-placeholder">04</div>
+                </div>
+                <div class="project-info">
+                    <div class="project-meta">
+                        <span class="project-year">2023</span>
+                        <span class="project-type">设计</span>
+                    </div>
+                    <h3 class="project-title">设计系统组件库</h3>
+                    <p class="project-description">
+                        为团队创建的设计系统，包含 50+ 可复用组件，
+                        支持多主题和响应式布局。
+                    </p>
+                    <div class="project-tags">
+                        <span class="project-tag">Figma</span>
+                        <span class="project-tag">Storybook</span>
+                        <span class="project-tag">React</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="#" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                                <line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                            预览
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card" data-category="web">
+                <div class="project-cover">
+                    <div class="project-placeholder">05</div>
+                </div>
+                <div class="project-info">
+                    <div class="project-meta">
+                        <span class="project-year">2023</span>
+                        <span class="project-type">网站</span>
+                    </div>
+                    <h3 class="project-title">数据可视化仪表盘</h3>
+                    <p class="project-description">
+                        企业级数据可视化解决方案，支持多数据源接入，
+                        实时数据更新和自定义图表配置。
+                    </p>
+                    <div class="project-tags">
+                        <span class="project-tag">Vue.js</span>
+                        <span class="project-tag">D3.js</span>
+                        <span class="project-tag">ECharts</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="#" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                                <line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                            演示
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card" data-category="app">
+                <div class="project-cover">
+                    <div class="project-placeholder">06</div>
+                </div>
+                <div class="project-info">
+                    <div class="project-meta">
+                        <span class="project-year">2022</span>
+                        <span class="project-type">应用</span>
+                    </div>
+                    <h3 class="project-title">跨平台笔记应用</h3>
+                    <p class="project-description">
+                        支持 Markdown 写作的双链笔记应用，
+                        类似 Roam Research 的块级引用和图谱视图。
+                    </p>
+                    <div class="project-tags">
+                        <span class="project-tag">Electron</span>
+                        <span class="project-tag">React</span>
+                        <span class="project-tag">SQLite</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/Mar14z/notes-app" target="_blank" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                            源码
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-text">© 2024 静墨</div>
+        <div class="footer-links">
+            <a href="https://github.com/Mar14z/blog" class="footer-link" target="_blank">GitHub</a>
+            <a href="/links" class="footer-link">友链</a>
+        </div>
+    </footer>
+
+    <script src="/public/js/portfolio.js"></script>
+</body>
+</html>

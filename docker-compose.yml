@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6
+    restart: unless-stopped
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - blog-network
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/blog
+      - PORT=3000
+      - HOST=0.0.0.0
+    depends_on:
+      - mongodb
+    volumes:
+      - uploads_data:/app/uploads
+    networks:
+      - blog-network
+
+volumes:
+  mongodb_data:
+  uploads_data:
+
+networks:
+  blog-network:
+    driver: bridge

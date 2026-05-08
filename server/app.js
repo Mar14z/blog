@@ -28,7 +28,7 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname, '..')));
+app.use('/public', express.static(path.join(__dirname, '..', 'public')));
 app.use('/admin', express.static(path.join(__dirname, '..', 'admin')));
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
@@ -37,11 +37,23 @@ app.get('/admin', (req, res) => {
 });
 
 app.get('/article', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'article.html'));
+  res.sendFile(path.join(__dirname, '..', 'views', 'article.html'));
+});
+
+app.get('/about', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'views', 'about.html'));
+});
+
+app.get('/portfolio', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'views', 'portfolio.html'));
+});
+
+app.get('/links', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'views', 'links.html'));
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'index.html'));
+  res.sendFile(path.join(__dirname, '..', 'views', 'index.html'));
 });
 
 const limiter = rateLimit({
@@ -71,8 +83,12 @@ app.get('/api/health', (req, res) => {
 
 app.use(errorHandler);
 
-app.use((req, res) => {
-  res.status(404).json({ code: 404, message: '接口不存在' });
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    res.status(404).json({ code: 404, message: '接口不存在' });
+  } else {
+    res.status(404).sendFile(path.join(__dirname, '..', 'views', 'index.html'));
+  }
 });
 
 const PORT = process.env.PORT || 3000;
