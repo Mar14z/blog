@@ -3,3 +3,11 @@ node_modules/
 *.log
 .DS_Store
 Thumbs.db
+
+# Obsidian 笔记库 - 只保留目录结构，不上传实际笔记
+obsidian-vault/01 - Blog/*.md
+obsidian-vault/02 - Notes/**/*.md
+!obsidian-vault/**/README.md
+
+# 保留索引文件
+!obsidian-vault/00 - Index/*.md
