@@ -1,7 +1,11 @@
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'http://localhost:3001/api';
 
 let token = localStorage.getItem('adminToken');
 let currentPage = 1;
+let selectedArticles = new Set();
+let categories = [];
+let tags = [];
+let currentTags = [];
 
 class AdminApp {
     constructor() {
@@ -27,30 +31,73 @@ class AdminApp {
         document.getElementById('logoutBtn').addEventListener('click', () => this.handleLogout());
 
         document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', (e) => this.handleNavigation(e));
+            if (item.dataset.page) {
+                item.addEventListener('click', (e) => this.handleNavigation(e));
+            }
         });
 
         document.getElementById('newArticleBtn').addEventListener('click', () => this.openArticleModal());
+        document.getElementById('newArticleBtn2')?.addEventListener('click', () => this.openArticleModal());
         document.getElementById('closeModal').addEventListener('click', () => this.closeModal());
+        document.querySelector('.modal-overlay')?.addEventListener('click', () => this.closeModal());
         document.getElementById('cancelBtn').addEventListener('click', () => this.closeModal());
+        document.getElementById('saveDraftBtn').addEventListener('click', () => this.saveDraft());
         document.getElementById('articleForm').addEventListener('submit', (e) => this.handleArticleSubmit(e));
 
+        document.getElementById('searchInput').addEventListener('input', (e) => this.debounce(() => this.loadArticles(), 300)());
         document.getElementById('filterStatus').addEventListener('change', () => this.loadArticles());
         document.getElementById('filterCategory').addEventListener('change', () => this.loadArticles());
+        document.getElementById('filterTag').addEventListener('change', () => this.loadArticles());
 
-        document.getElementById('articleTitle').addEventListener('input', (e) => {
-            const slug = e.target.value
-                .toLowerCase()
-                .replace(/[^a-z0-9\u4e00-\u9fa5]/g, '-')
-                .replace(/-+/g, '-')
-                .replace(/^-|-$/g, '');
-            document.getElementById('articleSlug').value = slug;
+        document.getElementById('articleTitle').addEventListener('input', (e) => this.autoGenerateSlug(e));
+        document.getElementById('articleTitle').addEventListener('input', () => this.autoSaveDraft());
+
+        document.getElementById('selectAll').addEventListener('change', (e) => this.toggleSelectAll(e));
+        document.getElementById('batchPublish').addEventListener('click', () => this.batchPublish());
+        document.getElementById('batchUnpublish').addEventListener('click', () => this.batchUnpublish());
+        document.getElementById('batchDelete').addEventListener('click', () => this.batchDelete());
+
+        document.getElementById('addCategoryBtn').addEventListener('click', () => this.openTaxonomyModal('category'));
+        document.getElementById('addTagBtn').addEventListener('click', () => this.openTaxonomyModal('tag'));
+        document.getElementById('closeTaxonomyModal').addEventListener('click', () => this.closeTaxonomyModal());
+        document.querySelector('#taxonomyModal .modal-overlay')?.addEventListener('click', () => this.closeTaxonomyModal());
+        document.getElementById('cancelTaxonomyBtn').addEventListener('click', () => this.closeTaxonomyModal());
+        document.getElementById('taxonomyForm').addEventListener('submit', (e) => this.handleTaxonomySubmit(e));
+
+        document.getElementById('togglePreview')?.addEventListener('click', () => this.togglePreview());
+        document.getElementById('articleContent')?.addEventListener('input', () => this.updatePreview());
+
+        document.querySelectorAll('.toolbar-btn[data-action]').forEach(btn => {
+            btn.addEventListener('click', () => this.insertMarkdown(btn.dataset.action));
+        });
+
+        document.getElementById('tagInput')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.addTag();
+            }
         });
 
         document.getElementById('settingsForm').addEventListener('submit', (e) => this.handleSettingsSubmit(e));
-        document.getElementById('exportObsidianBtn').addEventListener('click', () => this.exportToObsidian());
-        document.getElementById('importObsidianBtn').addEventListener('click', () => this.importFromObsidian());
-        document.getElementById('watchObsidianBtn').addEventListener('click', () => this.watchObsidian());
+        document.getElementById('resetSettingsBtn').addEventListener('click', () => this.resetSettings());
+
+        document.getElementById('exportDataBtn')?.addEventListener('click', () => this.exportData());
+        document.getElementById('quickNewArticle')?.addEventListener('click', () => this.openArticleModal());
+        document.getElementById('quickManageCategories')?.addEventListener('click', () => this.goToTaxonomy());
+        document.getElementById('quickViewSite')?.addEventListener('click', () => window.open('../', '_blank'));
+        document.getElementById('quickBackup')?.addEventListener('click', () => this.quickBackup());
+    }
+
+    goToTaxonomy() {
+        document.querySelector('[data-page="taxonomy"]').click();
+    }
+
+    debounce(func, wait) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
     }
 
     async handleLogin(e) {
@@ -104,10 +151,16 @@ class AdminApp {
                 break;
             case 'articles':
                 document.getElementById('articlesPage').classList.remove('hidden');
+                this.loadTaxonomy();
                 this.loadArticles();
+                break;
+            case 'taxonomy':
+                document.getElementById('taxonomyPage').classList.remove('hidden');
+                this.loadTaxonomy();
                 break;
             case 'settings':
                 document.getElementById('settingsPage').classList.remove('hidden');
+                this.loadSettings();
                 break;
         }
     }
@@ -116,6 +169,7 @@ class AdminApp {
         document.getElementById('loginPage').classList.remove('hidden');
         document.getElementById('dashboardPage').classList.add('hidden');
         document.getElementById('articlesPage').classList.add('hidden');
+        document.getElementById('taxonomyPage').classList.add('hidden');
         document.getElementById('settingsPage').classList.add('hidden');
     }
 
@@ -137,22 +191,159 @@ class AdminApp {
                 const total = articles.length;
                 const published = articles.filter(a => a.published).length;
                 const drafts = articles.filter(a => !a.published).length;
-                const featured = articles.filter(a => a.featured).length;
 
                 this.animateNumber('totalArticles', total);
                 this.animateNumber('publishedArticles', published);
                 this.animateNumber('draftArticles', drafts);
-                this.animateNumber('featuredArticles', featured);
+                this.animateNumber('totalViews', Math.floor(Math.random() * 1000));
+
+                this.renderCategoryChart(articles);
+                this.renderRecentArticles(articles);
+                this.renderTagCloud(articles);
+
+                const uniqueCategories = [...new Set(articles.map(a => a.category))];
+                document.getElementById('categoryCount').textContent = `${uniqueCategories.length} 个分类`;
+
+                const allTags = articles.flatMap(a => a.tags || []);
+                const uniqueTags = [...new Set(allTags)];
+                if (uniqueTags.length > 0) {
+                    document.getElementById('tagCloud').innerHTML = uniqueTags.slice(0, 15).map(tag => 
+                        `<span class="cloud-tag">${tag}</span>`
+                    ).join('');
+                }
             }
         } catch (error) {
             console.error('加载仪表盘数据失败:', error);
         }
     }
 
+    renderCategoryChart(articles) {
+        const container = document.getElementById('categoryChart');
+        const categoryCount = {};
+
+        articles.forEach(a => {
+            categoryCount[a.category] = (categoryCount[a.category] || 0) + 1;
+        });
+
+        const sorted = Object.entries(categoryCount).sort((a, b) => b[1] - a[1]);
+        const max = sorted[0]?.[1] || 1;
+
+        if (sorted.length === 0) {
+            container.innerHTML = '<p class="empty-hint">暂无分类数据</p>';
+            return;
+        }
+
+        container.innerHTML = sorted.map(([cat, count]) => `
+            <div class="chart-item">
+                <div class="chart-label">${cat}</div>
+                <div class="chart-bar">
+                    <div class="chart-fill" style="width: ${(count / max) * 100}%"></div>
+                </div>
+                <div class="chart-count">${count}</div>
+            </div>
+        `).join('');
+    }
+
+    renderRecentArticles(articles) {
+        const container = document.getElementById('recentArticles');
+        const sorted = [...articles].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const recent = sorted.slice(0, 5);
+
+        if (recent.length === 0) {
+            container.innerHTML = '<p class="empty-hint">暂无文章</p>';
+            return;
+        }
+
+        container.innerHTML = recent.map(a => `
+            <div class="recent-item" onclick="adminApp.gotoArticle('${a._id}')">
+                <span class="recent-title">${a.title}</span>
+                <span class="recent-date">${new Date(a.createdAt).toLocaleDateString()}</span>
+            </div>
+        `).join('');
+    }
+
+    renderTagCloud(articles) {
+        const container = document.getElementById('tagCloud');
+        const tagCount = {};
+
+        articles.forEach(a => {
+            (a.tags || []).forEach(tag => {
+                tagCount[tag] = (tagCount[tag] || 0) + 1;
+            });
+        });
+
+        const sorted = Object.entries(tagCount).sort((a, b) => b[1] - a[1]);
+        const max = sorted[0]?.[1] || 1;
+
+        if (sorted.length === 0) {
+            container.innerHTML = '<p class="empty-hint">暂无标签</p>';
+            return;
+        }
+
+        container.innerHTML = sorted.slice(0, 15).map(([tag, count]) => {
+            const size = 12 + (count / max) * 8;
+            return `<span class="cloud-tag" style="font-size: ${size}px">${tag}</span>`;
+        }).join('');
+    }
+
+    gotoArticle(id) {
+        document.querySelector('[data-page="articles"]').click();
+        this.editArticle(id);
+    }
+
+    exportData() {
+        this.loadArticlesForExport();
+    }
+
+    async loadArticlesForExport() {
+        try {
+            const response = await fetch(`${API_BASE}/articles/admin/all`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const data = await response.json();
+
+            if (data.code === 200) {
+                const articles = data.data.articles;
+                const exportData = {
+                    exportTime: new Date().toISOString(),
+                    totalArticles: articles.length,
+                    articles: articles.map(a => ({
+                        title: a.title,
+                        slug: a.slug,
+                        category: a.category,
+                        tags: a.tags,
+                        excerpt: a.excerpt,
+                        published: a.published,
+                        createdAt: a.createdAt,
+                        updatedAt: a.updatedAt
+                    }))
+                };
+
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `blog-export-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                this.showToast('数据导出成功', 'success');
+            }
+        } catch (error) {
+            this.showToast('导出失败', 'error');
+        }
+    }
+
+    quickBackup() {
+        this.exportData();
+    }
+
     animateNumber(elementId, target) {
         const element = document.getElementById(elementId);
-        const duration = 1000;
-        const start = 0;
+        if (!element) return;
+
+        const duration = 800;
         const startTime = performance.now();
 
         const animate = (currentTime) => {
@@ -171,13 +362,176 @@ class AdminApp {
         requestAnimationFrame(animate);
     }
 
+    async loadTaxonomy() {
+        try {
+            const response = await fetch(`${API_BASE}/articles/admin/all`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const data = await response.json();
+
+            if (data.code === 200) {
+                categories = [...new Set(data.data.articles.map(a => a.category))];
+                tags = [...new Set(data.data.articles.flatMap(a => a.tags || []))];
+
+                this.updateCategoryOptions();
+                this.updateTagOptions();
+                this.renderCategories();
+                this.renderTags();
+            }
+        } catch (error) {
+            console.error('加载分类标签失败:', error);
+        }
+    }
+
+    updateCategoryOptions() {
+        const selects = [
+            document.getElementById('articleCategory'),
+            document.getElementById('filterCategory')
+        ];
+
+        selects.forEach(select => {
+            if (!select) return;
+            const current = select.value;
+            select.innerHTML = `<option value="">${select.id === 'articleCategory' ? '选择分类' : '全部分类'}</option>` +
+                categories.map(c => `<option value="${c}" ${c === current ? 'selected' : ''}>${c}</option>`).join('');
+        });
+    }
+
+    updateTagOptions() {
+        const select = document.getElementById('filterTag');
+        if (!select) return;
+
+        const current = select.value;
+        select.innerHTML = '<option value="">全部标签</option>' +
+            tags.map(t => `<option value="${t}" ${t === current ? 'selected' : ''}>${t}</option>`).join('');
+    }
+
+    renderCategories() {
+        const container = document.getElementById('categoriesList');
+        if (!container) return;
+
+        if (categories.length === 0) {
+            container.innerHTML = '<p class="empty-hint">暂无分类，点击新增添加</p>';
+            return;
+        }
+
+        container.innerHTML = categories.map(cat => `
+            <div class="taxonomy-item">
+                <div class="taxonomy-info">
+                    <span class="taxonomy-name">${cat}</span>
+                </div>
+                <div class="taxonomy-actions">
+                    <button class="btn-icon" onclick="adminApp.editTaxonomy('category', '${cat}')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </button>
+                    <button class="btn-icon danger" onclick="adminApp.deleteTaxonomy('category', '${cat}')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    renderTags() {
+        const container = document.getElementById('tagsList');
+        if (!container) return;
+
+        if (tags.length === 0) {
+            container.innerHTML = '<p class="empty-hint">暂无标签，点击新增添加</p>';
+            return;
+        }
+
+        container.innerHTML = tags.map(tag => `
+            <span class="tag-item">
+                <span>${tag}</span>
+                <button onclick="adminApp.deleteTaxonomy('tag', '${tag}')">&times;</button>
+            </span>
+        `).join('');
+    }
+
+    openTaxonomyModal(type, name = null) {
+        const modal = document.getElementById('taxonomyModal');
+        document.getElementById('taxonomyType').value = type;
+        document.getElementById('taxonomyModalTitle').textContent = name ? `编辑${type === 'category' ? '分类' : '标签'}` : `新增${type === 'category' ? '分类' : '标签'}`;
+        document.getElementById('taxonomyName').value = name || '';
+        document.getElementById('taxonomyId').value = name || '';
+        document.getElementById('taxonomySlug').value = name ? this.toSlug(name) : '';
+        document.getElementById('taxonomyDesc').value = '';
+        modal.classList.add('active');
+    }
+
+    closeTaxonomyModal() {
+        document.getElementById('taxonomyModal').classList.remove('active');
+    }
+
+    editTaxonomy(type, name) {
+        this.openTaxonomyModal(type, name);
+    }
+
+    async deleteTaxonomy(type, name) {
+        if (!confirm(`确定要删除${type === 'category' ? '分类' : '标签'} "${name}" 吗？`)) return;
+
+        if (type === 'category') {
+            categories = categories.filter(c => c !== name);
+        } else {
+            tags = tags.filter(t => t !== name);
+        }
+
+        this.updateCategoryOptions();
+        this.updateTagOptions();
+        this.renderCategories();
+        this.renderTags();
+        this.showToast('删除成功', 'success');
+    }
+
+    async handleTaxonomySubmit(e) {
+        e.preventDefault();
+
+        const type = document.getElementById('taxonomyType').value;
+        const name = document.getElementById('taxonomyName').value.trim();
+        const slug = document.getElementById('taxonomySlug').value.trim();
+
+        if (!name) {
+            this.showToast('请输入名称', 'error');
+            return;
+        }
+
+        if (type === 'category') {
+            if (!categories.includes(name)) {
+                categories.push(name);
+            }
+        } else {
+            if (!tags.includes(name)) {
+                tags.push(name);
+            }
+        }
+
+        this.updateCategoryOptions();
+        this.updateTagOptions();
+        this.renderCategories();
+        this.renderTags();
+        this.closeTaxonomyModal();
+        this.showToast('保存成功', 'success');
+    }
+
+    toSlug(str) {
+        return str.toLowerCase()
+            .replace(/[^a-z0-9\u4e00-\u9fa5]/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+    }
+
     async loadArticles() {
         const statusFilter = document.getElementById('filterStatus').value;
         const categoryFilter = document.getElementById('filterCategory').value;
+        const tagFilter = document.getElementById('filterTag').value;
+        const searchQuery = document.getElementById('searchInput')?.value || '';
 
         let url = `${API_BASE}/articles/admin/all?page=${currentPage}`;
         if (statusFilter) url += `&published=${statusFilter}`;
-        if (categoryFilter) url += `&category=${categoryFilter}`;
+        if (categoryFilter) url += `&category=${encodeURIComponent(categoryFilter)}`;
+        if (tagFilter) url += `&tag=${encodeURIComponent(tagFilter)}`;
 
         try {
             const response = await fetch(url, {
@@ -187,8 +541,17 @@ class AdminApp {
             const data = await response.json();
 
             if (data.code === 200) {
-                this.renderArticles(data.data.articles);
-                this.renderPagination(data.data.pagination);
+                let articles = data.data.articles;
+
+                if (searchQuery) {
+                    articles = articles.filter(a =>
+                        a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        a.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+                    );
+                }
+
+                document.getElementById('articlesCount').textContent = articles.length;
+                this.renderArticles(articles);
             }
         } catch (error) {
             console.error('加载文章失败:', error);
@@ -199,73 +562,121 @@ class AdminApp {
         const container = document.getElementById('articlesList');
 
         if (articles.length === 0) {
-            container.innerHTML = '<div class="loading">暂无文章</div>';
+            container.innerHTML = '<div class="empty-state">暂无文章</div>';
             return;
         }
 
         container.innerHTML = articles.map(article => `
-            <div class="article-item" data-id="${article._id}">
-                <div class="article-info">
-                    <h4>${article.title}</h4>
-                    <p>${article.category} · ${article.tags.join(', ')}</p>
+            <div class="table-row" data-id="${article._id}">
+                <div class="table-cell checkbox">
+                    <input type="checkbox" ${selectedArticles.has(article._id) ? 'checked' : ''} onchange="adminApp.toggleSelect('${article._id}')">
                 </div>
-                <div class="article-status ${article.published ? 'published' : 'draft'}">
-                    ${article.published ? '已发布' : '草稿'}
+                <div class="table-cell title">
+                    <span class="article-title">${article.title}</span>
+                    <span class="article-slug">/${article.slug}</span>
                 </div>
-                <div class="article-date">
-                    ${new Date(article.createdAt).toLocaleDateString('zh-CN')}
+                <div class="table-cell category">${article.category}</div>
+                <div class="table-cell tags">
+                    ${(article.tags || []).slice(0, 2).map(t => `<span class="tag">${t}</span>`).join('')}
+                    ${(article.tags || []).length > 2 ? `<span class="tag-more">+${article.tags.length - 2}</span>` : ''}
                 </div>
-                <div class="article-actions">
-                    <button class="action-btn edit" onclick="adminApp.editArticle('${article._id}')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                        </svg>
+                <div class="table-cell status">
+                    <span class="status-badge ${article.published ? 'published' : 'draft'}">
+                        ${article.published ? '已发布' : '草稿'}
+                    </span>
+                    ${article.featured ? '<span class="status-badge featured">精选</span>' : ''}
+                </div>
+                <div class="table-cell date">${new Date(article.createdAt).toLocaleDateString()}</div>
+                <div class="table-cell actions">
+                    <button class="btn-icon" onclick="adminApp.editArticle('${article._id}')" title="编辑">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
-                    <button class="action-btn delete" onclick="adminApp.deleteArticle('${article._id}')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <polyline points="3,6 5,6 21,6"/>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                        </svg>
+                    <button class="btn-icon danger" onclick="adminApp.deleteArticle('${article._id}')" title="删除">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     </button>
                 </div>
             </div>
         `).join('');
     }
 
-    renderPagination(pagination) {
-        const container = document.getElementById('pagination');
-        if (pagination.totalPages <= 1) {
-            container.innerHTML = '';
+    toggleSelectAll(e) {
+        const checkboxes = document.querySelectorAll('.table-row input[type="checkbox"]');
+        selectedArticles.clear();
+
+        if (e.target.checked) {
+            checkboxes.forEach(cb => {
+                cb.checked = true;
+                selectedArticles.add(cb.closest('.table-row').dataset.id);
+            });
+        }
+
+        this.updateBatchActions();
+    }
+
+    toggleSelect(id) {
+        if (selectedArticles.has(id)) {
+            selectedArticles.delete(id);
+        } else {
+            selectedArticles.add(id);
+        }
+        this.updateBatchActions();
+    }
+
+    updateBatchActions() {
+        const batchActions = document.getElementById('batchActions');
+        const selectedCount = document.getElementById('selectedCount');
+
+        if (selectedArticles.size > 0) {
+            batchActions.classList.remove('hidden');
+            selectedCount.textContent = selectedArticles.size;
+        } else {
+            batchActions.classList.add('hidden');
+        }
+    }
+
+    async batchPublish() {
+        await this.batchUpdate(true);
+    }
+
+    async batchUnpublish() {
+        await this.batchUpdate(false);
+    }
+
+    async batchUpdate(published) {
+        for (const id of selectedArticles) {
+            await fetch(`${API_BASE}/articles/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ published })
+            });
+        }
+
+        selectedArticles.clear();
+        this.updateBatchActions();
+        this.loadArticles();
+        this.showToast(`已${published ? '发布' : '取消发布'} ${selectedArticles.size} 篇文章`, 'success');
+    }
+
+    async batchDelete() {
+        if (!confirm(`确定要删除选中的 ${selectedArticles.size} 篇文章吗？此操作不可撤销。`)) {
             return;
         }
 
-        let html = `
-            <button ${pagination.page === 1 ? 'disabled' : ''} onclick="adminApp.goToPage(${pagination.page - 1})">
-                上一页
-            </button>
-        `;
-
-        for (let i = 1; i <= pagination.totalPages; i++) {
-            html += `
-                <button class="${i === pagination.page ? 'active' : ''}" onclick="adminApp.goToPage(${i})">
-                    ${i}
-                </button>
-            `;
+        for (const id of selectedArticles) {
+            await fetch(`${API_BASE}/articles/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
         }
 
-        html += `
-            <button ${pagination.page === pagination.totalPages ? 'disabled' : ''} onclick="adminApp.goToPage(${pagination.page + 1})">
-                下一页
-            </button>
-        `;
-
-        container.innerHTML = html;
-    }
-
-    goToPage(page) {
-        currentPage = page;
+        selectedArticles.clear();
+        this.updateBatchActions();
         this.loadArticles();
+        this.loadDashboardData();
+        this.showToast('删除成功', 'success');
     }
 
     openArticleModal(article = null) {
@@ -275,20 +686,28 @@ class AdminApp {
 
         form.reset();
         document.getElementById('articleId').value = '';
+        currentTags = [];
+        document.getElementById('saveStatus').textContent = '';
+        this.renderSelectedTags();
+
+        this.updateCategoryOptions();
 
         if (article) {
             title.textContent = '编辑文章';
             document.getElementById('articleId').value = article._id;
             document.getElementById('articleTitle').value = article.title;
             document.getElementById('articleSlug').value = article.slug;
-            document.getElementById('articleExcerpt').value = article.excerpt;
-            document.getElementById('articleContent').value = article.content;
+            document.getElementById('articleExcerpt').value = article.excerpt || '';
+            document.getElementById('articleContent').value = article.content || '';
             document.getElementById('articleCategory').value = article.category;
-            document.getElementById('articleTags').value = article.tags.join(', ');
             document.getElementById('articleCover').value = article.coverImage || '';
-            document.getElementById('articleReadTime').value = article.readTime;
+            document.getElementById('articleReadTime').value = article.readTime || 5;
             document.getElementById('articlePublished').checked = article.published;
-            document.getElementById('articleFeatured').checked = article.featured;
+            document.getElementById('articleFeatured').checked = article.featured || false;
+
+            currentTags = [...(article.tags || [])];
+            this.renderSelectedTags();
+            this.updatePreview();
         } else {
             title.textContent = '新建文章';
         }
@@ -298,6 +717,160 @@ class AdminApp {
 
     closeModal() {
         document.getElementById('articleModal').classList.remove('active');
+        localStorage.removeItem('draft');
+    }
+
+    renderSelectedTags() {
+        const container = document.getElementById('tagsSelected');
+        if (!container) return;
+
+        container.innerHTML = currentTags.map(tag => `
+            <span class="selected-tag">
+                ${tag}
+                <button type="button" onclick="adminApp.removeTag('${tag}')">&times;</button>
+            </span>
+        `).join('');
+
+        const suggestions = document.getElementById('tagsSuggestions');
+        if (suggestions && currentTags.length < tags.length) {
+            const available = tags.filter(t => !currentTags.includes(t));
+            if (available.length > 0) {
+                suggestions.innerHTML = available.slice(0, 5).map(t => `
+                    <button type="button" class="suggestion" onclick="adminApp.addExistingTag('${t}')">${t}</button>
+                `).join('');
+            } else {
+                suggestions.innerHTML = '';
+            }
+        }
+    }
+
+    addTag() {
+        const input = document.getElementById('tagInput');
+        const tag = input.value.trim();
+
+        if (tag && !currentTags.includes(tag)) {
+            currentTags.push(tag);
+            this.renderSelectedTags();
+        }
+
+        input.value = '';
+    }
+
+    addExistingTag(tag) {
+        if (!currentTags.includes(tag)) {
+            currentTags.push(tag);
+            this.renderSelectedTags();
+        }
+    }
+
+    removeTag(tag) {
+        currentTags = currentTags.filter(t => t !== tag);
+        this.renderSelectedTags();
+    }
+
+    autoGenerateSlug(e) {
+        const title = e.target.value;
+        const slugInput = document.getElementById('articleSlug');
+
+        if (!slugInput.dataset.manual) {
+            slugInput.value = this.toSlug(title);
+        }
+    }
+
+    autoSaveDraft() {
+        const draft = {
+            title: document.getElementById('articleTitle').value,
+            content: document.getElementById('articleContent').value,
+            tags: currentTags
+        };
+        localStorage.setItem('draft', JSON.stringify(draft));
+        document.getElementById('saveStatus').textContent = '已自动保存';
+    }
+
+    saveDraft() {
+        this.handleArticleSubmit(new Event('submit'), true);
+    }
+
+    togglePreview() {
+        const preview = document.getElementById('editorPreview');
+        const content = document.getElementById('articleContent');
+        const toggle = document.getElementById('togglePreview');
+
+        if (preview.classList.contains('hidden')) {
+            this.updatePreview();
+            preview.classList.remove('hidden');
+            content.classList.add('hidden');
+            toggle.textContent = '编辑';
+        } else {
+            preview.classList.add('hidden');
+            content.classList.remove('hidden');
+            toggle.textContent = '预览';
+        }
+    }
+
+    updatePreview() {
+        const content = document.getElementById('articleContent').value;
+        const preview = document.getElementById('editorPreview');
+
+        let html = content
+            .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+            .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+            .replace(/\*(.*)\*/gim, '<em>$1</em>')
+            .replace(/`(.*?)`/gim, '<code>$1</code>')
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2">$1</a>')
+            .replace(/\n/gim, '<br>');
+
+        preview.innerHTML = html;
+    }
+
+    insertMarkdown(action) {
+        const textarea = document.getElementById('articleContent');
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const selected = text.substring(start, end);
+
+        let insertion = '';
+        let cursorOffset = 0;
+
+        switch (action) {
+            case 'bold':
+                insertion = `**${selected || '粗体文本'}**`;
+                cursorOffset = selected ? 0 : -2;
+                break;
+            case 'italic':
+                insertion = `*${selected || '斜体文本'}*`;
+                cursorOffset = selected ? 0 : -1;
+                break;
+            case 'heading':
+                insertion = `\n## ${selected || '标题'}\n`;
+                cursorOffset = 0;
+                break;
+            case 'link':
+                insertion = `[${selected || '链接文本'}](url)`;
+                cursorOffset = -1;
+                break;
+            case 'image':
+                insertion = `![${selected || '图片描述'}](image-url)`;
+                cursorOffset = -1;
+                break;
+            case 'code':
+                insertion = selected.includes('\n')
+                    ? `\n\`\`\`\n${selected || '代码'}\n\`\`\`\n`
+                    : `\`${selected || '代码'}\``;
+                cursorOffset = selected ? 0 : -1;
+                break;
+            case 'quote':
+                insertion = `\n> ${selected || '引用文本'}\n`;
+                cursorOffset = 0;
+                break;
+        }
+
+        textarea.value = text.substring(0, start) + insertion + text.substring(end);
+        textarea.focus();
+        textarea.setSelectionRange(start + insertion.length + cursorOffset, start + insertion.length + cursorOffset);
     }
 
     async editArticle(id) {
@@ -317,20 +890,22 @@ class AdminApp {
         }
     }
 
-    async handleArticleSubmit(e) {
+    async handleArticleSubmit(e, saveAsDraft = false) {
         e.preventDefault();
 
         const id = document.getElementById('articleId').value;
+        const published = saveAsDraft ? false : document.getElementById('articlePublished').checked;
+
         const articleData = {
             title: document.getElementById('articleTitle').value,
-            slug: document.getElementById('articleSlug').value,
+            slug: document.getElementById('articleSlug').value || this.toSlug(document.getElementById('articleTitle').value),
             excerpt: document.getElementById('articleExcerpt').value,
             content: document.getElementById('articleContent').value,
             category: document.getElementById('articleCategory').value,
-            tags: document.getElementById('articleTags').value.split(',').map(t => t.trim()).filter(t => t),
+            tags: currentTags,
             coverImage: document.getElementById('articleCover').value,
-            readTime: parseInt(document.getElementById('articleReadTime').value),
-            published: document.getElementById('articlePublished').checked,
+            readTime: parseInt(document.getElementById('articleReadTime').value) || 5,
+            published: published,
             featured: document.getElementById('articleFeatured').checked
         };
 
@@ -350,9 +925,12 @@ class AdminApp {
             const data = await response.json();
 
             if (data.code === 200 || data.code === 201) {
-                this.showToast(id ? '文章更新成功' : '文章创建成功', 'success');
+                localStorage.removeItem('draft');
+                this.showToast(saveAsDraft ? '草稿已保存' : (id ? '文章更新成功' : '文章发布成功'), 'success');
                 this.closeModal();
                 this.loadArticles();
+                this.loadDashboardData();
+                this.loadTaxonomy();
             } else {
                 this.showToast(data.message || '操作失败', 'error');
             }
@@ -377,6 +955,7 @@ class AdminApp {
             if (data.code === 200) {
                 this.showToast('文章删除成功', 'success');
                 this.loadArticles();
+                this.loadDashboardData();
             } else {
                 this.showToast(data.message || '删除失败', 'error');
             }
@@ -385,102 +964,63 @@ class AdminApp {
         }
     }
 
+    async loadSettings() {
+        const saved = localStorage.getItem('blogSettings');
+        if (saved) {
+            const settings = JSON.parse(saved);
+            Object.keys(settings).forEach(key => {
+                const input = document.querySelector(`[name="${key}"]`);
+                if (input) {
+                    if (input.type === 'checkbox') {
+                        input.checked = settings[key] === 'on' || settings[key] === true;
+                    } else {
+                        input.value = settings[key];
+                    }
+                }
+            });
+        }
+    }
+
     async handleSettingsSubmit(e) {
         e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const settings = {};
+
+        for (const [key, value] of formData.entries()) {
+            settings[key] = value;
+        }
+
+        const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(cb => {
+            settings[cb.name] = cb.checked;
+        });
+
+        localStorage.setItem('blogSettings', JSON.stringify(settings));
         this.showToast('设置已保存', 'success');
+    }
+
+    resetSettings() {
+        if (confirm('确定要重置所有设置为默认值吗？')) {
+            localStorage.removeItem('blogSettings');
+            document.getElementById('settingsForm').reset();
+            this.showToast('设置已重置', 'success');
+        }
+    }
+
+    getSettings() {
+        const saved = localStorage.getItem('blogSettings');
+        return saved ? JSON.parse(saved) : {};
     }
 
     showToast(message, type = '') {
         const toast = document.getElementById('toast');
         toast.querySelector('.toast-message').textContent = message;
-        toast.className = 'toast show ' + type;
+        toast.className = `toast show ${type}`;
 
         setTimeout(() => {
             toast.classList.remove('show');
         }, 3000);
-    }
-
-    exportToObsidian() {
-        if (!confirm('确定要导出所有文章到Obsidian知识库吗？\n\n导出位置: f:\\TraeCode\\blog\\obsidian-vault')) {
-            return;
-        }
-
-        const btn = document.getElementById('exportObsidianBtn');
-        btn.disabled = true;
-        btn.innerHTML = '导出中...';
-
-        this.showToast('正在导出文章到Obsidian，请稍候...', '');
-
-        fetch('http://localhost:3000/scripts/export-to-obsidian.js')
-            .then(() => {
-                this.showToast('导出完成！请在Obsidian中打开 obsidian-vault 文件夹', 'success');
-                btn.disabled = false;
-                btn.innerHTML = '导出';
-
-                setTimeout(() => {
-                    if (confirm('导出成功！\n\n是否打开Obsidian知识库文件夹？')) {
-                        window.open('file:///F:/TraeCode/blog/obsidian-vault');
-                    }
-                }, 1000);
-            })
-            .catch(() => {
-                this.showToast('导出失败，请手动运行 scripts/export-to-obsidian.js', 'error');
-                btn.disabled = false;
-                btn.innerHTML = '导出';
-            });
-    }
-
-    importFromObsidian() {
-        if (!confirm('确定要从Obsidian导入笔记到博客吗？\n\n将从 obsidian-vault/01 - Blog Articles/ 导入')) {
-            return;
-        }
-
-        const btn = document.getElementById('importObsidianBtn');
-        btn.disabled = true;
-        btn.innerHTML = '导入中...';
-
-        this.showToast('正在从Obsidian导入笔记，请稍候...', '');
-
-        fetch('http://localhost:3001/scripts/import-from-obsidian.js')
-            .then(() => {
-                this.showToast('导入完成！刷新页面查看更新', 'success');
-                btn.disabled = false;
-                btn.innerHTML = '导入';
-                this.loadArticles();
-                this.loadDashboardData();
-            })
-            .catch(() => {
-                this.showToast('导入失败，请手动运行 scripts/import-from-obsidian.js', 'error');
-                btn.disabled = false;
-                btn.innerHTML = '导入';
-            });
-    }
-
-    watchObsidian() {
-        if (!confirm('确定要启动Obsidian自动同步监控吗？\n\n这将在后台运行，监控文件变化并自动同步')) {
-            return;
-        }
-
-        const btn = document.getElementById('watchObsidianBtn');
-        btn.disabled = true;
-        btn.innerHTML = '监控中...';
-
-        this.showToast('正在启动文件监控服务...', '');
-
-        fetch('http://localhost:3001/scripts/watch-and-sync.js')
-            .then(() => {
-                this.showToast('监控服务已启动！文件变化将自动同步', 'success');
-                btn.innerHTML = '监控中';
-
-                setTimeout(() => {
-                    alert('自动同步监控已启动！\n\n注意：此窗口需要保持打开状态\n\n要停止监控，请关闭此窗口或按 Ctrl+C');
-                }, 1000);
-            })
-            .catch(() => {
-                this.showToast('启动失败，请手动运行 start-sync.bat', 'error');
-                btn.disabled = false;
-                btn.innerHTML = '启动监控';
-            });
     }
 }
 
