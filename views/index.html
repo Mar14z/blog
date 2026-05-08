@@ -142,52 +142,6 @@
             }
         }
 
-        .quick-nav {
-            position: fixed;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .quick-nav-item {
-            width: 12px;
-            height: 12px;
-            border: 1px solid var(--text-dim);
-            background: transparent;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .quick-nav-item::before {
-            content: attr(data-label);
-            position: absolute;
-            right: 24px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-family: var(--font-mono);
-            font-size: 0.625rem;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-
-        .quick-nav-item:hover::before {
-            opacity: 1;
-        }
-
-        .quick-nav-item:hover,
-        .quick-nav-item.active {
-            background: var(--text-primary);
-            border-color: var(--text-primary);
-        }
-
         .articles-section {
             background: var(--bg-primary);
             padding: 100px 40px;
@@ -528,8 +482,6 @@
         }
 
         @media (max-width: 768px) {
-            .quick-nav { display: none; }
-            
             .hero-title {
                 font-size: 1.25rem;
             }
@@ -575,13 +527,6 @@
             <a href="#contact-section" class="nav-link">联系</a>
         </div>
     </nav>
-
-    <div class="quick-nav" id="quickNav">
-        <div class="quick-nav-item active" data-section="hero" data-label="首页"></div>
-        <div class="quick-nav-item" data-section="articles" data-label="文章"></div>
-        <div class="quick-nav-item" data-section="about-section" data-label="关于"></div>
-        <div class="quick-nav-item" data-section="contact-section" data-label="联系"></div>
-    </div>
 
     <main class="main" id="main">
         <section class="section hero" id="hero">

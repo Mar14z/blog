@@ -13,7 +13,6 @@ class BlogApp {
         this.initLoader();
         this.initNavigation();
         this.initScrollEffects();
-        this.initQuickNav();
         this.initFilters();
         this.initContactForm();
         this.initFloatingLetters();
@@ -39,46 +38,6 @@ class BlogApp {
                     nav.classList.add('scrolled');
                 } else {
                     nav.classList.remove('scrolled');
-                }
-            });
-        }
-    }
-
-    initQuickNav() {
-        const navItems = document.querySelectorAll('.quick-nav-item');
-        const main = document.getElementById('main');
-        const sections = document.querySelectorAll('.section');
-
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const sectionId = item.dataset.section;
-                const targetSection = document.getElementById(sectionId);
-                if (targetSection && main) {
-                    targetSection.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-
-        if (main) {
-            const observerOptions = {
-                root: main,
-                threshold: 0.5
-            };
-
-            const sectionObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const sectionId = entry.target.id;
-                        navItems.forEach(item => {
-                            item.classList.toggle('active', item.dataset.section === sectionId);
-                        });
-                    }
-                });
-            }, observerOptions);
-
-            sections.forEach(section => {
-                if (section.id) {
-                    sectionObserver.observe(section);
                 }
             });
         }
