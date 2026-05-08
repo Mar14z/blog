@@ -15,7 +15,7 @@ class BlogApp {
         this.initScrollEffects();
         this.initFilters();
         this.initContactForm();
-        this.initCanvas3D();
+        this.initHeroAnimation();
         this.loadArticles();
     }
 
@@ -30,13 +30,17 @@ class BlogApp {
 
     initNavigation() {
         const nav = document.getElementById('nav');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                nav.classList.add('scrolled');
-            } else {
-                nav.classList.remove('scrolled');
-            }
-        });
+        const main = document.getElementById('main');
+        
+        if (main) {
+            main.addEventListener('scroll', () => {
+                if (main.scrollTop > 50) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            });
+        }
     }
 
     initScrollEffects() {
@@ -69,19 +73,6 @@ class BlogApp {
         sections.forEach(section => {
             sectionObserver.observe(section);
         });
-
-        const cards = document.querySelectorAll('.article-card');
-        const cardObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry, index) => {
-                if (entry.isIntersecting) {
-                    setTimeout(() => {
-                        entry.target.classList.add('visible');
-                    }, index * 100);
-                }
-            });
-        }, { threshold: 0.1 });
-
-        cards.forEach(card => cardObserver.observe(card));
     }
 
     initFilters() {
@@ -128,69 +119,38 @@ class BlogApp {
         }
     }
 
-    initCanvas3D() {
-        const canvas = document.getElementById('heroCanvas');
-        if (!canvas) return;
+    initHeroAnimation() {
+        const hero = document.getElementById('hero');
+        if (!hero) return;
 
-        const ctx = canvas.getContext('2d');
-        const letters = '静墨博客'.split('');
-        const particles = [];
+        const letters = ['记', '录', '思', '考', '沉', '淀', 'J', 'I', 'N', 'G', 'M', 'O'];
+        
+        letters.forEach((letter, i) => {
+            const span = document.createElement('span');
+            span.className = 'floating-letter';
+            span.textContent = letter;
+            span.style.cssText = `
+                position: absolute;
+                font-family: var(--font-mono);
+                font-size: ${14 + Math.random() * 10}px;
+                color: rgba(80, 80, 80, ${0.15 + Math.random() * 0.1});
+                left: ${10 + Math.random() * 80}%;
+                top: ${10 + Math.random() * 80}%;
+                animation: float ${8 + Math.random() * 4}s ease-in-out infinite;
+                animation-delay: ${i * 0.5}s;
+                pointer-events: none;
+            `;
+            hero.appendChild(span);
+        });
 
-        const resize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        };
-        resize();
-        window.addEventListener('resize', resize);
-
-        class Particle {
-            constructor(char) {
-                this.char = char;
-                this.angle = Math.random() * Math.PI * 2;
-                this.radius = 150 + Math.random() * 200;
-                this.centerX = canvas.width / 2;
-                this.centerY = canvas.height / 2;
-                this.speed = 0.002 + Math.random() * 0.003;
-                this.size = 12 + Math.random() * 8;
-                this.depth = 50 + Math.random() * 150;
-                this.opacity = 0.08 + Math.random() * 0.12;
-                this.verticalOffset = (Math.random() - 0.5) * 100;
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+                50% { transform: translateY(-20px) rotate(10deg); opacity: 0.8; }
             }
-
-            update() {
-                this.angle += this.speed;
-            }
-
-            draw() {
-                const x = this.centerX + Math.cos(this.angle) * this.radius;
-                const y = this.centerY + Math.sin(this.angle) * this.radius * 0.3 + this.verticalOffset;
-                const scale = this.depth / 300;
-                const alpha = this.opacity * scale;
-
-                ctx.font = `${this.size * scale}px "JetBrains Mono", monospace`;
-                ctx.fillStyle = `rgba(100, 100, 100, ${alpha})`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(this.char, x, y);
-            }
-        }
-
-        for (let i = 0; i < 12; i++) {
-            particles.push(new Particle(letters[i % letters.length]));
-        }
-
-        const animate = () => {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-
-            requestAnimationFrame(animate);
-        };
-        animate();
+        `;
+        document.head.appendChild(style);
     }
 
     async loadArticles() {
@@ -237,13 +197,6 @@ class BlogApp {
                 </div>
             </article>
         `).join('');
-
-        const cards = grid.querySelectorAll('.article-card');
-        cards.forEach((card, index) => {
-            setTimeout(() => {
-                card.classList.add('visible');
-            }, index * 100);
-        });
     }
 
     renderEmptyState() {
