@@ -85,28 +85,18 @@
 }
 
 .main {
-    scroll-snap-type: y mandatory;
-    overflow-y: scroll;
-    height: 100vh;
+    overflow-y: auto;
+    min-height: calc(100vh - 80px);
 }
 
 .section {
     min-height: 100vh;
-    scroll-snap-align: start;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     position: relative;
     padding: 100px 40px;
-    opacity: 0;
-    transform: translateY(50px);
-    transition: all 0.8s var(--transition-smooth);
-}
-
-.section.visible {
-    opacity: 1;
-    transform: translateY(0);
 }
 
 .section-header {
