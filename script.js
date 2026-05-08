@@ -133,7 +133,7 @@ class BlogApp {
         if (!canvas) return;
 
         const ctx = canvas.getContext('2d');
-        const letters = 'JINGMOBLOG'.split('');
+        const letters = '静墨博客'.split('');
         const particles = [];
 
         const resize = () => {
@@ -146,69 +146,41 @@ class BlogApp {
         class Particle {
             constructor(char) {
                 this.char = char;
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.z = Math.random() * 500;
-                this.size = Math.random() * 20 + 10;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
-                this.speedZ = (Math.random() - 0.5) * 0.5;
-                this.opacity = Math.random() * 0.5 + 0.1;
-                this.rotationX = Math.random() * Math.PI * 2;
-                this.rotationY = Math.random() * Math.PI * 2;
-                this.rotationSpeedX = (Math.random() - 0.5) * 0.02;
-                this.rotationSpeedY = (Math.random() - 0.5) * 0.02;
+                this.angle = Math.random() * Math.PI * 2;
+                this.radius = 150 + Math.random() * 200;
+                this.centerX = canvas.width / 2;
+                this.centerY = canvas.height / 2;
+                this.speed = 0.002 + Math.random() * 0.003;
+                this.size = 12 + Math.random() * 8;
+                this.depth = 50 + Math.random() * 150;
+                this.opacity = 0.08 + Math.random() * 0.12;
+                this.verticalOffset = (Math.random() - 0.5) * 100;
             }
 
             update() {
-                this.rotationX += this.rotationSpeedX;
-                this.rotationY += this.rotationSpeedY;
-
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                
-                let x3d = this.x - centerX;
-                let y3d = this.y - centerY;
-                let z3d = this.z;
-
-                const cosX = Math.cos(this.rotationX);
-                const sinX = Math.sin(this.rotationX);
-                const cosY = Math.cos(this.rotationY);
-                const sinY = Math.sin(this.rotationY);
-
-                let yTemp = y3d * cosX - z3d * sinX;
-                let zTemp = y3d * sinX + z3d * cosX;
-                y3d = yTemp;
-                z3d = zTemp;
-
-                let xTemp = x3d * cosY + z3d * sinY;
-                zTemp = -x3d * sinY + z3d * cosY;
-                x3d = xTemp;
-                z3d = zTemp;
-
-                this.projectedX = x3d + centerX;
-                this.projectedY = y3d + centerY;
-                this.scale = 500 / (500 + z3d);
+                this.angle += this.speed;
             }
 
             draw() {
-                if (this.scale <= 0) return;
-                
-                const alpha = this.opacity * Math.min(1, this.scale);
-                ctx.font = `${this.size * this.scale}px "Press Start 2P", monospace`;
-                ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                const x = this.centerX + Math.cos(this.angle) * this.radius;
+                const y = this.centerY + Math.sin(this.angle) * this.radius * 0.3 + this.verticalOffset;
+                const scale = this.depth / 300;
+                const alpha = this.opacity * scale;
+
+                ctx.font = `${this.size * scale}px "JetBrains Mono", monospace`;
+                ctx.fillStyle = `rgba(100, 100, 100, ${alpha})`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(this.char, this.projectedX, this.projectedY);
+                ctx.fillText(this.char, x, y);
             }
         }
 
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 12; i++) {
             particles.push(new Particle(letters[i % letters.length]));
         }
 
         const animate = () => {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             particles.forEach(p => {
