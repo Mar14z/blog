@@ -1,3 +1,18 @@
+/* 区块标题 */
+.section-tag {
+    font-family: var(--font-pixel);
+    font-size: 0.625rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.section-title {
+    font-family: var(--font-pixel);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    margin-bottom: 24px;
+}
+
 .links-section {
     margin-bottom: 80px;
     padding-bottom: 60px;
@@ -41,19 +56,6 @@
     flex-shrink: 0;
 }
 
-.avatar-placeholder {
-    width: 48px;
-    height: 48px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-pixel);
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-}
-
 .link-info {
     flex: 1;
     min-width: 0;
@@ -91,7 +93,7 @@
 .link-arrow svg {
     width: 16px;
     height: 16px;
-    stroke: var(--text-dim);
+    stroke: var(--text-muted);
     transition: stroke 0.3s;
 }
 
@@ -139,7 +141,7 @@
     content: '>';
     position: absolute;
     left: 0;
-    color: var(--text-dim);
+    color: var(--text-muted);
     font-family: var(--font-mono);
 }
 
@@ -163,7 +165,7 @@
     width: 80px;
     font-family: var(--font-pixel);
     font-size: 0.5rem;
-    color: var(--text-dim);
+    color: var(--text-muted);
     text-transform: uppercase;
 }
 
@@ -180,68 +182,8 @@
     gap: 24px;
 }
 
-.form-group {
-    position: relative;
-}
-
-.form-input {
-    width: 100%;
-    padding: 16px 0;
-    font-family: var(--font-mono);
-    font-size: 1rem;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--border);
-    color: var(--text-primary);
-    outline: none;
-    transition: all 0.3s var(--transition-smooth);
-}
-
-.form-input:focus {
-    border-color: var(--text-primary);
-}
-
-.form-label {
-    position: absolute;
-    left: 0;
-    top: 16px;
-    font-size: 1rem;
-    color: var(--text-dim);
-    pointer-events: none;
-    transition: all 0.3s var(--transition-smooth);
-}
-
-.form-input:focus + .form-label,
-.form-input:not(:placeholder-shown) + .form-label {
-    top: -8px;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-}
-
-.form-textarea {
-    min-height: 120px;
-    resize: vertical;
-}
-
 .btn-submit {
-    font-family: var(--font-pixel);
-    font-size: 0.75rem;
-    padding: 20px 40px;
-    background: var(--text-primary);
-    border: none;
-    color: var(--bg-primary);
-    cursor: pointer;
-    transition: all 0.3s var(--transition-smooth);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-top: 20px;
     align-self: flex-start;
-}
-
-.btn-submit:hover {
-    background: transparent;
-    color: var(--text-primary);
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
 }
 
 @media (max-width: 768px) {

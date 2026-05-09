@@ -1,0 +1,39 @@
+- [ ] helmet 中间件已安装并配置，HTTP 安全头生效
+- [ ] compression 中间件已安装，响应启用 gzip 压缩
+- [ ] cors 中间件已配置，跨域策略正确
+- [ ] rate-limit 已配置，登录接口 5次/分钟，普通接口 100次/分钟
+- [ ] 文章创建/更新路由对内容进行了 sanitize 处理
+- [ ] SIGTERM/SIGINT 信号处理已添加，数据库连接正确关闭
+- [ ] 所有页面包含 og:title, og:description, og:image, og:url
+- [ ] 所有页面包含 twitter:card 元标签
+- [ ] 文章详情页动态生成 OG 标签
+- [ ] 首页包含 WebSite + Organization JSON-LD schema
+- [ ] 文章详情页包含 Article JSON-LD schema
+- [ ] sitemap.xml 可访问且包含所有页面 URL
+- [ ] robots.txt 可访问且配置正确
+- [ ] 所有页面包含 canonical URL
+- [ ] 文章详情页显示 ToC 目录导航
+- [ ] ToC 当前标题高亮随滚动更新
+- [ ] 文章详情页顶部显示阅读进度条
+- [ ] 相关文章推荐区域显示在文章底部
+- [ ] /feed.xml 可访问且格式正确
+- [ ] 页面 head 包含 RSS alternate 链接
+- [ ] gallery.html CSS 已提取到 public/css/gallery.css
+- [ ] gallery.html JS 已提取到 public/js/gallery.js
+- [ ] index.html CSS 已提取到 public/css/home.css
+- [ ] articles.html CSS/JS 已提取到外部文件
+- [ ] 所有 fetch 调用包含 catch 错误处理
+- [ ] 图片加载失败显示占位图
+- [ ] 空状态样式统一（图标 + 提示 + 操作按钮）
+- [ ] 所有导航添加 aria-label="主导航"
+- [ ] 当前页面导航链接添加 aria-current="page"
+- [ ] about.html 使用语义标签（section/aside/main）
+- [ ] 分享按钮添加 aria-label
+- [ ] 外部链接添加 rel="noopener noreferrer"
+- [ ] 分页响应包含 totalPages 字段
+- [ ] 文章列表 API 支持 sort 参数
+- [ ] auth 中间件 token 校验逻辑无重复
+- [ ] 静态资源响应包含 Cache-Control 头
+- [ ] 管理后台支持草稿/发布状态切换
+- [ ] 管理后台支持数据导出
+- [ ] 管理后台支持文章预览

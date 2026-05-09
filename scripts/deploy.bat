@@ -2,6 +2,8 @@
 chcp 65001 > nul
 setlocal enabledelayedexpansion
 
+cd /d "%~dp0\.."
+
 echo ==========================================
 echo    静墨博客 - 部署脚本 (Windows)
 echo ==========================================

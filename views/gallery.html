@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="相册 - 静墨的影像记录">
+    <meta property="og:title" content="相册 - 静墨">
+    <meta property="og:description" content="相册 - 静墨的影像记录">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingmo.dev/gallery">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="相册 - 静墨">
+    <link rel="canonical" href="https://jingmo.dev/gallery">
+    <title>相册 - 静墨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="dns-prefetch" href="https://images.unsplash.com">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/gallery.css">
+</head>
+<body>
+    <div class="gallery-page" id="galleryPage">
+        <nav class="nav" aria-label="主导航">
+            <div class="nav-left">
+                <a href="/" class="logo">静</a>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link">首页</a>
+                <a href="/articles" class="nav-link">文章</a>
+                <a href="/about" class="nav-link">关于</a>
+                <a href="/gallery" class="nav-link active" aria-current="page">相册</a>
+                <a href="/portfolio" class="nav-link">作品</a>
+                <a href="/links" class="nav-link">友链</a>
+            </div>
+        </nav>
+
+        <main class="gallery-main">
+            <div class="dna-container dna-left">
+                <div class="dna-strand" id="dnaLeft"></div>
+            </div>
+
+            <div class="image-wrapper">
+                <div class="image-index" id="imageIndex">01 / 08</div>
+                <div class="image-skeleton" id="imageSkeleton">
+                    <div class="skeleton-box"></div>
+                </div>
+                <img class="gallery-image" id="galleryImage" alt="相册主图">
+                <div class="image-info">
+                    <div class="info-title" id="infoTitle"></div>
+                    <div class="info-desc" id="infoDesc"></div>
+                </div>
+            </div>
+
+            <div class="dna-container dna-right">
+                <div class="dna-strand" id="dnaRight"></div>
+            </div>
+
+            <div class="gallery-nav prev">
+                <button class="nav-btn" id="prevBtn" title="上一张">▲</button>
+            </div>
+            <div class="gallery-nav next">
+                <button class="nav-btn" id="nextBtn" title="下一张">▼</button>
+            </div>
+        </main>
+
+        <div class="thumbnail-bar" id="thumbnailBar"></div>
+    </div>
+
+    <script src="/js/gallery.js"></script>
+</body>
+</html>

@@ -413,9 +413,3 @@ mongodump --uri="mongodb+srv://blog_admin:密码@cluster0.xxxxxx.mongodb.net/blo
 2. **监控使用量** - 避免超出免费额度
 3. **安全第一** - 使用强密码，不要泄露敏感信息
 4. **阅读文档** - Render和MongoDB Atlas都有详细文档
-
----
-
-**祝你部署成功！🎉**
-
-如果遇到问题，随时问我！

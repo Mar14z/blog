@@ -3,6 +3,7 @@ const router = express.Router();
 const Article = require('../models/Article');
 const { protect, adminOnly, optionalAuth } = require('../middleware/auth');
 const { body, param, query, validationResult } = require('express-validator');
+const sanitizeHtml = require('sanitize-html');
 
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
@@ -19,11 +20,13 @@ const handleValidationErrors = (req, res, next) => {
 router.get('/',
   [
     query('page').optional().isInt({ min: 1 }).toInt(),
-    query('limit').optional().isInt({ min: 1, max: 50 }).toInt(),
+    query('limit').optional().isInt({ min: 1, max: 200 }).toInt(),
     query('category').optional().isString().trim(),
     query('tag').optional().isString().trim(),
     query('search').optional().isString().trim(),
-    query('featured').optional().isBoolean().toBoolean()
+    query('featured').optional().isBoolean().toBoolean(),
+    query('sort').optional().isString().trim(),
+    query('order').optional().isIn(['asc', 'desc'])
   ],
   handleValidationErrors,
   async (req, res, next) => {
@@ -31,6 +34,10 @@ router.get('/',
       const page = req.query.page || 1;
       const limit = req.query.limit || 10;
       const skip = (page - 1) * limit;
+
+      const sortField = req.query.sort || 'createdAt';
+      const sortOrder = req.query.order === 'asc' ? 1 : -1;
+      const sortObj = { [sortField]: sortOrder };
 
       const filter = { published: true };
 
@@ -56,7 +63,7 @@ router.get('/',
 
       const [articles, total] = await Promise.all([
         Article.find(filter)
-          .sort({ createdAt: -1 })
+          .sort(sortObj)
           .skip(skip)
           .limit(limit)
           .select('-__v'),
@@ -177,6 +184,28 @@ router.get('/:slug', async (req, res, next) => {
   }
 });
 
+router.get('/:slug/related', async (req, res) => {
+    try {
+        const article = await Article.findOne({ slug: req.params.slug });
+        if (!article) {
+            return res.status(404).json({ code: 404, message: '文章未找到' });
+        }
+
+        const related = await Article.find({
+            _id: { $ne: article._id },
+            published: true,
+            $or: [
+                { category: article.category },
+                { tags: { $in: article.tags || [] } }
+            ]
+        }).select('title slug excerpt category publishedAt createdAt readTime').limit(3).sort({ createdAt: -1 });
+
+        res.json({ code: 200, data: related });
+    } catch (error) {
+        res.status(500).json({ code: 500, message: '服务器错误' });
+    }
+});
+
 router.post('/',
   protect,
   adminOnly,
@@ -195,6 +224,19 @@ router.post('/',
   handleValidationErrors,
   async (req, res, next) => {
     try {
+      if (req.body.content) {
+        req.body.content = sanitizeHtml(req.body.content, {
+          allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td']),
+          allowedAttributes: {
+            ...sanitizeHtml.defaults.allowedAttributes,
+            img: ['src', 'alt', 'title', 'width', 'height'],
+            code: ['class'],
+            pre: ['class'],
+            span: ['class']
+          }
+        });
+      }
+
       let slug = req.body.slug;
       if (!slug && req.body.title) {
         slug = req.body.title
@@ -237,6 +279,19 @@ router.put('/:id',
   handleValidationErrors,
   async (req, res, next) => {
     try {
+      if (req.body.content) {
+        req.body.content = sanitizeHtml(req.body.content, {
+          allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td']),
+          allowedAttributes: {
+            ...sanitizeHtml.defaults.allowedAttributes,
+            img: ['src', 'alt', 'title', 'width', 'height'],
+            code: ['class'],
+            pre: ['class'],
+            span: ['class']
+          }
+        });
+      }
+
       const article = await Article.findByIdAndUpdate(
         req.params.id,
         req.body,

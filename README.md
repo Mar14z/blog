@@ -13,10 +13,10 @@
 ## 🚀 一键启动
 
 ```
-双击 start-all.bat
+npm start
 ```
 
-自动完成：MongoDB检查 + 依赖安装 + 服务器启动 + Obsidian监控
+启动后访问 http://localhost:3000
 
 ---
 
@@ -70,14 +70,18 @@ obsidian-vault/
 
 | 命令 | 说明 |
 |------|------|
-| `start-all.bat` | 一键启动（推荐） |
-| `node reset-admin.js` | 重置管理员密码 |
+| `scripts\deploy.bat` | Windows 部署 |
+| `bash scripts/deploy.sh` | Linux/Mac 部署 |
 
 ---
 
 ## 📚 文档
 
-- [完整开发文档](obsidian-vault/00 - Index/📊%20开发文档.md)
+- [项目规范文档](spec/README.md)
+- [使用指南](docs/使用指南.md)
+- [部署清单](docs/deploy-checklist.md)
+- [Render 部署指南](docs/render-deployment.md)
+- [Obsidian 双向同步](docs/obsidian-bidirectional.md)
 - [Obsidian 知识库说明](obsidian-vault/README.md)
 
 ---
@@ -96,8 +100,8 @@ obsidian-vault/
 
 | 问题 | 解决 |
 |------|------|
-| 无法启动 | `net start MongoDB` |
-| 无法登录 | `node reset-admin.js` |
+| 无法启动 | 检查 MongoDB 是否运行 |
+| 无法登录 | 检查 .env 中的管理员配置 |
 | 同步失效 | 检查笔记格式和路径 |
 
 ---

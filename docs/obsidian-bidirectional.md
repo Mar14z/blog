@@ -94,6 +94,3 @@ published: true
 - `scripts/watch-and-sync.js` - 监控脚本
 - `scripts/export-to-obsidian.js` - 导出脚本
 - `scripts/refresh-articles.js` - 索引刷新
-
----
-更新时间: 2024-05-07

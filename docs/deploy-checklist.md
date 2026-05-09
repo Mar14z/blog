@@ -101,7 +101,7 @@ git push -u origin main
 
 ## 📝 详细文档
 
-完整的部署指南请查看：[RENDER-DEPLOYMENT.md](./RENDER-DEPLOYMENT.md)
+完整的部署指南请查看：[render-deployment.md](./render-deployment.md)
 
 ---
 
@@ -156,7 +156,3 @@ git push -u origin main
 3. 优化SEO（sitemap.xml）
 4. 添加访问统计
 5. 配置自动备份
-
----
-
-**祝你部署成功！🚀**

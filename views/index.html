@@ -1,234 +1,541 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="description" content="静墨的个人博客，记录技术思考、产品感悟与生活点滴。在极简中寻找深度，在克制中追求表达。">
+    <meta property="og:title" content="静墨 - 记录 · 思考 · 沉淀">
+    <meta property="og:description" content="静墨的个人博客，记录技术思考、产品感悟与生活点滴。在极简中寻找深度，在克制中追求表达。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingmo.dev/">
+    <meta property="og:image" content="https://jingmo.dev/public/images/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="静墨 - 记录 · 思考 · 沉淀">
+    <meta name="twitter:description" content="静墨的个人博客，记录技术思考、产品感悟与生活点滴。">
+    <link rel="canonical" href="https://jingmo.dev/">
+    <link rel="alternate" type="application/rss+xml" title="静墨博客 RSS" href="https://jingmo.dev/feed.xml">
     <title>静墨 - 记录 · 思考 · 沉淀</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Press+Start+2P&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/public/css/variables.css">
-    <link rel="stylesheet" href="/public/css/base.css">
-    <link rel="stylesheet" href="/public/css/components.css">
-    <link rel="stylesheet" href="/public/css/pages.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages.css">
     <style>
+        :root {
+            --accent: #D32F2F;
+            --accent-hover: #B71C1C;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
         .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             position: relative;
-            background: radial-gradient(ellipse at center, var(--bg-secondary) 0%, var(--bg-primary) 70%);
+            padding: 120px 4rem 4rem;
             overflow: hidden;
         }
 
-        .hero-bg {
+        .hero::before {
+            content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-
-        .hero-grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
             background-size: 60px 60px;
-        }
-
-        .floating-letters {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
             pointer-events: none;
-            z-index: 0;
-        }
-
-        .floating-letter {
-            position: absolute;
-            font-family: var(--font-mono);
-            color: rgba(80, 80, 80, 0.15);
-            animation: float 10s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
-            50% { transform: translateY(-20px) rotate(5deg); opacity: 0.6; }
         }
 
         .hero-content {
+            text-align: center;
+            max-width: 800px;
             position: relative;
             z-index: 1;
-            text-align: center;
+        }
+
+        .hero-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 8px;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeInUp 0.8s var(--transition-ease-out) forwards;
         }
 
         .hero-title {
-            font-family: var(--font-pixel);
-            font-size: clamp(1.5rem, 4vw, 3rem);
-            line-height: 2;
-            margin-bottom: 40px;
+            font-family: var(--font-sans);
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.03em;
             opacity: 0;
-            animation: titleReveal 1s var(--transition-smooth) 0.5s forwards;
-        }
-
-        .hero-title span {
-            display: inline-block;
-        }
-
-        @keyframes titleReveal {
-            to {
-                opacity: 1;
-            }
+            animation: fadeInUp 0.8s var(--transition-ease-out) 0.15s forwards;
         }
 
         .hero-subtitle {
-            font-family: var(--font-sans);
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            font-weight: 300;
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            max-width: 500px;
+            margin: 0 auto 3rem;
             opacity: 0;
-            animation: fadeIn 1s var(--transition-smooth) 1s forwards;
+            animation: fadeInUp 0.8s var(--transition-ease-out) 0.3s forwards;
         }
 
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
+        .hero-subtitle .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: var(--accent);
+            margin-left: 4px;
+            vertical-align: text-bottom;
+            animation: blink 1s step-end infinite;
         }
 
-        .scroll-hint {
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .hero-scroll {
             position: absolute;
-            bottom: 60px;
+            bottom: 3rem;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
+            gap: 0.75rem;
             opacity: 0;
-            animation: fadeIn 1s var(--transition-smooth) 1.5s forwards;
+            animation: fadeInUp 0.8s var(--transition-ease-out) 0.6s forwards;
         }
 
-        .scroll-hint-text {
+        .hero-scroll-text {
             font-family: var(--font-mono);
-            font-size: 0.75rem;
+            font-size: 0.6rem;
             color: var(--text-dim);
-            text-transform: uppercase;
             letter-spacing: 3px;
+            text-transform: uppercase;
         }
 
-        .scroll-hint-line {
+        .hero-scroll-line {
             width: 1px;
-            height: 60px;
+            height: 40px;
             background: linear-gradient(to bottom, var(--text-dim), transparent);
             animation: scrollPulse 2s ease-in-out infinite;
         }
 
         @keyframes scrollPulse {
-            0%, 100% {
-                opacity: 1;
-                transform: scaleY(1);
-            }
-            50% {
-                opacity: 0.5;
-                transform: scaleY(0.8);
-            }
+            0%, 100% { opacity: 0.3; transform: scaleY(1); }
+            50% { opacity: 1; transform: scaleY(1.2); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .marquee-section {
+            padding: 1.5rem 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .marquee-track {
+            display: flex;
+            width: max-content;
+            animation: marqueeScroll 40s linear infinite;
+        }
+
+        .marquee-track:hover {
+            animation-play-state: paused;
+        }
+
+        .marquee-item {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .marquee-item .dot {
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        @keyframes marqueeScroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        .quick-nav {
+            padding: 6rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .quick-nav-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .quick-nav-number {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .quick-nav-title {
+            font-family: var(--font-sans);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .quick-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+        }
+
+        .quick-nav-card {
+            background: var(--bg-primary);
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            cursor: pointer;
+            transition: all 0.4s var(--transition-ease-out);
+            position: relative;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .quick-nav-card:hover {
+            background: var(--bg-secondary);
+        }
+
+        .quick-nav-card:hover .nav-card-arrow {
+            transform: translateX(8px);
+            color: var(--accent);
+        }
+
+        .nav-card-icon {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .nav-card-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--text-muted);
+            transition: stroke 0.3s ease;
+        }
+
+        .quick-nav-card:hover .nav-card-icon {
+            border-color: var(--accent);
+        }
+
+        .quick-nav-card:hover .nav-card-icon svg {
+            stroke: var(--accent);
+        }
+
+        .nav-card-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .nav-card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .nav-card-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .nav-card-arrow {
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            transition: all 0.3s var(--transition-ease-out);
+            margin-top: auto;
         }
 
         .articles-section {
-            background: var(--bg-primary);
-            padding: 100px 40px;
+            padding: 0 4rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 4rem 0 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .view-all-link {
+            margin-left: auto;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        .view-all-link:hover {
+            color: var(--accent);
+        }
+
+        .view-all-section {
+            display: flex;
+            justify-content: center;
+            padding: 3rem 0;
+        }
+
+        .view-all-btn {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 0.75rem 2rem;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .view-all-btn:hover {
+            background: var(--text-primary);
+            border-color: var(--text-primary);
+            color: var(--bg-primary);
+        }
+
+        .section-number {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .section-title {
+            font-family: var(--font-sans);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .featured-article {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border: 1px solid var(--border);
+            margin-bottom: 3rem;
+            cursor: pointer;
+            transition: all 0.4s var(--transition-ease-out);
+        }
+
+        .featured-article:hover {
+            border-color: var(--text-muted);
+        }
+
+        .featured-article:hover .featured-arrow {
+            transform: translateX(8px);
+            color: var(--accent);
+        }
+
+        .featured-visual {
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 320px;
+        }
+
+        .featured-visual::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .featured-number {
+            font-family: var(--font-mono);
+            font-size: 8rem;
+            font-weight: 700;
+            color: rgba(255,255,255,0.03);
+            line-height: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .featured-info {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .featured-tag {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--accent);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .featured-tag::before {
+            content: '';
+            width: 24px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        .featured-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .featured-excerpt {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .featured-meta {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .featured-date {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .featured-read {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .featured-arrow {
+            margin-left: auto;
+            font-family: var(--font-mono);
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            transition: all 0.3s var(--transition-ease-out);
         }
 
         .filters {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 24px;
-            margin-bottom: 48px;
-        }
-
-        .search-box {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 16px 20px 16px 48px;
-            font-family: var(--font-mono);
-            font-size: 1rem;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            outline: none;
-            transition: all 0.3s var(--transition-smooth);
-        }
-
-        .search-input:focus {
-            border-color: var(--text-secondary);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
-            stroke: var(--text-dim);
-        }
-
-        .filter-buttons {
-            display: flex;
             flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
+            gap: 12px;
+            margin-bottom: 3rem;
         }
 
         .filter-btn {
             font-family: var(--font-mono);
-            font-size: 0.875rem;
-            padding: 10px 20px;
+            font-size: 0.7rem;
+            padding: 0.5rem 1rem;
             background: transparent;
             border: 1px solid var(--border);
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.3s var(--transition-smooth);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .filter-btn:hover,
         .filter-btn.active {
+            background: var(--text-primary);
             border-color: var(--text-primary);
-            color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.05);
+            color: var(--bg-primary);
         }
 
         .articles-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: var(--card-gap);
-            max-width: 1200px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 32px;
         }
 
         .article-card {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
-            transition: all 0.4s var(--transition-smooth);
+            padding: 2rem;
             cursor: pointer;
+            transition: all 0.3s ease;
             opacity: 0;
             transform: translateY(30px);
-            overflow: hidden;
         }
 
         .article-card.visible {
@@ -237,184 +544,381 @@
         }
 
         .article-card:hover {
-            border-color: var(--text-secondary);
-            transform: translateY(-6px);
-            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.05);
+            border-color: var(--text-muted);
+            transform: translateY(-4px);
         }
 
-        .article-card-cover {
-            height: 160px;
-            background: var(--bg-tertiary);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .article-card-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
-        }
-
-        .article-card:hover .article-card-cover img {
-            transform: scale(1.05);
-        }
-
-        .article-card-cover-placeholder {
-            font-family: var(--font-pixel);
-            font-size: 2rem;
-            color: var(--text-dim);
-            opacity: 0.3;
-        }
-
-        .article-card-content {
-            padding: 24px;
-        }
-
-        .card-meta {
+        .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 1rem;
+        }
+
+        .card-category {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            padding: 0.25rem 0.5rem;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .card-date {
-            font-size: 0.875rem;
-            color: var(--text-dim);
             font-family: var(--font-mono);
-        }
-
-        .card-tag {
-            font-family: var(--font-pixel);
-            font-size: 0.5rem;
-            padding: 4px 12px;
-            border: 1px solid var(--text-dim);
-            color: var(--text-secondary);
-            text-transform: uppercase;
+            font-size: 0.65rem;
+            color: var(--text-muted);
         }
 
         .card-title {
-            font-family: var(--font-pixel);
-            font-size: 0.75rem;
-            line-height: 1.8;
-            margin-bottom: 16px;
-            color: var(--text-primary);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
         }
 
         .card-excerpt {
-            font-size: 0.9375rem;
+            font-size: 0.875rem;
             color: var(--text-secondary);
-            margin-bottom: 20px;
+            line-height: 1.7;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            line-height: 1.7;
+            margin-bottom: 1.5rem;
         }
 
         .card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
         }
 
-        .read-time {
-            font-size: 0.875rem;
-            color: var(--text-dim);
+        .card-tag {
             font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
         }
 
         .card-arrow {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s var(--transition-smooth);
+            transition: all 0.3s ease;
         }
 
         .card-arrow svg {
-            width: 16px;
-            height: 16px;
-            stroke: var(--text-dim);
-            transition: stroke 0.3s;
+            width: 14px;
+            height: 14px;
+            stroke: var(--text-muted);
+            transition: all 0.3s ease;
         }
 
         .article-card:hover .card-arrow {
-            border-color: var(--text-primary);
-            background: var(--text-primary);
+            background: var(--accent);
+            border-color: var(--accent);
         }
 
         .article-card:hover .card-arrow svg {
-            stroke: var(--bg-primary);
+            stroke: var(--text-primary);
+            transform: translateX(2px);
         }
 
         .about-section {
+            padding: 8rem 4rem;
             background: var(--bg-secondary);
-            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
         }
 
         .about-content {
-            max-width: 700px;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
         }
 
-        .about-description {
-            font-size: 1.125rem;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            line-height: 1.9;
-            font-weight: 300;
+        .about-left {
+            max-width: 500px;
+        }
+
+        .about-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 4px;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .about-text {
+            font-size: 1.5rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
         }
 
         .about-stats {
             display: flex;
-            justify-content: center;
-            gap: 60px;
-            margin-top: 60px;
-        }
-
-        .stat {
-            text-align: center;
+            gap: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
         }
 
         .stat-number {
-            font-family: var(--font-pixel);
-            font-size: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 2.5rem;
+            font-weight: 700;
             color: var(--text-primary);
             display: block;
-            margin-bottom: 8px;
+            line-height: 1;
         }
 
         .stat-label {
-            font-size: 0.875rem;
-            color: var(--text-dim);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 0.5rem;
+            display: block;
         }
 
-        .about-cta {
-            margin-top: 48px;
+        .about-right {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .about-quote {
+            font-family: var(--font-sans);
+            font-size: 2.5rem;
+            font-weight: 900;
+            line-height: 1.2;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            position: relative;
+            padding-left: 2rem;
+            border-left: 3px solid var(--accent);
+        }
+
+        .about-quote-author {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding-left: 2rem;
+        }
+
+        .about-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding-left: 2rem;
+        }
+
+        .about-tag {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            padding: 0.35rem 0.75rem;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .about-tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .timeline-section {
+            padding: 6rem 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .timeline-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .timeline-number {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .timeline-title {
+            font-family: var(--font-sans);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2.5rem;
+            padding-left: 2rem;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.6s var(--transition-ease-out);
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0.5rem;
+            width: 7px;
+            height: 7px;
+            background: var(--bg-primary);
+            border: 1px solid var(--accent);
+            transform: translateX(-3px);
+        }
+
+        .timeline-item:first-child::before {
+            background: var(--accent);
+        }
+
+        .timeline-date {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-text {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .timeline-text strong {
+            color: var(--text-primary);
+            font-weight: 700;
         }
 
         .contact-section {
-            background: var(--bg-primary);
+            padding: 8rem 4rem;
+            background: var(--bg-secondary);
+            position: relative;
         }
 
-        .contact-content {
-            width: 100%;
-            max-width: 500px;
+        .contact-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .contact-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: start;
+        }
+
+        .contact-left {
+            padding-top: 2rem;
+        }
+
+        .contact-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 4px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .contact-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .contact-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .contact-channels {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .contact-channel {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .contact-channel svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--text-dim);
         }
 
         .contact-form {
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 2rem;
         }
 
         .form-group {
@@ -423,192 +927,396 @@
 
         .form-input {
             width: 100%;
-            padding: 16px 0;
+            padding: 1rem 0;
             font-family: var(--font-mono);
-            font-size: 1rem;
+            font-size: 0.875rem;
             background: transparent;
             border: none;
             border-bottom: 1px solid var(--border);
             color: var(--text-primary);
             outline: none;
-            transition: all 0.3s var(--transition-smooth);
+            transition: border-color 0.3s ease;
         }
 
         .form-input:focus {
-            border-color: var(--text-primary);
+            border-color: var(--accent);
         }
 
         .form-label {
             position: absolute;
             left: 0;
-            top: 16px;
-            font-size: 1rem;
-            color: var(--text-dim);
+            top: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
             pointer-events: none;
-            transition: all 0.3s var(--transition-smooth);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .form-input:focus + .form-label,
         .form-input:not(:placeholder-shown) + .form-label {
-            top: -8px;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
+            top: -0.75rem;
+            font-size: 0.6rem;
+            color: var(--accent);
         }
 
         .form-textarea {
-            min-height: 120px;
-            resize: vertical;
+            min-height: 100px;
+            resize: none;
         }
 
         .btn-submit {
-            font-family: var(--font-pixel);
+            font-family: var(--font-mono);
             font-size: 0.75rem;
-            padding: 20px 40px;
+            padding: 1rem 2rem;
             background: var(--text-primary);
             border: none;
             color: var(--bg-primary);
             cursor: pointer;
-            transition: all 0.3s var(--transition-smooth);
+            transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-top: 20px;
-            align-self: center;
+            align-self: flex-start;
+            font-weight: 700;
         }
 
         .btn-submit:hover {
-            background: transparent;
+            background: var(--accent);
             color: var(--text-primary);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .footer {
+            padding: 2rem 4rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-text {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-link {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 1024px) {
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .contact-inner {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .quick-nav-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .featured-article {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-visual {
+                min-height: 200px;
+            }
         }
 
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 1.25rem;
+            .hero, .articles-section, .about-section, .contact-section,
+            .quick-nav, .timeline-section {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
             }
-            
-            .hero-subtitle {
-                font-size: 1rem;
-            }
-            
-            .articles-section {
-                padding: 60px 20px;
-            }
-            
+
             .articles-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .about-stats {
                 flex-direction: column;
-                gap: 30px;
+                gap: 1.5rem;
             }
 
-            .article-card-cover {
-                height: 140px;
+            .about-quote {
+                font-size: 1.5rem;
+            }
+
+            .quick-nav-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-info {
+                padding: 2rem;
+            }
+
+            .featured-title {
+                font-size: 1.25rem;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
             }
         }
     </style>
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "静墨",
+    "url": "https://jingmo.dev",
+    "description": "静墨的个人博客，记录技术思考、产品感悟与生活点滴",
+    "author": {
+        "@type": "Person",
+        "name": "静墨"
+    }
+}
+</script>
 </head>
 <body>
     <div class="nav-progress" id="navProgress"></div>
 
-    <div class="loader" id="loader">
-        <div class="loader-text">静墨</div>
-        <div class="loader-line"></div>
-    </div>
-
-    <nav class="nav" id="nav">
-        <a href="/" class="logo">静墨</a>
+    <nav class="nav" id="nav" aria-label="主导航">
+        <div class="nav-left">
+            <a href="/" class="logo">静</a>
+        </div>
         <div class="nav-links">
-            <a href="#articles" class="nav-link">文章</a>
-            <a href="/about" class="nav-link">介绍</a>
+            <a href="/" class="nav-link active" aria-current="page">首页</a>
+            <a href="/articles" class="nav-link">文章</a>
+            <a href="/about" class="nav-link">关于</a>
+            <a href="/gallery" class="nav-link">相册</a>
             <a href="/portfolio" class="nav-link">作品</a>
             <a href="/links" class="nav-link">友链</a>
-            <a href="#contact-section" class="nav-link">联系</a>
         </div>
     </nav>
 
-    <main class="main" id="main">
-        <section class="section hero" id="hero">
-            <div class="hero-bg">
-                <div class="hero-grid"></div>
-                <div class="floating-letters" id="floatingLetters"></div>
-            </div>
+    <main id="main">
+        <section class="hero" id="hero">
             <div class="hero-content">
-                <h1 class="hero-title" id="heroTitle">
-                    <span>记</span><span>录</span><span>.</span><span>思</span><span>考</span><span>.</span><span>沉</span><span>淀</span>
-                </h1>
-                <p class="hero-subtitle">在纷繁中寻找宁静，在文字里雕刻时光</p>
+                <div class="hero-label">静墨 / 博客</div>
+                <h1 class="hero-title">记录 · 思考 · 沉淀</h1>
+                <p class="hero-subtitle">在纷繁中寻找宁静，在文字里雕刻时光<span class="cursor"></span></p>
             </div>
-            <div class="scroll-hint">
-                <span class="scroll-hint-text">Scroll</span>
-                <div class="scroll-hint-line"></div>
+            <div class="hero-scroll">
+                <span class="hero-scroll-text">scroll</span>
+                <div class="hero-scroll-line"></div>
             </div>
         </section>
 
-        <section class="section articles-section" id="articles">
+        <section class="marquee-section">
+            <div class="marquee-track">
+                <span class="marquee-item"><span class="dot"></span>JavaScript</span>
+                <span class="marquee-item"><span class="dot"></span>Node.js</span>
+                <span class="marquee-item"><span class="dot"></span>TypeScript</span>
+                <span class="marquee-item"><span class="dot"></span>React</span>
+                <span class="marquee-item"><span class="dot"></span>Vue.js</span>
+                <span class="marquee-item"><span class="dot"></span>MongoDB</span>
+                <span class="marquee-item"><span class="dot"></span>Docker</span>
+                <span class="marquee-item"><span class="dot"></span>Figma</span>
+                <span class="marquee-item"><span class="dot"></span>产品设计</span>
+                <span class="marquee-item"><span class="dot"></span>用户体验</span>
+                <span class="marquee-item"><span class="dot"></span>极简主义</span>
+                <span class="marquee-item"><span class="dot"></span>开源</span>
+                <span class="marquee-item"><span class="dot"></span>JavaScript</span>
+                <span class="marquee-item"><span class="dot"></span>Node.js</span>
+                <span class="marquee-item"><span class="dot"></span>TypeScript</span>
+                <span class="marquee-item"><span class="dot"></span>React</span>
+                <span class="marquee-item"><span class="dot"></span>Vue.js</span>
+                <span class="marquee-item"><span class="dot"></span>MongoDB</span>
+                <span class="marquee-item"><span class="dot"></span>Docker</span>
+                <span class="marquee-item"><span class="dot"></span>Figma</span>
+                <span class="marquee-item"><span class="dot"></span>产品设计</span>
+                <span class="marquee-item"><span class="dot"></span>用户体验</span>
+                <span class="marquee-item"><span class="dot"></span>极简主义</span>
+                <span class="marquee-item"><span class="dot"></span>开源</span>
+            </div>
+        </section>
+
+        <section class="quick-nav">
+            <div class="quick-nav-header">
+                <span class="quick-nav-number">01</span>
+                <h2 class="quick-nav-title">探索</h2>
+            </div>
+            <div class="quick-nav-grid">
+                <a href="/gallery" class="quick-nav-card">
+                    <div class="nav-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                            <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+                        </svg>
+                    </div>
+                    <span class="nav-card-label">Gallery</span>
+                    <h3 class="nav-card-title">相册</h3>
+                    <p class="nav-card-desc">沉浸式浏览影像，感受光影之间的故事</p>
+                    <span class="nav-card-arrow">→</span>
+                </a>
+                <a href="/portfolio" class="quick-nav-card">
+                    <div class="nav-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-card-label">Portfolio</span>
+                    <h3 class="nav-card-title">作品集</h3>
+                    <p class="nav-card-desc">精选项目作品，从构想到落地的完整旅程</p>
+                    <span class="nav-card-arrow">→</span>
+                </a>
+                <a href="/about" class="quick-nav-card">
+                    <div class="nav-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/>
+                        </svg>
+                    </div>
+                    <span class="nav-card-label">About</span>
+                    <h3 class="nav-card-title">关于</h3>
+                    <p class="nav-card-desc">了解创作者的故事、技能与思维方式</p>
+                    <span class="nav-card-arrow">→</span>
+                </a>
+                <a href="/links" class="quick-nav-card">
+                    <div class="nav-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                        </svg>
+                    </div>
+                    <span class="nav-card-label">Links</span>
+                    <h3 class="nav-card-title">友链</h3>
+                    <p class="nav-card-desc">志同道合的伙伴，值得探索的优质站点</p>
+                    <span class="nav-card-arrow">→</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="articles-section" id="articles">
             <div class="section-header">
-                <div class="section-tag">01</div>
-                <h2 class="section-title">精选文章</h2>
+                <span class="section-number">02</span>
+                <h2 class="section-title">文章</h2>
+                <a href="/articles" class="view-all-link">查看全部 →</a>
             </div>
 
-            <div class="filters">
-                <div class="search-box">
-                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <circle cx="11" cy="11" r="8"/>
-                        <path d="m21 21-4.35-4.35"/>
-                    </svg>
-                    <input type="text" id="searchInput" class="search-input" placeholder="搜索文章...">
-                </div>
-                <div class="filter-buttons" id="filterButtons">
-                    <button class="filter-btn active" data-category="">全部</button>
-                    <button class="filter-btn" data-category="编程">编程</button>
-                    <button class="filter-btn" data-category="产品">产品</button>
-                    <button class="filter-btn" data-category="读书">读书</button>
-                    <button class="filter-btn" data-category="随笔">随笔</button>
-                </div>
-            </div>
+            <div class="featured-article" id="featuredArticle" style="display:none;"></div>
 
-            <div class="articles-grid" id="articlesGrid">
+            <div class="articles-grid" id="articlesGrid"></div>
+
+            <div class="view-all-section">
+                <a href="/articles" class="view-all-btn">浏览全部文章</a>
             </div>
         </section>
 
-        <section class="section about-section" id="about-section">
+        <section class="about-section" id="about">
             <div class="about-content">
-                <div class="section-tag">02</div>
-                <h2 class="section-title">关于</h2>
-                <p class="about-description">
-                    一个热爱文字与设计的创作者。在这个快节奏的时代，
-                    选择用最简单的方式记录思考，用最纯粹的形式表达观点。
-                </p>
-                <p class="about-description">
-                    相信好的设计是隐形的，而好的文字则是有力的。
-                    致力于在极简中寻找深度，在克制中追求表达。
-                </p>
-                <div class="about-stats">
-                    <div class="stat">
-                        <span class="stat-number" id="statArticles">0</span>
-                        <span class="stat-label">篇文章</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">365</span>
-                        <span class="stat-label">天写作</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">∞</span>
-                        <span class="stat-label">位读者</span>
+                <div class="about-left">
+                    <div class="about-label">关于</div>
+                    <p class="about-text">
+                        一个热爱文字与设计的创作者。在这个快节奏的时代，
+                        选择用最简单的方式记录思考，用最纯粹的形式表达观点。
+                    </p>
+                    <div class="about-stats">
+                        <div class="stat">
+                            <span class="stat-number" id="statArticles">0</span>
+                            <span class="stat-label">篇文章</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">365</span>
+                            <span class="stat-label">天写作</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">∞</span>
+                            <span class="stat-label">位读者</span>
+                        </div>
                     </div>
                 </div>
-                <div class="about-cta">
-                    <a href="/about" class="btn-submit" style="text-decoration: none; display: inline-block;">了解更多</a>
+                <div class="about-right">
+                    <blockquote class="about-quote">
+                        少即是多，<br>但少必须精准。
+                    </blockquote>
+                    <span class="about-quote-author">—密斯·凡·德·罗</span>
+                    <div class="about-tags">
+                        <span class="about-tag">极简主义</span>
+                        <span class="about-tag">代码诗人</span>
+                        <span class="about-tag">设计思维</span>
+                        <span class="about-tag">持续学习</span>
+                        <span class="about-tag">开源精神</span>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="section contact-section" id="contact-section">
-            <div class="contact-content">
-                <div class="section-tag">03</div>
-                <h2 class="section-title">联系</h2>
+        <section class="timeline-section" id="timeline">
+            <div class="timeline-header">
+                <span class="timeline-number">03</span>
+                <h2 class="timeline-title">最近动态</h2>
+            </div>
+            <div class="timeline" id="timelineList">
+                <div class="timeline-item">
+                    <div class="timeline-date">2026.05</div>
+                    <div class="timeline-text">完成博客系统重构，统一<strong>黑白极简</strong>视觉风格</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2026.04</div>
+                    <div class="timeline-text">新增<strong>沉浸式相册</strong>页面，支持 DNA 螺旋浏览</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2026.03</div>
+                    <div class="timeline-text">集成 <strong>Obsidian 双向同步</strong>，打通写作与知识管理</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2026.01</div>
+                    <div class="timeline-text">博客系统上线，从零搭建<strong>极简博客</strong></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-section" id="contact">
+            <div class="contact-inner">
+                <div class="contact-left">
+                    <div class="contact-label">联系</div>
+                    <h2 class="contact-title">保持联系</h2>
+                    <p class="contact-desc">
+                        无论是技术讨论、项目合作，还是单纯想聊聊，
+                        都欢迎给我留言。我会尽快回复。
+                    </p>
+                    <div class="contact-channels">
+                        <div class="contact-channel">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                            <span>hello@jingmo.dev</span>
+                        </div>
+                        <div class="contact-channel">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                            <span>github.com/Mar14z</span>
+                        </div>
+                    </div>
+                </div>
                 <form class="contact-form" id="contactForm">
                     <div class="form-group">
                         <input type="text" class="form-input" id="contactName" placeholder=" " required>
@@ -631,7 +1339,7 @@
     <footer class="footer">
         <div class="footer-text">© 2024 静墨</div>
         <div class="footer-links">
-            <a href="https://github.com/Mar14z/blog" class="footer-link" target="_blank">GitHub</a>
+            <a href="https://github.com/Mar14z/blog" class="footer-link" target="_blank" rel="noopener noreferrer">GitHub</a>
             <a href="/links" class="footer-link">友链</a>
         </div>
     </footer>
@@ -640,6 +1348,7 @@
         <span class="toast-message"></span>
     </div>
 
-    <script src="/public/js/app.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/app.js"></script>
 </body>
 </html>

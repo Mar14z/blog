@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { protect } = require('../middleware/auth');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -77,31 +78,11 @@ router.post('/login', async (req, res, next) => {
   }
 });
 
-router.get('/me', async (req, res, next) => {
+router.get('/me', protect, async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        code: 401,
-        message: '未授权访问'
-      });
-    }
-
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
-
-    if (!user) {
-      return res.status(404).json({
-        code: 404,
-        message: '用户不存在'
-      });
-    }
-
     res.json({
       code: 200,
-      data: { user: user.toJSON() }
+      data: { user: req.user.toJSON() }
     });
   } catch (error) {
     next(error);

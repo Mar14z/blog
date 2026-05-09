@@ -2,29 +2,27 @@
 
 set -e
 
-echo "=========================================="
-echo "   静墨博客 - 部署脚本"
-echo "=========================================="
+cd "$(dirname "$0")/.."
 
-# 颜色定义
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-# 检查 Node.js
+echo "=========================================="
+echo "   静墨博客 - 部署脚本"
+echo "=========================================="
+
 if ! command -v node &> /dev/null; then
     echo -e "${RED}错误: 未安装 Node.js${NC}"
     exit 1
 fi
 
-# 检查 npm
 if ! command -v npm &> /dev/null; then
     echo -e "${RED}错误: 未安装 npm${NC}"
     exit 1
 fi
 
-# 检查 MongoDB
 check_mongodb() {
     if command -v mongod &> /dev/null; then
         return 0
@@ -54,7 +52,6 @@ check_mongodb() {
     esac
 }
 
-# 安装依赖
 install_dependencies() {
     echo -e "\n${GREEN}[1/4] 安装依赖...${NC}"
     npm install
@@ -67,7 +64,6 @@ install_dependencies() {
     fi
 }
 
-# 复制环境变量文件
 setup_env() {
     echo -e "\n${GREEN}[2/4] 配置环境变量...${NC}"
     if [ ! -f .env ]; then
@@ -80,7 +76,6 @@ setup_env() {
     fi
 }
 
-# 构建项目
 build_project() {
     echo -e "\n${GREEN}[3/4] 构建项目...${NC}"
     
@@ -89,11 +84,9 @@ build_project() {
     echo -e "${GREEN}项目构建完成${NC}"
 }
 
-# 启动服务
 start_service() {
     echo -e "\n${GREEN}[4/4] 启动服务...${NC}"
     
-    # 检查 PM2
     if command -v pm2 &> /dev/null; then
         echo -e "${GREEN}使用 PM2 启动服务...${NC}"
         pm2 start server/app.js --name "jingmo-blog"
@@ -115,7 +108,6 @@ start_service() {
     echo -e "==========================================${NC}"
 }
 
-# 主流程
 main() {
     echo -e "${GREEN}开始部署静墨博客...${NC}"
     

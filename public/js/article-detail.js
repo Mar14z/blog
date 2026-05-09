@@ -1,8 +1,7 @@
-const API_BASE = 'http://localhost:3001/api';
-
 class ArticleDetail {
     constructor() {
         this.slug = this.getArticleSlug();
+        this.cursorObserver = null;
         this.init();
     }
 
@@ -17,25 +16,71 @@ class ArticleDetail {
         this.initCursor();
     }
 
+    initToC() {
+        const content = document.querySelector('.article-content');
+        const tocList = document.getElementById('tocList');
+        if (!content || !tocList) return;
+
+        const headings = content.querySelectorAll('h2, h3');
+        if (headings.length === 0) {
+            document.getElementById('articleToc')?.remove();
+            return;
+        }
+
+        headings.forEach((heading, index) => {
+            const id = `heading-${index}`;
+            heading.id = id;
+
+            const li = document.createElement('li');
+            li.className = `toc-item ${heading.tagName === 'H3' ? 'toc-item-h3' : ''}`;
+
+            const a = document.createElement('a');
+            a.href = `#${id}`;
+            a.className = 'toc-link';
+            a.textContent = heading.textContent;
+
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
+                heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+
+            li.appendChild(a);
+            tocList.appendChild(li);
+        });
+
+        this.observeToC(headings);
+    }
+
+    observeToC(headings) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const id = entry.target.id;
+                const link = document.querySelector(`.toc-link[href="#${id}"]`);
+                if (link) {
+                    if (entry.isIntersecting) {
+                        document.querySelectorAll('.toc-link.active').forEach(l => l.classList.remove('active'));
+                        link.classList.add('active');
+                    }
+                }
+            });
+        }, { rootMargin: '-80px 0px -70% 0px' });
+
+        headings.forEach(heading => observer.observe(heading));
+    }
+
     initReadingProgress() {
         const progressBar = document.getElementById('readingProgress');
         if (!progressBar) return;
 
-        const articleContent = document.getElementById('articleContent');
-        if (!articleContent) return;
+        const updateProgress = throttle(() => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            if (docHeight > 0) {
+                progressBar.style.width = ((scrollTop / docHeight) * 100) + '%';
+            }
+        }, 16);
 
-        window.addEventListener('scroll', () => {
-            const articleTop = articleContent.offsetTop;
-            const articleHeight = articleContent.offsetHeight;
-            const windowHeight = window.innerHeight;
-            const scrollY = window.scrollY;
-
-            const start = articleTop - windowHeight;
-            const end = articleTop + articleHeight - windowHeight;
-            const progress = Math.max(0, Math.min(100, ((scrollY - start) / (end - start)) * 100));
-
-            progressBar.style.width = `${progress}%`;
-        });
+        window.addEventListener('scroll', updateProgress);
     }
 
     getArticleSlug() {
@@ -49,9 +94,27 @@ class ArticleDetail {
             const data = await response.json();
 
             if (data.code === 200) {
-                this.renderArticle(data.data.article);
+                this.article = data.data.article;
+                this.renderArticle(this.article);
                 this.renderNavigation(data.data.prevArticle, data.data.nextArticle);
-                document.title = `${data.data.article.title} - 静墨`;
+                document.title = `${this.article.title} - 静墨`;
+
+                const jsonld = document.getElementById('article-jsonld');
+                if (jsonld && this.article) {
+                    const ldData = JSON.parse(jsonld.textContent);
+                    ldData.headline = this.article.title;
+                    ldData.description = this.article.excerpt || '';
+                    ldData.datePublished = this.article.publishedAt || this.article.createdAt;
+                    ldData.dateModified = this.article.updatedAt || this.article.createdAt;
+                    ldData.url = `https://jingmo.dev/article?slug=${this.article.slug}`;
+                    jsonld.textContent = JSON.stringify(ldData);
+                }
+
+                document.querySelector('meta[property="og:title"]')?.setAttribute('content', this.article.title);
+                document.querySelector('meta[property="og:description"]')?.setAttribute('content', this.article.excerpt || '');
+                document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', this.article.title);
+
+                this.loadRelatedArticles();
             } else {
                 this.showError('文章不存在或已被删除');
             }
@@ -64,11 +127,7 @@ class ArticleDetail {
     renderArticle(article) {
         document.getElementById('articleCategory').textContent = article.category;
         document.getElementById('articleTitle').textContent = article.title;
-        document.getElementById('articleDate').textContent = new Date(article.publishedAt || article.createdAt).toLocaleDateString('zh-CN', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+        document.getElementById('articleDate').textContent = formatDateFull(article.publishedAt || article.createdAt);
         document.getElementById('articleReadTime').textContent = `${article.readTime || 5} 分钟`;
         document.getElementById('articleViews').textContent = `${article.viewCount || 0} 次`;
 
@@ -84,11 +143,13 @@ class ArticleDetail {
         const tagsContainer = document.getElementById('articleTags');
         if (article.tags && article.tags.length > 0) {
             tagsContainer.innerHTML = article.tags.map(tag =>
-                `<a href="index.html?tag=${encodeURIComponent(tag)}" class="article-tag">#${tag}</a>`
+                `<a href="/?tag=${encodeURIComponent(tag)}" class="article-tag">#${tag}</a>`
             ).join('');
         } else {
             tagsContainer.style.display = 'none';
         }
+
+        this.initToC();
     }
 
     cleanExportedContent(content) {
@@ -113,14 +174,14 @@ class ArticleDetail {
         const nextTitle = document.getElementById('nextTitle');
 
         if (prev) {
-            prevEl.href = `article.html?slug=${prev.slug}`;
+            prevEl.href = `/article?slug=${prev.slug}`;
             prevTitle.textContent = prev.title;
         } else {
             prevEl.style.display = 'none';
         }
 
         if (next) {
-            nextEl.href = `article.html?slug=${next.slug}`;
+            nextEl.href = `/article?slug=${next.slug}`;
             nextTitle.textContent = next.title;
         } else {
             nextEl.style.display = 'none';
@@ -173,19 +234,21 @@ class ArticleDetail {
         let mouseX = 0, mouseY = 0;
         let followerX = 0, followerY = 0;
 
-        document.addEventListener('mousemove', (e) => {
+        const updateCursor = (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
             cursor.style.left = mouseX + 'px';
             cursor.style.top = mouseY + 'px';
-        });
+        };
+
+        document.addEventListener('mousemove', updateCursor);
 
         const animateFollower = () => {
             followerX += (mouseX - followerX) * 0.15;
             followerY += (mouseY - followerY) * 0.15;
             cursorFollower.style.left = followerX + 'px';
             cursorFollower.style.top = followerY + 'px';
-            requestAnimationFrame(animateFollower);
+            this.cursorFrameId = requestAnimationFrame(animateFollower);
         };
         animateFollower();
 
@@ -196,12 +259,47 @@ class ArticleDetail {
         });
     }
 
-    showToast(message, type = '') {
-        const toast = document.getElementById('toast');
-        if (!toast) return;
-        toast.querySelector('.toast-message').textContent = message;
-        toast.className = `toast show ${type}`;
-        setTimeout(() => toast.classList.remove('show'), 3000);
+    async loadRelatedArticles() {
+        try {
+            const response = await fetch(`${API_BASE}/articles/${this.article.slug}/related`);
+            const data = await response.json();
+            if (data.code === 200 && data.data.length > 0) {
+                this.renderRelated(data.data);
+            }
+        } catch (error) {
+            console.error('加载相关文章失败:', error);
+        }
+    }
+
+    renderRelated(articles) {
+        const container = document.createElement('section');
+        container.className = 'related-articles';
+        container.innerHTML = `
+            <h3 class="related-title">相关文章</h3>
+            <div class="related-grid">
+                ${articles.map(a => `
+                    <a href="/article?slug=${a.slug}" class="related-card">
+                        <span class="related-category">${a.category}</span>
+                        <h4 class="related-card-title">${a.title}</h4>
+                        <span class="related-date">${formatDate(a.publishedAt || a.createdAt)}</span>
+                    </a>
+                `).join('')}
+            </div>
+        `;
+
+        const articleContent = document.querySelector('.article-content');
+        if (articleContent) {
+            articleContent.after(container);
+        }
+    }
+
+    destroy() {
+        if (this.cursorFrameId) {
+            cancelAnimationFrame(this.cursorFrameId);
+        }
+        if (this.cursorObserver) {
+            this.cursorObserver.disconnect();
+        }
     }
 }
 
@@ -213,8 +311,9 @@ function shareToWeibo() {
 
 function copyLink() {
     navigator.clipboard.writeText(window.location.href).then(() => {
-        const articleDetail = new ArticleDetail();
-        articleDetail.showToast('链接已复制到剪贴板', 'success');
+        showToast('链接已复制到剪贴板', 'success');
+    }).catch(() => {
+        showToast('复制失败，请手动复制', 'error');
     });
 }
 

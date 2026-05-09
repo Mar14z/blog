@@ -1,35 +1,45 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="作品集 - 静墨的项目作品展示">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta property="og:title" content="作品集 - 静墨">
+    <meta property="og:description" content="精选项目作品，从构想到落地的完整旅程">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jingmo.dev/portfolio">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="作品集 - 静墨">
+    <link rel="canonical" href="https://jingmo.dev/portfolio">
     <title>作品集 - 静墨</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Press+Start+2P&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/public/css/variables.css">
-    <link rel="stylesheet" href="/public/css/base.css">
-    <link rel="stylesheet" href="/public/css/components.css">
-    <link rel="stylesheet" href="/public/css/portfolio.css">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/portfolio.css">
 </head>
 <body>
-    <nav class="nav">
-        <a href="/" class="logo">静墨</a>
+    <nav class="nav" aria-label="主导航">
+        <div class="nav-left">
+            <a href="/" class="logo">静</a>
+        </div>
         <div class="nav-links">
-            <a href="/#articles" class="nav-link">文章</a>
-            <a href="/about" class="nav-link">介绍</a>
-            <a href="/portfolio" class="nav-link active">作品</a>
+            <a href="/" class="nav-link">首页</a>
+            <a href="/articles" class="nav-link">文章</a>
+            <a href="/about" class="nav-link">关于</a>
+            <a href="/gallery" class="nav-link">相册</a>
+            <a href="/portfolio" class="nav-link active" aria-current="page">作品</a>
             <a href="/links" class="nav-link">友链</a>
-            <a href="/#contact" class="nav-link">联系</a>
         </div>
     </nav>
 
     <main class="page-content">
         <header class="page-header">
             <h1 class="page-title">作品集</h1>
-            <p class="page-subtitle">Some of my recent work</p>
+            <p class="page-subtitle">精选项目作品</p>
         </header>
 
         <div class="portfolio-filters">
@@ -224,7 +234,7 @@
                         <span class="project-tag">SQLite</span>
                     </div>
                     <div class="project-links">
-                        <a href="https://github.com/Mar14z/notes-app" target="_blank" class="project-link">
+                        <a href="https://github.com/Mar14z/notes-app" target="_blank" rel="noopener noreferrer" class="project-link">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
                             </svg>
@@ -239,11 +249,12 @@
     <footer class="footer">
         <div class="footer-text">© 2024 静墨</div>
         <div class="footer-links">
-            <a href="https://github.com/Mar14z/blog" class="footer-link" target="_blank">GitHub</a>
+            <a href="https://github.com/Mar14z/blog" class="footer-link" target="_blank" rel="noopener noreferrer">GitHub</a>
             <a href="/links" class="footer-link">友链</a>
         </div>
     </footer>
 
-    <script src="/public/js/portfolio.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/portfolio.js"></script>
 </body>
 </html>

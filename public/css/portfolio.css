@@ -50,7 +50,7 @@
     transform: translate(-50%, -50%);
     font-family: var(--font-pixel);
     font-size: 2rem;
-    color: var(--text-dim);
+    color: var(--text-muted);
     opacity: 0.3;
 }
 
@@ -72,14 +72,14 @@
 .project-year {
     font-family: var(--font-mono);
     font-size: 0.75rem;
-    color: var(--text-dim);
+    color: var(--text-muted);
 }
 
 .project-type {
     font-family: var(--font-pixel);
     font-size: 0.5rem;
     padding: 4px 10px;
-    border: 1px solid var(--text-dim);
+    border: 1px solid var(--text-muted);
     color: var(--text-secondary);
     text-transform: uppercase;
 }
@@ -112,7 +112,7 @@
     padding: 4px 12px;
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
-    color: var(--text-dim);
+    color: var(--text-muted);
 }
 
 .project-links {

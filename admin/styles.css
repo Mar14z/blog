@@ -1085,6 +1085,33 @@ body {
     color: var(--bg-primary);
 }
 
+.status-toggle {
+    display: flex;
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.status-toggle .toggle-option {
+    flex: 1;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.status-toggle .toggle-option.active {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+}
+
+.status-toggle .toggle-option:not(.active):hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
 .toast {
     position: fixed;
     bottom: 24px;

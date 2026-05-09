@@ -1,5 +1,3 @@
-const API_BASE = 'http://localhost:3001/api';
-
 let token = localStorage.getItem('adminToken');
 let currentPage = 1;
 let selectedArticles = new Set();
@@ -27,8 +25,66 @@ class AdminApp {
     }
 
     bindEvents() {
-        document.getElementById('loginForm').addEventListener('submit', (e) => this.handleLogin(e));
-        document.getElementById('logoutBtn').addEventListener('click', () => this.handleLogout());
+        const bind = (selector, event, handler) => {
+            const el = document.getElementById(selector);
+            if (el) el.addEventListener(event, handler);
+        };
+
+        bind('loginForm', 'submit', (e) => this.handleLogin(e));
+        bind('logoutBtn', 'click', () => this.handleLogout());
+        bind('newArticleBtn', 'click', () => this.openArticleModal());
+        bind('newArticleBtn2', 'click', () => this.openArticleModal());
+        bind('closeModal', 'click', () => this.closeModal());
+        bind('cancelArticleBtn', 'click', () => this.closeModal());
+        bind('saveDraftBtn', 'click', () => this.saveDraft());
+        bind('articleForm', 'submit', (e) => this.handleArticleSubmit(e));
+        bind('articleTitle', 'input', (e) => this.autoGenerateSlug(e));
+        bind('articleTitle', 'input', () => this.autoSaveDraft());
+        bind('selectAll', 'change', (e) => this.toggleSelectAll(e));
+        bind('batchPublish', 'click', () => this.batchPublish());
+        bind('batchUnpublish', 'click', () => this.batchUnpublish());
+        bind('batchDelete', 'click', () => this.batchDelete());
+        bind('addCategoryBtn', 'click', () => this.openTaxonomyModal('category'));
+        bind('addTagBtn', 'click', () => this.openTaxonomyModal('tag'));
+        bind('closeTaxonomyModal', 'click', () => this.closeTaxonomyModal());
+        bind('cancelTaxonomyBtn', 'click', () => this.closeTaxonomyModal());
+        bind('taxonomyForm', 'submit', (e) => this.handleTaxonomySubmit(e));
+        bind('togglePreview', 'click', () => this.togglePreview());
+        bind('articleContent', 'input', () => this.updatePreview());
+        bind('settingsForm', 'submit', (e) => this.handleSettingsSubmit(e));
+        bind('resetSettingsBtn', 'click', () => this.resetSettings());
+        bind('exportDataBtn', 'click', () => this.exportData());
+        bind('quickNewArticle', 'click', () => this.openArticleModal());
+        bind('quickManageCategories', 'click', () => this.goToTaxonomy());
+        bind('quickViewSite', 'click', () => window.open('../', '_blank'));
+        bind('quickBackup', 'click', () => this.quickBackup());
+
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', debounce(() => this.loadArticles(), 300));
+        }
+
+        const filterStatus = document.getElementById('filterStatus');
+        if (filterStatus) filterStatus.addEventListener('change', () => this.loadArticles());
+
+        const filterCategory = document.getElementById('filterCategory');
+        if (filterCategory) filterCategory.addEventListener('change', () => this.loadArticles());
+
+        const filterTag = document.getElementById('filterTag');
+        if (filterTag) filterTag.addEventListener('change', () => this.loadArticles());
+
+        const tagInput = document.getElementById('tagInput');
+        if (tagInput) {
+            tagInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.addTag();
+                }
+            });
+        }
+
+        document.querySelector('#articleModal .modal-overlay')?.addEventListener('click', () => this.closeModal());
+        document.querySelector('#taxonomyModal .modal-overlay')?.addEventListener('click', () => this.closeTaxonomyModal());
 
         document.querySelectorAll('.nav-item').forEach(item => {
             if (item.dataset.page) {
@@ -36,68 +92,13 @@ class AdminApp {
             }
         });
 
-        document.getElementById('newArticleBtn').addEventListener('click', () => this.openArticleModal());
-        document.getElementById('newArticleBtn2')?.addEventListener('click', () => this.openArticleModal());
-        document.getElementById('closeModal').addEventListener('click', () => this.closeModal());
-        document.querySelector('.modal-overlay')?.addEventListener('click', () => this.closeModal());
-        document.getElementById('cancelBtn').addEventListener('click', () => this.closeModal());
-        document.getElementById('saveDraftBtn').addEventListener('click', () => this.saveDraft());
-        document.getElementById('articleForm').addEventListener('submit', (e) => this.handleArticleSubmit(e));
-
-        document.getElementById('searchInput').addEventListener('input', (e) => this.debounce(() => this.loadArticles(), 300)());
-        document.getElementById('filterStatus').addEventListener('change', () => this.loadArticles());
-        document.getElementById('filterCategory').addEventListener('change', () => this.loadArticles());
-        document.getElementById('filterTag').addEventListener('change', () => this.loadArticles());
-
-        document.getElementById('articleTitle').addEventListener('input', (e) => this.autoGenerateSlug(e));
-        document.getElementById('articleTitle').addEventListener('input', () => this.autoSaveDraft());
-
-        document.getElementById('selectAll').addEventListener('change', (e) => this.toggleSelectAll(e));
-        document.getElementById('batchPublish').addEventListener('click', () => this.batchPublish());
-        document.getElementById('batchUnpublish').addEventListener('click', () => this.batchUnpublish());
-        document.getElementById('batchDelete').addEventListener('click', () => this.batchDelete());
-
-        document.getElementById('addCategoryBtn').addEventListener('click', () => this.openTaxonomyModal('category'));
-        document.getElementById('addTagBtn').addEventListener('click', () => this.openTaxonomyModal('tag'));
-        document.getElementById('closeTaxonomyModal').addEventListener('click', () => this.closeTaxonomyModal());
-        document.querySelector('#taxonomyModal .modal-overlay')?.addEventListener('click', () => this.closeTaxonomyModal());
-        document.getElementById('cancelTaxonomyBtn').addEventListener('click', () => this.closeTaxonomyModal());
-        document.getElementById('taxonomyForm').addEventListener('submit', (e) => this.handleTaxonomySubmit(e));
-
-        document.getElementById('togglePreview')?.addEventListener('click', () => this.togglePreview());
-        document.getElementById('articleContent')?.addEventListener('input', () => this.updatePreview());
-
         document.querySelectorAll('.toolbar-btn[data-action]').forEach(btn => {
             btn.addEventListener('click', () => this.insertMarkdown(btn.dataset.action));
         });
-
-        document.getElementById('tagInput')?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                this.addTag();
-            }
-        });
-
-        document.getElementById('settingsForm').addEventListener('submit', (e) => this.handleSettingsSubmit(e));
-        document.getElementById('resetSettingsBtn').addEventListener('click', () => this.resetSettings());
-
-        document.getElementById('exportDataBtn')?.addEventListener('click', () => this.exportData());
-        document.getElementById('quickNewArticle')?.addEventListener('click', () => this.openArticleModal());
-        document.getElementById('quickManageCategories')?.addEventListener('click', () => this.goToTaxonomy());
-        document.getElementById('quickViewSite')?.addEventListener('click', () => window.open('../', '_blank'));
-        document.getElementById('quickBackup')?.addEventListener('click', () => this.quickBackup());
     }
 
     goToTaxonomy() {
         document.querySelector('[data-page="taxonomy"]').click();
-    }
-
-    debounce(func, wait) {
-        let timeout;
-        return (...args) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
     }
 
     async handleLogin(e) {
@@ -117,14 +118,14 @@ class AdminApp {
             if (data.code === 200) {
                 token = data.data.token;
                 localStorage.setItem('adminToken', token);
-                this.showToast('登录成功', 'success');
+                showToast('登录成功', 'success');
                 this.showDashboard();
                 this.loadDashboardData();
             } else {
-                this.showToast(data.message, 'error');
+                showToast(data.message, 'error');
             }
         } catch (error) {
-            this.showToast('登录失败，请检查服务器是否运行', 'error');
+            showToast('登录失败，请检查服务器是否运行', 'error');
         }
     }
 
@@ -132,7 +133,7 @@ class AdminApp {
         token = null;
         localStorage.removeItem('adminToken');
         this.showLogin();
-        this.showToast('已退出登录');
+        showToast('已退出登录');
     }
 
     handleNavigation(e) {
@@ -257,7 +258,7 @@ class AdminApp {
         container.innerHTML = recent.map(a => `
             <div class="recent-item" onclick="adminApp.gotoArticle('${a._id}')">
                 <span class="recent-title">${a.title}</span>
-                <span class="recent-date">${new Date(a.createdAt).toLocaleDateString()}</span>
+                <span class="recent-date">${formatDate(a.createdAt)}</span>
             </div>
         `).join('');
     }
@@ -328,10 +329,10 @@ class AdminApp {
                 a.click();
                 URL.revokeObjectURL(url);
 
-                this.showToast('数据导出成功', 'success');
+                showToast('数据导出成功', 'success');
             }
         } catch (error) {
-            this.showToast('导出失败', 'error');
+            showToast('导出失败', 'error');
         }
     }
 
@@ -456,7 +457,7 @@ class AdminApp {
         document.getElementById('taxonomyModalTitle').textContent = name ? `编辑${type === 'category' ? '分类' : '标签'}` : `新增${type === 'category' ? '分类' : '标签'}`;
         document.getElementById('taxonomyName').value = name || '';
         document.getElementById('taxonomyId').value = name || '';
-        document.getElementById('taxonomySlug').value = name ? this.toSlug(name) : '';
+        document.getElementById('taxonomySlug').value = name ? toSlug(name) : '';
         document.getElementById('taxonomyDesc').value = '';
         modal.classList.add('active');
     }
@@ -482,7 +483,7 @@ class AdminApp {
         this.updateTagOptions();
         this.renderCategories();
         this.renderTags();
-        this.showToast('删除成功', 'success');
+        showToast('删除成功', 'success');
     }
 
     async handleTaxonomySubmit(e) {
@@ -490,10 +491,9 @@ class AdminApp {
 
         const type = document.getElementById('taxonomyType').value;
         const name = document.getElementById('taxonomyName').value.trim();
-        const slug = document.getElementById('taxonomySlug').value.trim();
 
         if (!name) {
-            this.showToast('请输入名称', 'error');
+            showToast('请输入名称', 'error');
             return;
         }
 
@@ -512,14 +512,7 @@ class AdminApp {
         this.renderCategories();
         this.renderTags();
         this.closeTaxonomyModal();
-        this.showToast('保存成功', 'success');
-    }
-
-    toSlug(str) {
-        return str.toLowerCase()
-            .replace(/[^a-z0-9\u4e00-\u9fa5]/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '');
+        showToast('保存成功', 'success');
     }
 
     async loadArticles() {
@@ -544,9 +537,10 @@ class AdminApp {
                 let articles = data.data.articles;
 
                 if (searchQuery) {
+                    const query = searchQuery.toLowerCase();
                     articles = articles.filter(a =>
-                        a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        a.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+                        a.title.toLowerCase().includes(query) ||
+                        a.excerpt.toLowerCase().includes(query)
                     );
                 }
 
@@ -586,7 +580,7 @@ class AdminApp {
                     </span>
                     ${article.featured ? '<span class="status-badge featured">精选</span>' : ''}
                 </div>
-                <div class="table-cell date">${new Date(article.createdAt).toLocaleDateString()}</div>
+                <div class="table-cell date">${formatDate(article.createdAt)}</div>
                 <div class="table-cell actions">
                     <button class="btn-icon" onclick="adminApp.editArticle('${article._id}')" title="编辑">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -657,7 +651,7 @@ class AdminApp {
         selectedArticles.clear();
         this.updateBatchActions();
         this.loadArticles();
-        this.showToast(`已${published ? '发布' : '取消发布'} ${selectedArticles.size} 篇文章`, 'success');
+        showToast(`已${published ? '发布' : '取消发布'}选中的文章`, 'success');
     }
 
     async batchDelete() {
@@ -676,7 +670,26 @@ class AdminApp {
         this.updateBatchActions();
         this.loadArticles();
         this.loadDashboardData();
-        this.showToast('删除成功', 'success');
+        showToast('删除成功', 'success');
+    }
+
+    setStatus(status) {
+        const toggle = document.getElementById('statusToggle');
+        const input = document.getElementById('articlePublished');
+        toggle.querySelectorAll('.toggle-option').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.value === status);
+        });
+        input.value = status === 'published' ? 'true' : 'false';
+    }
+
+    previewArticle() {
+        const title = document.getElementById('articleTitle')?.value || '无标题';
+        const content = document.getElementById('articleContent')?.value || '';
+        const category = document.getElementById('articleCategory')?.value || '';
+        const html = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>预览 - ${title}</title><link rel="stylesheet" href="/css/variables.css"><link rel="stylesheet" href="/css/base.css"><style>body{background:#000;color:#fff;font-family:'Noto Sans SC',sans-serif;padding:4rem;max-width:800px;margin:0 auto}.preview-tag{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#D32F2F;letter-spacing:2px;text-transform:uppercase;margin-bottom:1rem}.preview-title{font-size:2rem;font-weight:700;margin-bottom:1rem}.preview-content{line-height:1.8;font-size:0.95rem;color:rgba(255,255,255,0.8)}.preview-content pre{background:rgba(255,255,255,0.05);padding:1rem;overflow-x:auto}.preview-content code{font-family:'JetBrains Mono',monospace;font-size:0.85rem}.preview-content img{max-width:100%}</style></head><body><div class="preview-tag">${category}</div><h1 class="preview-title">${title}</h1><div class="preview-content">${content}</div></body></html>`;
+        const win = window.open('', '_blank');
+        win.document.write(html);
+        win.document.close();
     }
 
     openArticleModal(article = null) {
@@ -702,7 +715,8 @@ class AdminApp {
             document.getElementById('articleCategory').value = article.category;
             document.getElementById('articleCover').value = article.coverImage || '';
             document.getElementById('articleReadTime').value = article.readTime || 5;
-            document.getElementById('articlePublished').checked = article.published;
+            document.getElementById('articlePublished').value = article.published;
+            this.setStatus(article.published ? 'published' : 'draft');
             document.getElementById('articleFeatured').checked = article.featured || false;
 
             currentTags = [...(article.tags || [])];
@@ -710,6 +724,7 @@ class AdminApp {
             this.updatePreview();
         } else {
             title.textContent = '新建文章';
+            this.setStatus('draft');
         }
 
         modal.classList.add('active');
@@ -773,7 +788,7 @@ class AdminApp {
         const slugInput = document.getElementById('articleSlug');
 
         if (!slugInput.dataset.manual) {
-            slugInput.value = this.toSlug(title);
+            slugInput.value = toSlug(title);
         }
     }
 
@@ -886,7 +901,7 @@ class AdminApp {
                 this.openArticleModal(article);
             }
         } catch (error) {
-            this.showToast('加载文章失败', 'error');
+            showToast('加载文章失败', 'error');
         }
     }
 
@@ -894,11 +909,11 @@ class AdminApp {
         e.preventDefault();
 
         const id = document.getElementById('articleId').value;
-        const published = saveAsDraft ? false : document.getElementById('articlePublished').checked;
+        const published = saveAsDraft ? false : document.getElementById('articlePublished').value === 'true';
 
         const articleData = {
             title: document.getElementById('articleTitle').value,
-            slug: document.getElementById('articleSlug').value || this.toSlug(document.getElementById('articleTitle').value),
+            slug: document.getElementById('articleSlug').value || toSlug(document.getElementById('articleTitle').value),
             excerpt: document.getElementById('articleExcerpt').value,
             content: document.getElementById('articleContent').value,
             category: document.getElementById('articleCategory').value,
@@ -926,16 +941,16 @@ class AdminApp {
 
             if (data.code === 200 || data.code === 201) {
                 localStorage.removeItem('draft');
-                this.showToast(saveAsDraft ? '草稿已保存' : (id ? '文章更新成功' : '文章发布成功'), 'success');
+                showToast(saveAsDraft ? '草稿已保存' : (id ? '文章更新成功' : '文章发布成功'), 'success');
                 this.closeModal();
                 this.loadArticles();
                 this.loadDashboardData();
                 this.loadTaxonomy();
             } else {
-                this.showToast(data.message || '操作失败', 'error');
+                showToast(data.message || '操作失败', 'error');
             }
         } catch (error) {
-            this.showToast('操作失败，请重试', 'error');
+            showToast('操作失败，请重试', 'error');
         }
     }
 
@@ -953,14 +968,14 @@ class AdminApp {
             const data = await response.json();
 
             if (data.code === 200) {
-                this.showToast('文章删除成功', 'success');
+                showToast('文章删除成功', 'success');
                 this.loadArticles();
                 this.loadDashboardData();
             } else {
-                this.showToast(data.message || '删除失败', 'error');
+                showToast(data.message || '删除失败', 'error');
             }
         } catch (error) {
-            this.showToast('删除失败，请重试', 'error');
+            showToast('删除失败，请重试', 'error');
         }
     }
 
@@ -997,30 +1012,20 @@ class AdminApp {
         });
 
         localStorage.setItem('blogSettings', JSON.stringify(settings));
-        this.showToast('设置已保存', 'success');
+        showToast('设置已保存', 'success');
     }
 
     resetSettings() {
         if (confirm('确定要重置所有设置为默认值吗？')) {
             localStorage.removeItem('blogSettings');
             document.getElementById('settingsForm').reset();
-            this.showToast('设置已重置', 'success');
+            showToast('设置已重置', 'success');
         }
     }
 
     getSettings() {
         const saved = localStorage.getItem('blogSettings');
         return saved ? JSON.parse(saved) : {};
-    }
-
-    showToast(message, type = '') {
-        const toast = document.getElementById('toast');
-        toast.querySelector('.toast-message').textContent = message;
-        toast.className = `toast show ${type}`;
-
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3000);
     }
 }
 
