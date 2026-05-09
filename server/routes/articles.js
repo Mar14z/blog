@@ -232,7 +232,7 @@ router.put('/:id',
     body('slug').optional().isString().trim().withMessage('URL别名格式不正确'),
     body('excerpt').optional().notEmpty().trim().withMessage('摘要不能为空'),
     body('content').optional().notEmpty().withMessage('内容不能为空'),
-    body('category').optional().trim().withMessage('分类不能为空')
+    body('category').optional().isString().trim().withMessage('分类格式不正确')
   ],
   handleValidationErrors,
   async (req, res, next) => {
