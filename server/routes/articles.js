@@ -182,12 +182,12 @@ router.post('/',
   adminOnly,
   [
     body('title').notEmpty().trim().withMessage('标题不能为空'),
-    body('slug').notEmpty().isSlug().withMessage('URL别名格式不正确'),
+    body('slug').optional().isString().trim().withMessage('URL别名格式不正确'),
     body('excerpt').notEmpty().trim().withMessage('摘要不能为空'),
     body('content').notEmpty().withMessage('内容不能为空'),
-    body('category').notEmpty().isIn(['设计', '技术', '生活', '随笔', '其他']).withMessage('分类不正确'),
+    body('category').notEmpty().trim().withMessage('分类不能为空'),
     body('tags').optional().isArray().withMessage('标签必须是数组'),
-    body('coverImage').optional().isURL().withMessage('封面图片必须是有效URL'),
+    body('coverImage').optional().isString().trim().withMessage('封面图片格式不正确'),
     body('published').optional().isBoolean().withMessage('发布状态必须是布尔值'),
     body('featured').optional().isBoolean().withMessage('推荐状态必须是布尔值'),
     body('readTime').optional().isInt({ min: 1 }).withMessage('阅读时间必须大于0')
@@ -195,8 +195,18 @@ router.post('/',
   handleValidationErrors,
   async (req, res, next) => {
     try {
+      let slug = req.body.slug;
+      if (!slug && req.body.title) {
+        slug = req.body.title
+          .toLowerCase()
+          .replace(/[^a-z0-9\u4e00-\u9fa5]/g, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '');
+      }
+
       const articleData = {
         ...req.body,
+        slug: slug,
         author: req.user._id
       };
 
@@ -219,10 +229,10 @@ router.put('/:id',
   [
     param('id').isMongoId().withMessage('无效的文章ID'),
     body('title').optional().notEmpty().trim().withMessage('标题不能为空'),
-    body('slug').optional().isSlug().withMessage('URL别名格式不正确'),
+    body('slug').optional().isString().trim().withMessage('URL别名格式不正确'),
     body('excerpt').optional().notEmpty().trim().withMessage('摘要不能为空'),
     body('content').optional().notEmpty().withMessage('内容不能为空'),
-    body('category').optional().isIn(['设计', '技术', '生活', '随笔', '其他']).withMessage('分类不正确')
+    body('category').optional().trim().withMessage('分类不能为空')
   ],
   handleValidationErrors,
   async (req, res, next) => {
