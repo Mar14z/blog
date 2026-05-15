@@ -30,12 +30,15 @@ npm start
 
 ## 📝 Obsidian 工作流
 
+笔记仓库独立于博客项目，位于 `D:\documents\note`，通过 Git 同步。
+
 ### 发布文章
 
-1. 在 `obsidian-vault/02 - Notes/` 写笔记
+1. 在 Obsidian 中写笔记（`02 - Notes/`）
 2. 添加 Frontmatter 元数据
-3. 将文件移动到 `obsidian-vault/01 - Blog/`
-4. 自动同步到博客！
+3. 将文件移动到 `01 - Blog/`
+4. `git push` 推送到 GitHub
+5. 服务器拉取并同步到博客
 
 ### Frontmatter 格式
 
@@ -43,17 +46,18 @@ npm start
 ---
 title: "文章标题"
 category: "技术"
-tags: ["JavaScript"]
+tags:
+  - JavaScript
 published: true
 ---
 ```
 
 ---
 
-## 📂 目录结构
+## 📂 笔记仓库结构
 
 ```
-obsidian-vault/
+D:\documents\note/
 ├── 00 - Index/      # 📖 索引总览
 ├── 01 - Blog/       # 📝 博客文章（发布到这里）
 └── 02 - Notes/      # 📚 个人笔记
@@ -82,7 +86,6 @@ obsidian-vault/
 - [部署清单](docs/deploy-checklist.md)
 - [Render 部署指南](docs/render-deployment.md)
 - [Obsidian 双向同步](docs/obsidian-bidirectional.md)
-- [Obsidian 知识库说明](obsidian-vault/README.md)
 
 ---
 
@@ -91,7 +94,7 @@ obsidian-vault/
 - Node.js + Express
 - MongoDB
 - JWT 认证
-- Chokidar 文件监控
+- Git 同步笔记仓库
 - 原生 HTML/CSS/JavaScript
 
 ---
@@ -102,7 +105,7 @@ obsidian-vault/
 |------|------|
 | 无法启动 | 检查 MongoDB 是否运行 |
 | 无法登录 | 检查 .env 中的管理员配置 |
-| 同步失效 | 检查笔记格式和路径 |
+| 同步失效 | 检查 .env 中的 OBSIDIAN_VAULT_PATH 配置 |
 
 ---
 
