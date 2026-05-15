@@ -124,7 +124,7 @@ const server = app.listen(PORT, HOST, () => {
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully...');
   server.close(() => {
-    mongoose.connection.close(false, () => {
+    mongoose.connection.close(false).then(() => {
       console.log('服务器已关闭');
       process.exit(0);
     });
@@ -134,7 +134,7 @@ process.on('SIGTERM', () => {
 process.on('SIGINT', () => {
   console.log('SIGINT received, shutting down gracefully...');
   server.close(() => {
-    mongoose.connection.close(false, () => {
+    mongoose.connection.close(false).then(() => {
       console.log('服务器已关闭');
       process.exit(0);
     });
