@@ -68,10 +68,9 @@ blog/
 │   ├── deploy.sh                # Linux/Mac 部署脚本
 │   ├── export-to-obsidian.js    # 导出到 Obsidian
 │   ├── import-from-obsidian.js  # 从 Obsidian 导入
-│   ├── refresh-articles.js      # 刷新文章缓存
+│   ├── refresh-articles.js      # 刷新文章索引
 │   ├── sync-to-obsidian.js      # 同步到 Obsidian
 │   └── watch-and-sync.js        # 监听并同步
-├── obsidian-vault/              # Obsidian 笔记库
 ├── uploads/                     # 上传文件目录
 ├── spec/                        # 项目规范文档
 ├── package.json                 # 项目依赖配置
@@ -195,3 +194,80 @@ Docker Container
 | `MONGODB_URI` | MongoDB 连接地址 | `mongodb://localhost:27017/blog` |
 | `JWT_SECRET` | JWT 签名密钥 | - |
 | `NODE_ENV` | 运行环境 | `production` |
+| `OBSIDIAN_VAULT_PATH` | Obsidian 笔记仓库路径 | `D:\documents\note` |
+| `OBSIDIAN_BLOG_DIR` | 博客文章子目录 | `01 - Blog` |
+| `OBSIDIAN_INDEX_DIR` | 索引子目录 | `00 - Index` |
+| `OBSIDIAN_GIT_REPO` | 笔记仓库 Git 地址 | `https://github.com/Mar14z/note.git` |
+
+---
+
+## Obsidian 笔记仓库架构
+
+笔记仓库独立于博客项目，通过 Git 进行版本管理和同步。
+
+### 仓库结构
+
+```
+note/ (D:\documents\note)
+├── 00 - Index/          # 索引和总览
+│   └── 博客文章索引.md   # 自动生成的双链索引
+├── 01 - Blog/           # 博客文章（发布区）
+│   ├── article-slug.md  # 带 frontmatter 的文章
+│   └── ...
+└── 02 - Notes/          # 笔记区（PARA 分类法）
+    ├── 00 - Inbox/      # 收集箱
+    ├── 01 - Learning/   # 学习笔记
+    ├── 02 - Projects/   # 项目笔记
+    ├── 03 - Areas/      # 领域研究
+    └── 04 - Resources/  # 资源收藏
+```
+
+### 同步流程设计（Git-Based）
+
+```
+本地 Obsidian 写作
+    ↓
+git push → GitHub 仓库 (Mar14z/note)
+    ↓
+服务器 git pull（定时/Webhook/手动）
+    ↓
+import-from-obsidian.js 解析 Markdown + Frontmatter
+    ↓
+写入 MongoDB 数据库
+    ↓
+博客前端展示
+```
+
+### 同步触发方式（待实现）
+
+| 方式 | 说明 | 优先级 |
+|------|------|--------|
+| 定时拉取 | 服务器 cron 定时 git pull + 导入 | P0 |
+| Webhook 触发 | GitHub Webhook 通知服务器拉取 | P1 |
+| 手动触发 | 管理后台按钮触发 git pull + 同步 | P0 |
+| 本地监控 | watch-and-sync.js 监控本地文件变化 | P2（仅开发环境） |
+
+### Frontmatter 格式
+
+```yaml
+---
+title: 文章标题
+category: 编程          # 设计/技术/生活/随笔/编程/产品/读书/其他
+tags:
+  - JavaScript
+  - 最佳实践
+date: 2024-01-01
+published: true
+---
+```
+
+### 路径配置
+
+所有脚本通过 `.env` 环境变量读取笔记仓库路径，不再硬编码：
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `OBSIDIAN_VAULT_PATH` | 笔记仓库根路径 | `D:\documents\note` |
+| `OBSIDIAN_BLOG_DIR` | 博客文章子目录 | `01 - Blog` |
+| `OBSIDIAN_INDEX_DIR` | 索引子目录 | `00 - Index` |
+| `OBSIDIAN_GIT_REPO` | Git 远程仓库地址 | `https://github.com/Mar14z/note.git` |
