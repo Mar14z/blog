@@ -18,12 +18,9 @@ const initializeDefaultData = async () => {
   try {
     const adminExists = await User.findOne({ role: 'admin' });
     if (!adminExists) {
-      const bcrypt = require('bcryptjs');
-      const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
-      
       await User.create({
         username: process.env.ADMIN_USERNAME,
-        password: hashedPassword,
+        password: process.env.ADMIN_PASSWORD,
         role: 'admin',
         email: 'admin@example.com'
       });
