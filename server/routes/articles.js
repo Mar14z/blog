@@ -241,9 +241,13 @@ router.post('/',
       if (!slug && req.body.title) {
         slug = req.body.title
           .toLowerCase()
-          .replace(/[^a-z0-9\u4e00-\u9fa5]/g, '-')
+          .replace(/[^a-z0-9]/g, '-')
           .replace(/-+/g, '-')
           .replace(/^-|-$/g, '');
+        // 中文等非 ASCII 标题无法生成合法 slug 时，回退为 post-时间戳
+        if (!slug) {
+          slug = `post-${Date.now()}`;
+        }
       }
 
       const articleData = {
