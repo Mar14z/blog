@@ -163,6 +163,18 @@ class AdminApp {
                 document.getElementById('settingsPage').classList.remove('hidden');
                 this.loadSettings();
                 break;
+            case 'profile':
+                document.getElementById('profilePage').classList.remove('hidden');
+                if (window.profileEditor && typeof window.profileEditor.load === 'function') {
+                    window.profileEditor.load();
+                }
+                break;
+            case 'gallery':
+                document.getElementById('galleryPage').classList.remove('hidden');
+                if (window.galleryAdmin && typeof window.galleryAdmin.load === 'function') {
+                    window.galleryAdmin.load();
+                }
+                break;
         }
     }
 
@@ -172,6 +184,8 @@ class AdminApp {
         document.getElementById('articlesPage').classList.add('hidden');
         document.getElementById('taxonomyPage').classList.add('hidden');
         document.getElementById('settingsPage').classList.add('hidden');
+        document.getElementById('profilePage').classList.add('hidden');
+        document.getElementById('galleryPage').classList.add('hidden');
     }
 
     showDashboard() {
