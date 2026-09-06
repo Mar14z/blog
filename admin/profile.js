@@ -34,6 +34,20 @@
             const el = document.getElementById(id);
             if (el) el.addEventListener(ev, fn);
         });
+
+        const fileInput = document.getElementById('profileAvatarFile');
+        if (fileInput) {
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                const url = await uploadAvatar(file);
+                if (url) {
+                    document.getElementById('profileAvatar').value = url;
+                    renderAvatarPreview(url);
+                }
+                e.target.value = '';
+            });
+        }
     }
 
     async function loadProfile() {
@@ -61,6 +75,8 @@
         document.getElementById('profileName').value = intro.name || '';
         document.getElementById('profileGreeting').value = intro.greeting || '';
         document.getElementById('profileBio').value = intro.bio || '';
+        document.getElementById('profileAvatar').value = intro.avatar || '';
+        renderAvatarPreview(intro.avatar || '');
 
         const skills = profile.skills || {};
         document.getElementById('profileTechnical').value = (skills.technical || []).join('\n');
@@ -69,6 +85,43 @@
         renderEducation(profile.education || []);
         renderExperiences(profile.experiences || []);
         renderContacts(profile.contacts || []);
+    }
+
+    function renderAvatarPreview(url) {
+        const wrap = document.getElementById('profileAvatarPreview');
+        if (!wrap) return;
+        if (url) {
+            wrap.innerHTML = `<img src="${escapeHtml(url)}" alt="头像预览" style="max-width:120px;max-height:120px;border-radius:50%;display:block">`;
+        } else {
+            wrap.innerHTML = '<span style="color:var(--text-secondary);font-size:0.85rem">暂无头像</span>';
+        }
+    }
+
+    async function uploadAvatar(file) {
+        const fd = new FormData();
+        fd.append('image', file);
+        const statusEl = document.getElementById('profileAvatarStatus');
+        if (statusEl) statusEl.textContent = '上传中...';
+        try {
+            const res = await fetch(`${API_BASE}/upload/image`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: fd
+            });
+            const data = await res.json();
+            if (data.code !== 200) {
+                if (statusEl) statusEl.textContent = '上传失败：' + (data.message || '');
+                showToast(data.message || '上传失败', 'error');
+                return null;
+            }
+            if (statusEl) statusEl.textContent = '上传成功';
+            showToast('头像已上传', 'success');
+            return data.data.url;
+        } catch (err) {
+            if (statusEl) statusEl.textContent = '上传失败';
+            showToast('上传失败', 'error');
+            return null;
+        }
     }
 
     function renderEducation(list) {
@@ -251,7 +304,8 @@
             intro: {
                 name: document.getElementById('profileName').value.trim(),
                 greeting: document.getElementById('profileGreeting').value.trim(),
-                bio: document.getElementById('profileBio').value.trim()
+                bio: document.getElementById('profileBio').value.trim(),
+                avatar: document.getElementById('profileAvatar').value.trim()
             },
             education: readList('educationList', ['title', 'period', 'school', 'desc', 'order']),
             experiences: readList('experiencesList', ['title', 'period', 'company', 'desc', 'order']),

@@ -63,11 +63,33 @@ function renderProfile(profile) {
     if (intro.name) {
         const nameEl = document.getElementById('profile-name');
         if (nameEl) nameEl.textContent = intro.name;
-        const avatar = document.getElementById('profile-avatar');
-        if (avatar && !avatar.textContent.trim()) {
-            avatar.textContent = intro.name.charAt(0);
-        }
     }
+
+    // 头像：有 URL 就显示图，否则显示首字母占位
+    const avatarImg = document.getElementById('profile-avatar-img');
+    const avatarPh = document.getElementById('profile-avatar-placeholder');
+    if (intro.avatar) {
+        if (avatarImg) {
+            avatarImg.src = intro.avatar;
+            avatarImg.alt = intro.name || '头像';
+            avatarImg.style.display = 'block';
+            avatarImg.onerror = () => {
+                avatarImg.style.display = 'none';
+                if (avatarPh) {
+                    avatarPh.textContent = (intro.name || '?').charAt(0);
+                    avatarPh.style.display = 'flex';
+                }
+            };
+        }
+        if (avatarPh) avatarPh.style.display = 'none';
+    } else {
+        if (avatarPh) {
+            avatarPh.textContent = (intro.name || '?').charAt(0);
+            avatarPh.style.display = 'flex';
+        }
+        if (avatarImg) avatarImg.style.display = 'none';
+    }
+
     const greetingEl = document.getElementById('profile-greeting');
     if (greetingEl) greetingEl.textContent = intro.greeting || '你好';
     const bioEl = document.getElementById('profile-bio');
