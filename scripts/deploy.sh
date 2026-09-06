@@ -1,121 +1,48 @@
 #!/bin/bash
+# 自动部署脚本：被 webhook 触发执行
+# 工作目录必须是 /opt/blog
 
 set -e
 
-cd "$(dirname "$0")/.."
+LOG=/opt/blog/logs/deploy.log
+mkdir -p /opt/blog/logs
 
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m'
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] 开始部署" >> "$LOG"
 
-echo "=========================================="
-echo "   静墨博客 - 部署脚本"
-echo "=========================================="
+cd /opt/blog
 
-if ! command -v node &> /dev/null; then
-    echo -e "${RED}错误: 未安装 Node.js${NC}"
-    exit 1
+# 1. git pull（强制同步到 origin/master，丢弃本地差异）
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] git reset --hard origin/master..." >> "$LOG"
+GIT_SSH_COMMAND="ssh -i ~/.ssh/blog_deploy_key -o StrictHostKeyChecking=yes" \
+  git fetch origin master >> "$LOG" 2>&1
+GIT_SSH_COMMAND="ssh -i ~/.ssh/blog_deploy_key -o StrictHostKeyChecking=yes" \
+  git reset --hard origin/master >> "$LOG" 2>&1
+
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] git 同步完成" >> "$LOG"
+
+# 2. 同步 .env（本地不提交，由 scp 推送；这里只是兜底）
+if [ ! -f .env ]; then
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] WARNING: .env 不存在" >> "$LOG"
 fi
 
-if ! command -v npm &> /dev/null; then
-    echo -e "${RED}错误: 未安装 npm${NC}"
-    exit 1
+# 3. 安装新依赖（如果有）
+if [ -f package.json ]; then
+  # 检查 lock 是否变了（粗略判断）
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] 检查依赖..." >> "$LOG"
+  # npm install 太重，用生产安装且跳过 scripts，避免触发 husky 等
+  npm ci --omit=dev --ignore-scripts >> "$LOG" 2>&1 || npm install --omit=dev --ignore-scripts >> "$LOG" 2>&1
 fi
 
-check_mongodb() {
-    if command -v mongod &> /dev/null; then
-        return 0
-    fi
-    
-    echo -e "${YELLOW}警告: 未检测到本地 MongoDB${NC}"
-    echo "选项:"
-    echo "  1. 使用 Docker 运行 MongoDB"
-    echo "  2. 跳过 (仅用于开发)"
-    read -p "请选择 [1/2]: " choice
-    
-    case $choice in
-        1)
-            echo -e "${GREEN}启动 MongoDB Docker 容器...${NC}"
-            docker run -d --name mongodb \
-                -p 27017:27017 \
-                -v mongodb_data:/data/db \
-                mongo:6
-            ;;
-        2)
-            echo -e "${YELLOW}跳过 MongoDB 检查${NC}"
-            ;;
-        *)
-            echo -e "${RED}无效选择${NC}"
-            exit 1
-            ;;
-    esac
-}
+# 4. 重启 PM2
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] pm2 restart blog..." >> "$LOG"
+pm2 restart blog >> "$LOG" 2>&1
 
-install_dependencies() {
-    echo -e "\n${GREEN}[1/4] 安装依赖...${NC}"
-    npm install
-    
-    if [ $? -eq 0 ]; then
-        echo -e "${GREEN}依赖安装成功${NC}"
-    else
-        echo -e "${RED}依赖安装失败${NC}"
-        exit 1
-    fi
-}
-
-setup_env() {
-    echo -e "\n${GREEN}[2/4] 配置环境变量...${NC}"
-    if [ ! -f .env ]; then
-        if [ -f .env.example ]; then
-            cp .env.example .env
-            echo -e "${YELLOW}已创建 .env 文件，请编辑并设置密码${NC}"
-        fi
-    else
-        echo "环境变量文件已存在"
-    fi
-}
-
-build_project() {
-    echo -e "\n${GREEN}[3/4] 构建项目...${NC}"
-    
-    mkdir -p uploads
-    
-    echo -e "${GREEN}项目构建完成${NC}"
-}
-
-start_service() {
-    echo -e "\n${GREEN}[4/4] 启动服务...${NC}"
-    
-    if command -v pm2 &> /dev/null; then
-        echo -e "${GREEN}使用 PM2 启动服务...${NC}"
-        pm2 start server/app.js --name "jingmo-blog"
-        pm2 save
-        pm2 startup
-    else
-        echo -e "${YELLOW}未安装 PM2，使用 npm start 启动服务${NC}"
-        echo -e "建议安装 PM2: npm install -g pm2"
-        echo -e "\n或者使用 Docker 部署:"
-        echo -e "  docker-compose up -d"
-        echo -e "\n或者直接运行:"
-        echo -e "  npm start"
-    fi
-    
-    echo -e "\n${GREEN}=========================================="
-    echo "   部署完成!"
-    echo "=========================================="
-    echo -e "访问地址: http://localhost:3000"
-    echo -e "==========================================${NC}"
-}
-
-main() {
-    echo -e "${GREEN}开始部署静墨博客...${NC}"
-    
-    check_mongodb
-    install_dependencies
-    setup_env
-    build_project
-    start_service
-}
-
-main "$@"
+# 5. 健康检查
+sleep 2
+if curl -sf http://127.0.0.1:3000/api/health > /dev/null; then
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✅ 部署成功，健康检查通过" >> "$LOG"
+  exit 0
+else
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] ❌ 健康检查失败" >> "$LOG"
+  exit 1
+fi
