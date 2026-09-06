@@ -43,15 +43,15 @@ app.use('/api', (req, res, next) => {
 });
 
 app.use('/public', express.static(path.join(__dirname, '..', 'public'), {
-    maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
+    maxAge: process.env.NODE_ENV === 'production' ? '5m' : 0,
     etag: true
 }));
 app.use(express.static(path.join(__dirname, '..', 'public'), {
-    maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
+    maxAge: process.env.NODE_ENV === 'production' ? '5m' : 0,
     etag: true
 }));
 app.use('/admin', express.static(path.join(__dirname, '..', 'admin'), {
-    maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
+    maxAge: process.env.NODE_ENV === 'production' ? '5m' : 0,
     etag: true
 }));
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads'), {
