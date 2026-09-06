@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const introSchema = new mongoose.Schema({
   name: { type: String, default: '' },
   greeting: { type: String, default: '你好' },
-  bio: { type: String, default: '' }
+  bio: { type: String, default: '' },
+  avatar: { type: String, default: '' }
 }, { _id: false });
 
 const educationSchema = new mongoose.Schema({

@@ -284,6 +284,24 @@
                             <label>个人简介</label>
                             <textarea id="profileBio" rows="3" maxlength="500" placeholder="一句话或一段话介绍自己..."></textarea>
                         </div>
+                        <div class="form-group">
+                            <label>头像</label>
+                            <div class="form-row">
+                                <div class="form-group" style="flex:1">
+                                    <input type="text" id="profileAvatar" placeholder="/uploads/avatar.png" readonly>
+                                    <span class="form-hint">通过下方按钮上传头像</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="upload-dropzone" for="profileAvatarFile" style="padding:0.75rem 1.5rem;margin:0">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                        <span>选择图片</span>
+                                    </label>
+                                    <input type="file" id="profileAvatarFile" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none">
+                                </div>
+                            </div>
+                            <div id="profileAvatarPreview" style="margin-top:0.5rem"></div>
+                            <span id="profileAvatarStatus" class="upload-status"></span>
+                        </div>
                     </div>
 
                     <div class="settings-section">
