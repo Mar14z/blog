@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -12,9 +12,8 @@
     <meta name="twitter:title" content="关于 - 静墨">
     <link rel="canonical" href="https://jingmo.dev/about">
     <title>关于 - 静墨</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin>
+    <link href="/css/fonts.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/variables.css">
     <link rel="stylesheet" href="/css/base.css">
     <link rel="stylesheet" href="/css/components.css">
@@ -411,136 +410,41 @@
     <div class="main-content">
         <div class="left-column">
             <div class="avatar">
-                <div class="avatar-placeholder">静</div>
+                <div class="avatar-placeholder" id="profile-avatar">·</div>
             </div>
             <div class="intro-section">
-                <div class="intro-greeting">你好</div>
-                <h1 class="intro-title">静墨</h1>
-                <p class="intro-text">
-                    全栈开发者 / 设计师 / 终身学习者。热爱技术与设计，追求极简与优雅。
-                </p>
+                <div class="intro-greeting" id="profile-greeting">你好</div>
+                <h1 class="intro-title" id="profile-name">—</h1>
+                <p class="intro-text" id="profile-bio"></p>
             </div>
         </div>
 
         <div class="center-column">
             <div>
                 <h2 class="section-title">教育背景</h2>
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-header">
-                            <h3 class="timeline-title">计算机科学学士</h3>
-                            <span class="timeline-date">2017 - 2021</span>
-                        </div>
-                        <p class="timeline-company">某大学</p>
-                        <p class="timeline-desc">主修软件工程，优秀毕业生</p>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-header">
-                            <h3 class="timeline-title">前端开发训练营</h3>
-                            <span class="timeline-date">2020</span>
-                        </div>
-                        <p class="timeline-company">线上学习</p>
-                        <p class="timeline-desc">完成全栈开发课程</p>
-                    </div>
-                </div>
+                <div class="timeline" id="profile-education"></div>
             </div>
 
             <div>
                 <h2 class="section-title">数字技能</h2>
-                <div class="skills-grid">
-                    <span class="skill-tag">JavaScript</span>
-                    <span class="skill-tag">TypeScript</span>
-                    <span class="skill-tag">Node.js</span>
-                    <span class="skill-tag">React</span>
-                    <span class="skill-tag">Vue</span>
-                    <span class="skill-tag">Python</span>
-                    <span class="skill-tag">MongoDB</span>
-                    <span class="skill-tag">PostgreSQL</span>
-                    <span class="skill-tag">Docker</span>
-                    <span class="skill-tag">Git</span>
-                    <span class="skill-tag">Figma</span>
-                    <span class="skill-tag">CSS</span>
-                </div>
+                <div class="skills-grid" id="profile-technical"></div>
             </div>
 
             <div>
                 <h2 class="section-title">软技能</h2>
-                <div class="skills-grid">
-                    <span class="skill-tag">UI/UX</span>
-                    <span class="skill-tag">Prototyping</span>
-                    <span class="skill-tag">Design Thinking</span>
-                    <span class="skill-tag">Critical Thinking</span>
-                    <span class="skill-tag">Research</span>
-                    <span class="skill-tag">Visualizing</span>
-                </div>
+                <div class="skills-grid" id="profile-soft"></div>
             </div>
         </div>
 
         <div class="right-column">
             <div>
                 <h2 class="section-title">Work Experience</h2>
-                <div class="work-list">
-                    <div class="work-item">
-                        <div class="work-header">
-                            <h3 class="work-title">全栈开发工程师</h3>
-                            <span class="work-date">2023 - 至今</span>
-                        </div>
-                        <p class="work-company">某科技公司</p>
-                        <p class="work-desc">负责核心产品设计与开发，主导技术架构设计</p>
-                    </div>
-                    <div class="work-item">
-                        <div class="work-header">
-                            <h3 class="work-title">前端开发工程师</h3>
-                            <span class="work-date">2021 - 2023</span>
-                        </div>
-                        <p class="work-company">某互联网公司</p>
-                        <p class="work-desc">负责官网及移动端产品开发与维护</p>
-                    </div>
-                    <div class="work-item">
-                        <div class="work-header">
-                            <h3 class="work-title">自由开发者</h3>
-                            <span class="work-date">2020 - 2021</span>
-                        </div>
-                        <p class="work-company">独立项目</p>
-                        <p class="work-desc">承接网站设计与开发项目</p>
-                    </div>
-                </div>
+                <div class="work-list" id="profile-experiences"></div>
             </div>
 
             <div>
                 <h2 class="section-title">联系方式</h2>
-                <div class="contact-list">
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5">
-                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                            </svg>
-                        </div>
-                        <span class="contact-label">Phone</span>
-                        <span class="contact-value">+86 138 0000 0000</span>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                <polyline points="22 6 12 13 2 6"/>
-                            </svg>
-                        </div>
-                        <span class="contact-label">邮箱</span>
-                        <span class="contact-value">hello@jingmo.dev</span>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5">
-                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-                            </svg>
-                        </div>
-                        <span class="contact-label">GitHub</span>
-                        <span class="contact-value">@Mar14z</span>
-                    </div>
-                </div>
+                <div class="contact-list" id="profile-contacts"></div>
             </div>
         </div>
     </div>
