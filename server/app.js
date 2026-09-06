@@ -12,6 +12,7 @@ const authRoutes = require('./routes/auth');
 const uploadRoutes = require('./routes/upload');
 const profileRoutes = require('./routes/profile');
 const galleryRoutes = require('./routes/gallery');
+const webhookRoutes = require('./routes/webhook');
 const feed = require('./routes/feed');
 const sitemap = require('./routes/sitemap');
 const errorHandler = require('./middleware/errorHandler');
@@ -25,7 +26,13 @@ app.use(helmet({
 
 app.use(cors());
 app.use(compression());
-app.use(express.json({ limit: '10kb' }));
+app.use(express.json({
+  limit: '10kb',
+  verify: (req, res, buf) => {
+    // 给 webhook 用的原始字节，用于 HMAC 校验
+    req.rawBody = buf;
+  }
+}));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 app.use('/api', (req, res, next) => {
@@ -106,6 +113,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/gallery', galleryRoutes);
+app.use('/api/webhook', webhookRoutes);
 app.use(feed);
 app.use(sitemap);
 
