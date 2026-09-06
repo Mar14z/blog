@@ -10,6 +10,8 @@ const connectDB = require('./config/database');
 const articleRoutes = require('./routes/articles');
 const authRoutes = require('./routes/auth');
 const uploadRoutes = require('./routes/upload');
+const profileRoutes = require('./routes/profile');
+const galleryRoutes = require('./routes/gallery');
 const feed = require('./routes/feed');
 const sitemap = require('./routes/sitemap');
 const errorHandler = require('./middleware/errorHandler');
@@ -33,6 +35,10 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
+app.use('/public', express.static(path.join(__dirname, '..', 'public'), {
+    maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
+    etag: true
+}));
 app.use(express.static(path.join(__dirname, '..', 'public'), {
     maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
     etag: true
@@ -98,6 +104,8 @@ connectDB();
 app.use('/api/articles', articleRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/gallery', galleryRoutes);
 app.use(feed);
 app.use(sitemap);
 

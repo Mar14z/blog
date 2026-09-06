@@ -4,6 +4,13 @@ node_modules/
 .DS_Store
 Thumbs.db
 
+# 用户上传的图片（运行时不入库，仓库只保留目录占位）
+uploads/*
+!uploads/.gitkeep
+
+# Trae 开发期文档（plan / spec 等），不入仓库
+.trae/documents/
+
 # Obsidian 笔记库 - 只保留目录结构，不上传实际笔记
 obsidian-vault/01 - Blog/*.md
 obsidian-vault/02 - Notes/**/*.md
