@@ -41,7 +41,7 @@
   - 头像（avatar）
   - 名称（name）
   - 描述（description）
-  - 链接（URL → jingmo.dev 域名）
+  - 链接（URL → mar14z.xyz 域名）
 - 卡片网格布局
 
 ### 4. 申请友链说明
@@ -60,7 +60,7 @@
 
 1. 调用 `/api/links` 获取友链数据
 2. 按分类分组渲染
-3. 占位 URL 替换为 `jingmo.dev` 域名
+3. 占位 URL 替换为 `mar14z.xyz` 域名
 
 ### 友链卡片 Hover
 

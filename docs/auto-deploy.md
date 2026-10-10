@@ -84,7 +84,7 @@ GIT_SSH_COMMAND="ssh -i ~/.ssh/blog_deploy_key -o StrictHostKeyChecking=yes" \
 
 访问 <https://github.com/Mar14z/blog/settings/hooks/new>
 
-- Payload URL: `http://jingmo.dev/api/webhook/github`（或服务器 IP）
+- Payload URL: `http://mar14z.xyz/api/webhook/github`（或服务器 IP）
 
 - Content type: `application/json`
 

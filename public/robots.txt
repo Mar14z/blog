@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
-Sitemap: https://jingmo.dev/sitemap.xml
+Sitemap: https://mar14z.xyz/sitemap.xml
 
 User-agent: *
 Disallow: /admin/

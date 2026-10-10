@@ -81,7 +81,7 @@ const initializeDefaultData = async () => {
         },
         contacts: [
           { type: 'phone', label: 'Phone', value: '+86 138 0000 0000' },
-          { type: 'email', label: '邮箱', value: 'hello@jingmo.dev' },
+          { type: 'email', label: '邮箱', value: 'hello@mar14z.xyz' },
           { type: 'github', label: 'GitHub', value: '@Mar14z' }
         ]
       });

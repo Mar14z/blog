@@ -19,7 +19,7 @@ router.get('/sitemap.xml', async (req, res) => {
 
         pages.forEach(page => {
             xml += '  <url>\n';
-            xml += `    <loc>https://jingmo.dev${page.url}</loc>\n`;
+            xml += `    <loc>https://mar14z.xyz${page.url}</loc>\n`;
             xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
             xml += `    <priority>${page.priority}</priority>\n`;
             xml += '  </url>\n';
@@ -27,7 +27,7 @@ router.get('/sitemap.xml', async (req, res) => {
 
         articles.forEach(article => {
             xml += '  <url>\n';
-            xml += `    <loc>https://jingmo.dev/article?slug=${article.slug}</loc>\n`;
+            xml += `    <loc>https://mar14z.xyz/article?slug=${article.slug}</loc>\n`;
             xml += `    <lastmod>${article.updatedAt ? article.updatedAt.toISOString().split('T')[0] : ''}</lastmod>\n`;
             xml += '    <changefreq>weekly</changefreq>\n';
             xml += '    <priority>0.8</priority>\n';
