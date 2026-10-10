@@ -26,13 +26,13 @@ app.use(helmet({
 
 app.use(cors());
 app.use(compression());
-app.use(express.json({
-  limit: '10kb',
-  verify: (req, res, buf) => {
-    // 给 webhook 用的原始字节，用于 HMAC 校验
-    req.rawBody = buf;
-  }
-}));
+// 给 webhook 用的原始字节，用于 HMAC 校验
+const captureRawBody = (req, res, buf) => { req.rawBody = buf; };
+
+// webhook 需保留原始 body 做签名校验，且 GitHub push 的 payload 可能远超 10kb（最大 25MB）
+app.use('/api/webhook', express.json({ limit: '25mb', verify: captureRawBody }));
+
+app.use(express.json({ limit: '10kb', verify: captureRawBody }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 app.use('/api', (req, res, next) => {
