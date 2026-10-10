@@ -156,9 +156,11 @@ async function importFromObsidian() {
                 fromObsidian: true,
                 obsidianPath: item.filePath
             };
-            // pre('save') 钩子对 findOneAndUpdate 不生效，publishedAt 手动维护且不覆盖已有值
-            if (item.published && (!existing || !existing.publishedAt)) {
-                set.publishedAt = item.date ? new Date(item.date) : new Date();
+            // pre('save') 钩子对 findOneAndUpdate 不生效，publishedAt 手动维护
+            // 有 date 时以笔记 frontmatter 为准（保证日期修改能同步），否则仅在首次发布时写入
+            if (item.published) {
+                if (item.date) set.publishedAt = new Date(item.date);
+                else if (!existing || !existing.publishedAt) set.publishedAt = new Date();
             }
 
             await Article.findOneAndUpdate(
