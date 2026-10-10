@@ -11,20 +11,20 @@ router.get('/feed.xml', async (req, res) => {
         const feed = new Feed({
             title: '静墨博客',
             description: '静墨的个人博客，记录技术思考、产品感悟与生活点滴',
-            id: 'https://jingmo.dev/',
-            link: 'https://jingmo.dev/',
+            id: 'https://mar14z.xyz/',
+            link: 'https://mar14z.xyz/',
             language: 'zh-CN',
             author: {
                 name: '静墨',
-                link: 'https://jingmo.dev'
+                link: 'https://mar14z.xyz'
             }
         });
 
         articles.forEach(article => {
             feed.addItem({
                 title: article.title,
-                id: `https://jingmo.dev/article?slug=${article.slug}`,
-                link: `https://jingmo.dev/article?slug=${article.slug}`,
+                id: `https://mar14z.xyz/article?slug=${article.slug}`,
+                link: `https://mar14z.xyz/article?slug=${article.slug}`,
                 description: article.excerpt || '',
                 content: article.content || '',
                 date: article.publishedAt || article.createdAt

@@ -106,7 +106,7 @@ class ArticleDetail {
                     ldData.description = this.article.excerpt || '';
                     ldData.datePublished = this.article.publishedAt || this.article.createdAt;
                     ldData.dateModified = this.article.updatedAt || this.article.createdAt;
-                    ldData.url = `https://jingmo.dev/article?slug=${this.article.slug}`;
+                    ldData.url = `https://mar14z.xyz/article?slug=${this.article.slug}`;
                     jsonld.textContent = JSON.stringify(ldData);
                 }
 
