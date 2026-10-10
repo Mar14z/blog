@@ -80,7 +80,7 @@ function renderThumbnails() {
     if (!thumbnailBar) return;
     thumbnailBar.innerHTML = galleryData.map((item, index) => `
         <div class="thumbnail ${index === 0 ? 'active' : ''}" data-index="${index}">
-            <img data-src="${item.src}" alt="${item.title}" loading="lazy" decoding="async">
+            <img data-src="${escapeHtml(item.src)}" alt="${escapeHtml(item.title)}" loading="lazy" decoding="async">
         </div>
     `).join('');
 

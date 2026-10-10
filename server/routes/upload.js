@@ -70,7 +70,10 @@ router.post('/image', protect, adminOnly, upload.single('image'), (req, res) => 
 
 router.delete('/image/:filename', protect, adminOnly, (req, res) => {
     try {
-        const filename = req.params.filename;
+        const filename = path.basename(req.params.filename);
+        if (!filename || filename === '.' || filename === '..') {
+            return res.status(400).json({ code: 400, message: '无效的文件名' });
+        }
         const filePath = path.join(uploadDir, filename);
 
         if (fs.existsSync(filePath)) {

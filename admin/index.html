@@ -149,7 +149,7 @@
                             </button>
                             <button class="quick-action" id="quickManageCategories">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                                管理分类
+                                分类与标签
                             </button>
                             <button class="quick-action" id="quickViewSite">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
@@ -223,27 +223,19 @@
                 <div class="page-header">
                     <div>
                         <h2>分类与标签</h2>
-                        <p class="page-subtitle">管理系统分类和标签</p>
+                        <p class="page-subtitle">由文章自动汇总（只读）。新增或修改请编辑文章的「分类 / 标签」字段。</p>
                     </div>
                 </div>
                 <div class="taxonomy-grid">
                     <div class="taxonomy-card">
                         <div class="taxonomy-header">
                             <h3>分类</h3>
-                            <button class="btn-add" id="addCategoryBtn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                新增
-                            </button>
                         </div>
                         <div class="taxonomy-list" id="categoriesList"></div>
                     </div>
                     <div class="taxonomy-card">
                         <div class="taxonomy-header">
                             <h3>标签</h3>
-                            <button class="btn-add" id="addTagBtn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                新增
-                            </button>
                         </div>
                         <div class="taxonomy-tags" id="tagsList"></div>
                     </div>
@@ -630,38 +622,6 @@
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" id="galleryCancelBtn">取消</button>
                     <button type="submit" class="btn-primary" id="gallerySaveBtn">保存</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal" id="taxonomyModal">
-        <div class="modal-overlay"></div>
-        <div class="modal-content modal-small">
-            <div class="modal-header">
-                <h3 id="taxonomyModalTitle">新增分类</h3>
-                <button class="modal-close" id="closeTaxonomyModal">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
-            </div>
-            <form id="taxonomyForm" class="taxonomy-form">
-                <input type="hidden" id="taxonomyType" name="type">
-                <input type="hidden" id="taxonomyId" name="id">
-                <div class="form-group">
-                    <label id="taxonomyLabel">名称</label>
-                    <input type="text" id="taxonomyName" name="name" required>
-                </div>
-                <div class="form-group">
-                    <label>Slug</label>
-                    <input type="text" id="taxonomySlug" name="slug" placeholder="url-friendly-slug">
-                </div>
-                <div class="form-group">
-                    <label>描述</label>
-                    <textarea id="taxonomyDesc" name="description" rows="2"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" id="cancelTaxonomyBtn">取消</button>
-                    <button type="submit" class="btn-primary">保存</button>
                 </div>
             </form>
         </div>

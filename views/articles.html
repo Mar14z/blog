@@ -388,6 +388,7 @@
                 this.articles = [];
                 this.filteredArticles = [];
                 this.currentCategory = '';
+                this.currentTag = '';
                 this.searchQuery = '';
                 this.pageSize = 15;
                 this.currentPage = 1;
@@ -396,6 +397,11 @@
             }
 
             init() {
+                // 支持从文章页的标签/分类链接带参数进入
+                const params = new URLSearchParams(window.location.search);
+                this.currentCategory = params.get('category') || '';
+                this.currentTag = params.get('tag') || '';
+
                 this.initFilters();
                 this.initSearch();
                 this.loadArticles();
@@ -404,6 +410,8 @@
             initFilters() {
                 const filterButtons = document.querySelectorAll('.filter-btn');
                 filterButtons.forEach(btn => {
+                    btn.classList.toggle('active', (btn.dataset.category || '') === this.currentCategory);
+
                     btn.addEventListener('click', () => {
                         filterButtons.forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
@@ -427,11 +435,13 @@
             applyFilters() {
                 this.filteredArticles = this.articles.filter(article => {
                     const matchesCategory = !this.currentCategory || article.category === this.currentCategory;
+                    const matchesTag = !this.currentTag ||
+                        (article.tags && article.tags.includes(this.currentTag));
                     const matchesSearch = !this.searchQuery ||
                         article.title.toLowerCase().includes(this.searchQuery) ||
                         (article.excerpt && article.excerpt.toLowerCase().includes(this.searchQuery)) ||
                         (article.tags && article.tags.some(tag => tag.toLowerCase().includes(this.searchQuery)));
-                    return matchesCategory && matchesSearch;
+                    return matchesCategory && matchesTag && matchesSearch;
                 });
                 this.renderArticles();
             }
@@ -472,19 +482,25 @@
                 const visibleArticles = this.filteredArticles.slice(0, showing);
 
                 list.innerHTML = visibleArticles.map((article, index) => `
-                    <div class="article-row" onclick="window.location.href='/article?slug=${article.slug}'">
+                    <div class="article-row" data-slug="${escapeHtml(article.slug)}">
                         <span class="row-index">${String(index + 1).padStart(2, '0')}</span>
                         <div class="row-content">
-                            <div class="row-title">${article.title}</div>
-                            <div class="row-excerpt">${article.excerpt || ''}</div>
+                            <div class="row-title">${escapeHtml(article.title)}</div>
+                            <div class="row-excerpt">${escapeHtml(article.excerpt || '')}</div>
                         </div>
-                        <span class="row-category">${article.category}</span>
+                        <span class="row-category">${escapeHtml(article.category)}</span>
                         <div class="row-meta">
                             <span class="row-date">${formatDate(article.publishedAt || article.createdAt)}</span>
                             <span class="row-arrow">→</span>
                         </div>
                     </div>
                 `).join('');
+
+                list.querySelectorAll('.article-row').forEach(row => {
+                    row.addEventListener('click', () => {
+                        window.location.href = `/article?slug=${encodeURIComponent(row.dataset.slug)}`;
+                    });
+                });
 
                 if (showing < total) {
                     loadMore.style.display = 'flex';

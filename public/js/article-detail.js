@@ -135,7 +135,7 @@ class ArticleDetail {
         document.getElementById('articleContent').innerHTML = this.formatContent(cleanContent);
 
         if (article.coverImage) {
-            document.getElementById('articleCover').innerHTML = `<img src="${article.coverImage}" alt="${article.title}">`;
+            document.getElementById('articleCover').innerHTML = `<img src="${escapeHtml(article.coverImage)}" alt="${escapeHtml(article.title)}">`;
         } else {
             document.getElementById('articleCover').style.display = 'none';
         }
@@ -143,7 +143,7 @@ class ArticleDetail {
         const tagsContainer = document.getElementById('articleTags');
         if (article.tags && article.tags.length > 0) {
             tagsContainer.innerHTML = article.tags.map(tag =>
-                `<a href="/?tag=${encodeURIComponent(tag)}" class="article-tag">#${tag}</a>`
+                `<a href="/articles?tag=${encodeURIComponent(tag)}" class="article-tag">#${escapeHtml(tag)}</a>`
             ).join('');
         } else {
             tagsContainer.style.display = 'none';
@@ -174,14 +174,14 @@ class ArticleDetail {
         const nextTitle = document.getElementById('nextTitle');
 
         if (prev) {
-            prevEl.href = `/article?slug=${prev.slug}`;
+            prevEl.href = `/article?slug=${encodeURIComponent(prev.slug)}`;
             prevTitle.textContent = prev.title;
         } else {
             prevEl.style.display = 'none';
         }
 
         if (next) {
-            nextEl.href = `/article?slug=${next.slug}`;
+            nextEl.href = `/article?slug=${encodeURIComponent(next.slug)}`;
             nextTitle.textContent = next.title;
         } else {
             nextEl.style.display = 'none';
@@ -189,37 +189,60 @@ class ArticleDetail {
     }
 
     formatContent(content) {
-        return content
-            .split('\n\n')
-            .map(para => {
-                para = para.trim();
+        // 先把代码块摘出来，避免其中的空行被误当作分段
+        const codeBlocks = [];
+        const source = String(content || '').replace(/```(\w*)\r?\n([\s\S]*?)```/g, (_, lang, code) => {
+            const cls = lang ? ` class="language-${escapeHtml(lang)}"` : '';
+            codeBlocks.push(`<pre><code${cls}>${escapeHtml(code.replace(/\r?\n$/, ''))}</code></pre>`);
+            return `@@CODE${codeBlocks.length - 1}@@`;
+        });
+
+        return source
+            .split(/\n{2,}/)
+            .map(block => {
+                const para = block.trim();
                 if (!para) return '';
 
-                if (para.startsWith('## ')) {
-                    return `<h2>${para.substring(3)}</h2>`;
-                } else if (para.startsWith('### ')) {
-                    return `<h3>${para.substring(4)}</h3>`;
-                } else if (para.startsWith('> ')) {
-                    return `<blockquote>${para.substring(2)}</blockquote>`;
-                } else if (para.startsWith('- ')) {
-                    const items = para.split('\n').map(item => `<li>${item.substring(2)}</li>`).join('');
-                    return `<ul>${items}</ul>`;
-                } else if (para.match(/^\d+\. /)) {
-                    const items = para.split('\n').map(item => `<li>${item.replace(/^\d+\. /, '')}</li>`).join('');
-                    return `<ol>${items}</ol>`;
-                } else {
-                    return `<p>${para.replace(/\n/g, '<br>')}</p>`;
+                const placeholder = para.match(/^@@CODE(\d+)@@$/);
+                if (placeholder) return codeBlocks[Number(placeholder[1])];
+
+                if (para.startsWith('### ')) return `<h3>${this.inline(para.slice(4))}</h3>`;
+                if (para.startsWith('## ')) return `<h2>${this.inline(para.slice(3))}</h2>`;
+                if (para.startsWith('# ')) return `<h1>${this.inline(para.slice(2))}</h1>`;
+
+                if (para.startsWith('> ')) {
+                    const quoted = para.split('\n').map(l => l.replace(/^>\s?/, '')).join('\n');
+                    return `<blockquote>${this.inline(quoted)}</blockquote>`;
                 }
+                if (/^[-*] /.test(para)) {
+                    const items = para.split('\n').map(l => `<li>${this.inline(l.replace(/^[-*]\s+/, ''))}</li>`).join('');
+                    return `<ul>${items}</ul>`;
+                }
+                if (/^\d+\. /.test(para)) {
+                    const items = para.split('\n').map(l => `<li>${this.inline(l.replace(/^\d+\.\s+/, ''))}</li>`).join('');
+                    return `<ol>${items}</ol>`;
+                }
+                return `<p>${this.inline(para)}</p>`;
             })
             .join('');
+    }
+
+    // 行内 Markdown：先转义 HTML，再套用行内样式
+    inline(text) {
+        return escapeHtml(text)
+            .replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img src="$2" alt="$1" loading="lazy">')
+            .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/\n/g, '<br>');
     }
 
     showError(message) {
         document.getElementById('articleTitle').textContent = '出错了';
         document.getElementById('articleContent').innerHTML = `
             <div style="text-align: center; padding: 4rem 0;">
-                <p style="font-size: 1.25rem; color: var(--color-text-light); margin-bottom: 2rem;">${message}</p>
-                <a href="index.html" style="color: var(--color-accent); text-decoration: none; font-family: var(--font-mono);">
+                <p style="font-size: 1.25rem; color: var(--color-text-light); margin-bottom: 2rem;">${escapeHtml(message)}</p>
+                <a href="/" style="color: var(--color-accent); text-decoration: none; font-family: var(--font-mono);">
                     ← 返回首页
                 </a>
             </div>
@@ -278,9 +301,9 @@ class ArticleDetail {
             <h3 class="related-title">相关文章</h3>
             <div class="related-grid">
                 ${articles.map(a => `
-                    <a href="/article?slug=${a.slug}" class="related-card">
-                        <span class="related-category">${a.category}</span>
-                        <h4 class="related-card-title">${a.title}</h4>
+                    <a href="/article?slug=${encodeURIComponent(a.slug)}" class="related-card">
+                        <span class="related-category">${escapeHtml(a.category)}</span>
+                        <h4 class="related-card-title">${escapeHtml(a.title)}</h4>
                         <span class="related-date">${formatDate(a.publishedAt || a.createdAt)}</span>
                     </a>
                 `).join('')}
