@@ -1,6 +1,7 @@
 class BlogApp {
     constructor() {
         this.articles = [];
+        this.total = 0;
         this.scrollObserver = null;
         this.timelineObserver = null;
         this.init();
@@ -73,6 +74,8 @@ class BlogApp {
             const data = await response.json();
             if (data.code === 200) {
                 this.articles = data.data.articles || data.data;
+                // 统计总数用分页总量，而不是本次拉取的条数
+                this.total = data.data.pagination?.total ?? this.articles.length;
                 this.renderFeatured();
                 this.renderArticles();
                 this.updateStats();
@@ -90,15 +93,15 @@ class BlogApp {
 
         const article = this.articles[0];
         container.style.display = 'grid';
-        container.onclick = () => window.location.href = `/article?slug=${article.slug}`;
+        container.onclick = () => window.location.href = `/article?slug=${encodeURIComponent(article.slug)}`;
         container.innerHTML = `
             <div class="featured-visual">
                 <span class="featured-number">01</span>
             </div>
             <div class="featured-info">
                 <div class="featured-tag">精选</div>
-                <h3 class="featured-title">${article.title}</h3>
-                <p class="featured-excerpt">${article.excerpt || ''}</p>
+                <h3 class="featured-title">${escapeHtml(article.title)}</h3>
+                <p class="featured-excerpt">${escapeHtml(article.excerpt || '')}</p>
                 <div class="featured-meta">
                     <span class="featured-date">${formatDate(article.publishedAt || article.createdAt)}</span>
                     <span class="featured-read">${article.readTime || 5} 分钟阅读</span>
@@ -120,13 +123,13 @@ class BlogApp {
         const previewArticles = this.articles.slice(1, 7);
 
         grid.innerHTML = previewArticles.map((article) => `
-            <article class="article-card" onclick="window.location.href='/article?slug=${article.slug}'">
+            <article class="article-card" data-slug="${escapeHtml(article.slug)}">
                 <div class="card-header">
-                    <span class="card-category">${article.category}</span>
+                    <span class="card-category">${escapeHtml(article.category)}</span>
                     <span class="card-date">${formatDate(article.publishedAt || article.createdAt)}</span>
                 </div>
-                <h3 class="card-title">${article.title}</h3>
-                <p class="card-excerpt">${article.excerpt || ''}</p>
+                <h3 class="card-title">${escapeHtml(article.title)}</h3>
+                <p class="card-excerpt">${escapeHtml(article.excerpt || '')}</p>
                 <div class="card-footer">
                     <div class="card-meta">
                         <span class="card-tag">${article.readTime || 5} 分钟阅读</span>
@@ -140,13 +143,19 @@ class BlogApp {
             </article>
         `).join('');
 
+        grid.querySelectorAll('.article-card').forEach(card => {
+            card.addEventListener('click', () => {
+                window.location.href = `/article?slug=${encodeURIComponent(card.dataset.slug)}`;
+            });
+        });
+
         this.initIntersectionObserver();
     }
 
     updateStats() {
         const statEl = document.getElementById('statArticles');
         if (statEl) {
-            statEl.textContent = this.articles.length;
+            statEl.textContent = this.total;
         }
     }
 }

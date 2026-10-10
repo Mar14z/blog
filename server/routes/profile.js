@@ -2,19 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Profile = require('../models/Profile');
 const { protect, adminOnly } = require('../middleware/auth');
-const { body, validationResult } = require('express-validator');
-
-const handleValidationErrors = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      code: 400,
-      message: '数据验证失败',
-      errors: errors.array().map(err => err.msg)
-    });
-  }
-  next();
-};
+const { body } = require('express-validator');
+const { handleValidationErrors } = require('../middleware/validate');
 
 // 公开：读取当前 Profile（单例）
 router.get('/', async (req, res, next) => {

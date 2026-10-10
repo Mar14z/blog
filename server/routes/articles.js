@@ -2,20 +2,37 @@ const express = require('express');
 const router = express.Router();
 const Article = require('../models/Article');
 const { protect, adminOnly, optionalAuth } = require('../middleware/auth');
-const { body, param, query, validationResult } = require('express-validator');
+const { body, param, query } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
+const { handleValidationErrors } = require('../middleware/validate');
 
-const handleValidationErrors = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      code: 400,
-      message: '数据验证失败',
-      errors: errors.array().map(err => err.msg)
-    });
+// 正文统一清洗规则（POST / PUT 共用）
+const CONTENT_SANITIZE_OPTIONS = {
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td']),
+  allowedAttributes: {
+    ...sanitizeHtml.defaults.allowedAttributes,
+    img: ['src', 'alt', 'title', 'width', 'height'],
+    code: ['class'],
+    pre: ['class'],
+    span: ['class']
   }
-  next();
 };
+
+// 转义用户输入里的正则元字符，避免搜索被当成任意正则
+const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// slug 只保留小写字母/数字/连字符
+const cleanSlug = (value) => String(value || '')
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/-+/g, '-')
+  .replace(/^-|-$/g, '');
+
+// 清洗后为空（如纯中文标题）时回退为时间戳
+const normalizeSlug = (slug, title) => cleanSlug(slug) || cleanSlug(title) || `post-${Date.now()}`;
+
+// 后台允许更新的字段白名单
+const UPDATABLE_FIELDS = ['title', 'slug', 'excerpt', 'content', 'category', 'tags', 'coverImage', 'readTime', 'published', 'featured'];
 
 router.get('/',
   [
@@ -54,10 +71,11 @@ router.get('/',
       }
 
       if (req.query.search) {
+        const keyword = escapeRegex(req.query.search);
         filter.$or = [
-          { title: { $regex: req.query.search, $options: 'i' } },
-          { excerpt: { $regex: req.query.search, $options: 'i' } },
-          { content: { $regex: req.query.search, $options: 'i' } }
+          { title: { $regex: keyword, $options: 'i' } },
+          { excerpt: { $regex: keyword, $options: 'i' } },
+          { content: { $regex: keyword, $options: 'i' } }
         ];
       }
 
@@ -151,8 +169,9 @@ router.get('/:slug', async (req, res, next) => {
       });
     }
 
-    article.viewCount += 1;
-    await article.save();
+    // 用 $inc 原子自增，避免并发浏览时计数互相覆盖
+    await Article.updateOne({ _id: article._id }, { $inc: { viewCount: 1 } });
+    article.viewCount = (article.viewCount || 0) + 1;
 
     const [prevArticle, nextArticle] = await Promise.all([
       Article.findOne({ 
@@ -202,7 +221,7 @@ router.get('/:slug/related', async (req, res) => {
 
         res.json({ code: 200, data: related });
     } catch (error) {
-        res.status(500).json({ code: 500, message: '服务器错误' });
+        next(error);
     }
 });
 
@@ -225,34 +244,13 @@ router.post('/',
   async (req, res, next) => {
     try {
       if (req.body.content) {
-        req.body.content = sanitizeHtml(req.body.content, {
-          allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td']),
-          allowedAttributes: {
-            ...sanitizeHtml.defaults.allowedAttributes,
-            img: ['src', 'alt', 'title', 'width', 'height'],
-            code: ['class'],
-            pre: ['class'],
-            span: ['class']
-          }
-        });
+        req.body.content = sanitizeHtml(req.body.content, CONTENT_SANITIZE_OPTIONS);
       }
 
-      let slug = req.body.slug;
-      if (!slug && req.body.title) {
-        slug = req.body.title
-          .toLowerCase()
-          .replace(/[^a-z0-9]/g, '-')
-          .replace(/-+/g, '-')
-          .replace(/^-|-$/g, '');
-        // 中文等非 ASCII 标题无法生成合法 slug 时，回退为 post-时间戳
-        if (!slug) {
-          slug = `post-${Date.now()}`;
-        }
-      }
-
+      // 前端可能传入中文等非法 slug，这里统一清洗并兜底
       const articleData = {
         ...req.body,
-        slug: slug,
+        slug: normalizeSlug(req.body.slug, req.body.title),
         author: req.user._id
       };
 
@@ -284,23 +282,10 @@ router.put('/:id',
   async (req, res, next) => {
     try {
       if (req.body.content) {
-        req.body.content = sanitizeHtml(req.body.content, {
-          allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td']),
-          allowedAttributes: {
-            ...sanitizeHtml.defaults.allowedAttributes,
-            img: ['src', 'alt', 'title', 'width', 'height'],
-            code: ['class'],
-            pre: ['class'],
-            span: ['class']
-          }
-        });
+        req.body.content = sanitizeHtml(req.body.content, CONTENT_SANITIZE_OPTIONS);
       }
 
-      const article = await Article.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true, runValidators: true }
-      );
+      const article = await Article.findById(req.params.id);
 
       if (!article) {
         return res.status(404).json({
@@ -308,6 +293,20 @@ router.put('/:id',
           message: '文章不存在'
         });
       }
+
+      // 白名单更新，避免越权修改 viewCount / obsidianPath 等字段
+      UPDATABLE_FIELDS.forEach(field => {
+        if (req.body[field] === undefined) return;
+        if (field === 'slug') {
+          const cleaned = cleanSlug(req.body.slug);
+          if (cleaned) article.slug = cleaned;
+          return;
+        }
+        article[field] = req.body[field];
+      });
+
+      // 用 save() 触发 pre('save') 钩子维护 publishedAt
+      await article.save();
 
       res.json({
         code: 200,
@@ -362,6 +361,16 @@ router.get('/admin/all',
       if (req.query.category) {
         filter.category = req.query.category;
       }
+      if (req.query.tag) {
+        filter.tags = req.query.tag;
+      }
+      if (req.query.search) {
+        const keyword = escapeRegex(req.query.search);
+        filter.$or = [
+          { title: { $regex: keyword, $options: 'i' } },
+          { excerpt: { $regex: keyword, $options: 'i' } }
+        ];
+      }
 
       const [articles, total] = await Promise.all([
         Article.find(filter)
@@ -372,18 +381,42 @@ router.get('/admin/all',
         Article.countDocuments(filter)
       ]);
 
-      res.json({
-        code: 200,
-        data: {
-          articles,
-          pagination: {
-            page,
-            limit,
-            total,
-            totalPages: Math.ceil(total / limit)
-          }
+      const data = {
+        articles,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit)
         }
-      });
+      };
+
+      // 仪表盘 / 分类标签页需要全量统计，按需计算避免列表请求额外开销
+      if (req.query.stats === '1') {
+        const [publishedCount, draftCount, viewAgg, categories, tagAgg] = await Promise.all([
+          Article.countDocuments({ published: true }),
+          Article.countDocuments({ published: false }),
+          Article.aggregate([{ $group: { _id: null, views: { $sum: '$viewCount' } } }]),
+          Article.distinct('category'),
+          Article.aggregate([
+            { $unwind: '$tags' },
+            { $group: { _id: '$tags', count: { $sum: 1 } } },
+            { $sort: { count: -1 } }
+          ])
+        ]);
+        data.stats = {
+          total: publishedCount + draftCount,
+          published: publishedCount,
+          drafts: draftCount,
+          views: viewAgg[0] ? viewAgg[0].views : 0
+        };
+        data.categories = categories;
+        data.tags = tagAgg.map(t => ({ name: t._id, count: t.count }));
+        // 让后台下拉使用与模型一致的可选分类，避免提交被枚举校验拒绝
+        data.categoryOptions = Article.schema.path('category').enumValues;
+      }
+
+      res.json({ code: 200, data });
     } catch (error) {
       next(error);
     }

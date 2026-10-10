@@ -47,11 +47,23 @@ function formatDateFull(dateStr) {
     });
 }
 
+// 只保留小写字母/数字/连字符，与后端 slug 规则保持一致
 function toSlug(str) {
-    return str.toLowerCase()
-        .replace(/[^a-z0-9\u4e00-\u9fa5]/g, '-')
+    return String(str || '').toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
         .replace(/-+/g, '-')
         .replace(/^-|-$/g, '');
+}
+
+// 转义后再拼 innerHTML，避免内容里的 HTML 被执行
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
 
 function isValidUrl(string) {

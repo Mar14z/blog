@@ -11,6 +11,7 @@ class AdminApp {
     }
 
     init() {
+        this.categoryOptions = [];
         this.checkAuth();
         this.bindEvents();
     }
@@ -44,11 +45,6 @@ class AdminApp {
         bind('batchPublish', 'click', () => this.batchPublish());
         bind('batchUnpublish', 'click', () => this.batchUnpublish());
         bind('batchDelete', 'click', () => this.batchDelete());
-        bind('addCategoryBtn', 'click', () => this.openTaxonomyModal('category'));
-        bind('addTagBtn', 'click', () => this.openTaxonomyModal('tag'));
-        bind('closeTaxonomyModal', 'click', () => this.closeTaxonomyModal());
-        bind('cancelTaxonomyBtn', 'click', () => this.closeTaxonomyModal());
-        bind('taxonomyForm', 'submit', (e) => this.handleTaxonomySubmit(e));
         bind('togglePreview', 'click', () => this.togglePreview());
         bind('articleContent', 'input', () => this.updatePreview());
         bind('settingsForm', 'submit', (e) => this.handleSettingsSubmit(e));
@@ -61,17 +57,26 @@ class AdminApp {
 
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
-            searchInput.addEventListener('input', debounce(() => this.loadArticles(), 300));
+            searchInput.addEventListener('input', debounce(() => {
+                currentPage = 1;
+                this.loadArticles();
+            }, 300));
         }
 
+        // 切换筛选条件时回到第一页
+        const resetAndLoad = () => {
+            currentPage = 1;
+            this.loadArticles();
+        };
+
         const filterStatus = document.getElementById('filterStatus');
-        if (filterStatus) filterStatus.addEventListener('change', () => this.loadArticles());
+        if (filterStatus) filterStatus.addEventListener('change', resetAndLoad);
 
         const filterCategory = document.getElementById('filterCategory');
-        if (filterCategory) filterCategory.addEventListener('change', () => this.loadArticles());
+        if (filterCategory) filterCategory.addEventListener('change', resetAndLoad);
 
         const filterTag = document.getElementById('filterTag');
-        if (filterTag) filterTag.addEventListener('change', () => this.loadArticles());
+        if (filterTag) filterTag.addEventListener('change', resetAndLoad);
 
         const tagInput = document.getElementById('tagInput');
         if (tagInput) {
@@ -84,7 +89,6 @@ class AdminApp {
         }
 
         document.querySelector('#articleModal .modal-overlay')?.addEventListener('click', () => this.closeModal());
-        document.querySelector('#taxonomyModal .modal-overlay')?.addEventListener('click', () => this.closeTaxonomyModal());
 
         document.querySelectorAll('.nav-item').forEach(item => {
             if (item.dataset.page) {
@@ -195,37 +199,27 @@ class AdminApp {
 
     async loadDashboardData() {
         try {
-            const response = await fetch(`${API_BASE}/articles/admin/all`, {
+            const response = await fetch(`${API_BASE}/articles/admin/all?stats=1&limit=200`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
             const data = await response.json();
 
             if (data.code === 200) {
-                const articles = data.data.articles;
-                const total = articles.length;
-                const published = articles.filter(a => a.published).length;
-                const drafts = articles.filter(a => !a.published).length;
+                const { articles, stats, categories: allCategories = [], tags: allTags = [], categoryOptions = [] } = data.data;
 
-                this.animateNumber('totalArticles', total);
-                this.animateNumber('publishedArticles', published);
-                this.animateNumber('draftArticles', drafts);
-                this.animateNumber('totalViews', Math.floor(Math.random() * 1000));
+                this.categoryOptions = categoryOptions;
+
+                this.animateNumber('totalArticles', stats.total);
+                this.animateNumber('publishedArticles', stats.published);
+                this.animateNumber('draftArticles', stats.drafts);
+                this.animateNumber('totalViews', stats.views);
 
                 this.renderCategoryChart(articles);
                 this.renderRecentArticles(articles);
-                this.renderTagCloud(articles);
+                this.renderTagCloud(allTags);
 
-                const uniqueCategories = [...new Set(articles.map(a => a.category))];
-                document.getElementById('categoryCount').textContent = `${uniqueCategories.length} 个分类`;
-
-                const allTags = articles.flatMap(a => a.tags || []);
-                const uniqueTags = [...new Set(allTags)];
-                if (uniqueTags.length > 0) {
-                    document.getElementById('tagCloud').innerHTML = uniqueTags.slice(0, 15).map(tag => 
-                        `<span class="cloud-tag">${tag}</span>`
-                    ).join('');
-                }
+                document.getElementById('categoryCount').textContent = `${allCategories.length} 个分类`;
             }
         } catch (error) {
             console.error('加载仪表盘数据失败:', error);
@@ -250,7 +244,7 @@ class AdminApp {
 
         container.innerHTML = sorted.map(([cat, count]) => `
             <div class="chart-item">
-                <div class="chart-label">${cat}</div>
+                <div class="chart-label">${escapeHtml(cat)}</div>
                 <div class="chart-bar">
                     <div class="chart-fill" style="width: ${(count / max) * 100}%"></div>
                 </div>
@@ -270,34 +264,32 @@ class AdminApp {
         }
 
         container.innerHTML = recent.map(a => `
-            <div class="recent-item" onclick="adminApp.gotoArticle('${a._id}')">
-                <span class="recent-title">${a.title}</span>
+            <div class="recent-item" data-id="${a._id}">
+                <span class="recent-title">${escapeHtml(a.title)}</span>
                 <span class="recent-date">${formatDate(a.createdAt)}</span>
             </div>
         `).join('');
+
+        container.querySelectorAll('.recent-item').forEach(el => {
+            el.addEventListener('click', () => this.gotoArticle(el.dataset.id));
+        });
     }
 
-    renderTagCloud(articles) {
+    renderTagCloud(tagList = []) {
         const container = document.getElementById('tagCloud');
-        const tagCount = {};
+        if (!container) return;
 
-        articles.forEach(a => {
-            (a.tags || []).forEach(tag => {
-                tagCount[tag] = (tagCount[tag] || 0) + 1;
-            });
-        });
-
-        const sorted = Object.entries(tagCount).sort((a, b) => b[1] - a[1]);
-        const max = sorted[0]?.[1] || 1;
+        const sorted = [...tagList].sort((a, b) => b.count - a.count);
+        const max = sorted[0]?.count || 1;
 
         if (sorted.length === 0) {
             container.innerHTML = '<p class="empty-hint">暂无标签</p>';
             return;
         }
 
-        container.innerHTML = sorted.slice(0, 15).map(([tag, count]) => {
+        container.innerHTML = sorted.slice(0, 15).map(({ name, count }) => {
             const size = 12 + (count / max) * 8;
-            return `<span class="cloud-tag" style="font-size: ${size}px">${tag}</span>`;
+            return `<span class="cloud-tag" style="font-size: ${size}px">${escapeHtml(name)}</span>`;
         }).join('');
     }
 
@@ -379,15 +371,17 @@ class AdminApp {
 
     async loadTaxonomy() {
         try {
-            const response = await fetch(`${API_BASE}/articles/admin/all`, {
+            const response = await fetch(`${API_BASE}/articles/admin/all?stats=1&limit=1`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
             const data = await response.json();
 
             if (data.code === 200) {
-                categories = [...new Set(data.data.articles.map(a => a.category))];
-                tags = [...new Set(data.data.articles.flatMap(a => a.tags || []))];
+                const { categories: allCategories = [], tags: allTags = [], categoryOptions = [] } = data.data;
+                categories = allCategories;
+                tags = allTags.map(t => t.name);
+                if (categoryOptions.length > 0) this.categoryOptions = categoryOptions;
 
                 this.updateCategoryOptions();
                 this.updateTagOptions();
@@ -400,17 +394,21 @@ class AdminApp {
     }
 
     updateCategoryOptions() {
-        const selects = [
-            document.getElementById('articleCategory'),
-            document.getElementById('filterCategory')
-        ];
+        // 文章编辑用后端允许的分类全集；筛选框只列已经用过的分类
+        const articleSelect = document.getElementById('articleCategory');
+        if (articleSelect) {
+            const current = articleSelect.value;
+            const options = this.categoryOptions.length > 0 ? this.categoryOptions : categories;
+            articleSelect.innerHTML = '<option value="">选择分类</option>' +
+                options.map(c => `<option value="${escapeHtml(c)}" ${c === current ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('');
+        }
 
-        selects.forEach(select => {
-            if (!select) return;
-            const current = select.value;
-            select.innerHTML = `<option value="">${select.id === 'articleCategory' ? '选择分类' : '全部分类'}</option>` +
-                categories.map(c => `<option value="${c}" ${c === current ? 'selected' : ''}>${c}</option>`).join('');
-        });
+        const filterSelect = document.getElementById('filterCategory');
+        if (filterSelect) {
+            const current = filterSelect.value;
+            filterSelect.innerHTML = '<option value="">全部分类</option>' +
+                categories.map(c => `<option value="${escapeHtml(c)}" ${c === current ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('');
+        }
     }
 
     updateTagOptions() {
@@ -419,7 +417,7 @@ class AdminApp {
 
         const current = select.value;
         select.innerHTML = '<option value="">全部标签</option>' +
-            tags.map(t => `<option value="${t}" ${t === current ? 'selected' : ''}>${t}</option>`).join('');
+            tags.map(t => `<option value="${escapeHtml(t)}" ${t === current ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('');
     }
 
     renderCategories() {
@@ -427,22 +425,15 @@ class AdminApp {
         if (!container) return;
 
         if (categories.length === 0) {
-            container.innerHTML = '<p class="empty-hint">暂无分类，点击新增添加</p>';
+            container.innerHTML = '<p class="empty-hint">暂无分类，发表文章时填写分类后会自动出现</p>';
             return;
         }
 
+        // 分类由文章汇总而来，此处只读展示
         container.innerHTML = categories.map(cat => `
             <div class="taxonomy-item">
                 <div class="taxonomy-info">
-                    <span class="taxonomy-name">${cat}</span>
-                </div>
-                <div class="taxonomy-actions">
-                    <button class="btn-icon" onclick="adminApp.editTaxonomy('category', '${cat}')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                    </button>
-                    <button class="btn-icon danger" onclick="adminApp.deleteTaxonomy('category', '${cat}')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                    </button>
+                    <span class="taxonomy-name">${escapeHtml(cat)}</span>
                 </div>
             </div>
         `).join('');
@@ -453,92 +444,27 @@ class AdminApp {
         if (!container) return;
 
         if (tags.length === 0) {
-            container.innerHTML = '<p class="empty-hint">暂无标签，点击新增添加</p>';
+            container.innerHTML = '<p class="empty-hint">暂无标签，文章添加标签后会自动出现</p>';
             return;
         }
 
+        // 标签由文章汇总而来，此处只读展示
         container.innerHTML = tags.map(tag => `
-            <span class="tag-item">
-                <span>${tag}</span>
-                <button onclick="adminApp.deleteTaxonomy('tag', '${tag}')">&times;</button>
-            </span>
+            <span class="tag-item"><span>${escapeHtml(tag)}</span></span>
         `).join('');
-    }
-
-    openTaxonomyModal(type, name = null) {
-        const modal = document.getElementById('taxonomyModal');
-        document.getElementById('taxonomyType').value = type;
-        document.getElementById('taxonomyModalTitle').textContent = name ? `编辑${type === 'category' ? '分类' : '标签'}` : `新增${type === 'category' ? '分类' : '标签'}`;
-        document.getElementById('taxonomyName').value = name || '';
-        document.getElementById('taxonomyId').value = name || '';
-        document.getElementById('taxonomySlug').value = name ? toSlug(name) : '';
-        document.getElementById('taxonomyDesc').value = '';
-        modal.classList.add('active');
-    }
-
-    closeTaxonomyModal() {
-        document.getElementById('taxonomyModal').classList.remove('active');
-    }
-
-    editTaxonomy(type, name) {
-        this.openTaxonomyModal(type, name);
-    }
-
-    async deleteTaxonomy(type, name) {
-        if (!confirm(`确定要删除${type === 'category' ? '分类' : '标签'} "${name}" 吗？`)) return;
-
-        if (type === 'category') {
-            categories = categories.filter(c => c !== name);
-        } else {
-            tags = tags.filter(t => t !== name);
-        }
-
-        this.updateCategoryOptions();
-        this.updateTagOptions();
-        this.renderCategories();
-        this.renderTags();
-        showToast('删除成功', 'success');
-    }
-
-    async handleTaxonomySubmit(e) {
-        e.preventDefault();
-
-        const type = document.getElementById('taxonomyType').value;
-        const name = document.getElementById('taxonomyName').value.trim();
-
-        if (!name) {
-            showToast('请输入名称', 'error');
-            return;
-        }
-
-        if (type === 'category') {
-            if (!categories.includes(name)) {
-                categories.push(name);
-            }
-        } else {
-            if (!tags.includes(name)) {
-                tags.push(name);
-            }
-        }
-
-        this.updateCategoryOptions();
-        this.updateTagOptions();
-        this.renderCategories();
-        this.renderTags();
-        this.closeTaxonomyModal();
-        showToast('保存成功', 'success');
     }
 
     async loadArticles() {
         const statusFilter = document.getElementById('filterStatus').value;
         const categoryFilter = document.getElementById('filterCategory').value;
         const tagFilter = document.getElementById('filterTag').value;
-        const searchQuery = document.getElementById('searchInput')?.value || '';
+        const searchQuery = document.getElementById('searchInput')?.value.trim() || '';
 
         let url = `${API_BASE}/articles/admin/all?page=${currentPage}`;
         if (statusFilter) url += `&published=${statusFilter}`;
         if (categoryFilter) url += `&category=${encodeURIComponent(categoryFilter)}`;
         if (tagFilter) url += `&tag=${encodeURIComponent(tagFilter)}`;
+        if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
 
         try {
             const response = await fetch(url, {
@@ -548,18 +474,8 @@ class AdminApp {
             const data = await response.json();
 
             if (data.code === 200) {
-                let articles = data.data.articles;
-
-                if (searchQuery) {
-                    const query = searchQuery.toLowerCase();
-                    articles = articles.filter(a =>
-                        a.title.toLowerCase().includes(query) ||
-                        a.excerpt.toLowerCase().includes(query)
-                    );
-                }
-
-                document.getElementById('articlesCount').textContent = articles.length;
-                this.renderArticles(articles);
+                document.getElementById('articlesCount').textContent = data.data.pagination.total;
+                this.renderArticles(data.data.articles);
             }
         } catch (error) {
             console.error('加载文章失败:', error);
@@ -577,15 +493,15 @@ class AdminApp {
         container.innerHTML = articles.map(article => `
             <div class="table-row" data-id="${article._id}">
                 <div class="table-cell checkbox">
-                    <input type="checkbox" ${selectedArticles.has(article._id) ? 'checked' : ''} onchange="adminApp.toggleSelect('${article._id}')">
+                    <input type="checkbox" data-action="select" ${selectedArticles.has(article._id) ? 'checked' : ''}>
                 </div>
                 <div class="table-cell title">
-                    <span class="article-title">${article.title}</span>
-                    <span class="article-slug">/${article.slug}</span>
+                    <span class="article-title">${escapeHtml(article.title)}</span>
+                    <span class="article-slug">/${escapeHtml(article.slug)}</span>
                 </div>
-                <div class="table-cell category">${article.category}</div>
+                <div class="table-cell category">${escapeHtml(article.category)}</div>
                 <div class="table-cell tags">
-                    ${(article.tags || []).slice(0, 2).map(t => `<span class="tag">${t}</span>`).join('')}
+                    ${(article.tags || []).slice(0, 2).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}
                     ${(article.tags || []).length > 2 ? `<span class="tag-more">+${article.tags.length - 2}</span>` : ''}
                 </div>
                 <div class="table-cell status">
@@ -596,15 +512,22 @@ class AdminApp {
                 </div>
                 <div class="table-cell date">${formatDate(article.createdAt)}</div>
                 <div class="table-cell actions">
-                    <button class="btn-icon" onclick="adminApp.editArticle('${article._id}')" title="编辑">
+                    <button class="btn-icon" data-action="edit" title="编辑">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
-                    <button class="btn-icon danger" onclick="adminApp.deleteArticle('${article._id}')" title="删除">
+                    <button class="btn-icon danger" data-action="delete" title="删除">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     </button>
                 </div>
             </div>
         `).join('');
+
+        container.querySelectorAll('.table-row').forEach(row => {
+            const id = row.dataset.id;
+            row.querySelector('[data-action="select"]').addEventListener('change', () => this.toggleSelect(id));
+            row.querySelector('[data-action="edit"]').addEventListener('click', () => this.editArticle(id));
+            row.querySelector('[data-action="delete"]').addEventListener('click', () => this.deleteArticle(id));
+        });
     }
 
     toggleSelectAll(e) {
@@ -739,6 +662,18 @@ class AdminApp {
         } else {
             title.textContent = '新建文章';
             this.setStatus('draft');
+
+            // 恢复上次自动保存、尚未提交的草稿
+            const savedDraft = localStorage.getItem('draft');
+            if (savedDraft) {
+                try {
+                    const draft = JSON.parse(savedDraft);
+                    document.getElementById('articleTitle').value = draft.title || '';
+                    document.getElementById('articleContent').value = draft.content || '';
+                    currentTags = Array.isArray(draft.tags) ? draft.tags : [];
+                    this.renderSelectedTags();
+                } catch (_) { /* 草稿损坏则忽略 */ }
+            }
         }
 
         modal.classList.add('active');
@@ -755,21 +690,24 @@ class AdminApp {
 
         container.innerHTML = currentTags.map(tag => `
             <span class="selected-tag">
-                ${tag}
-                <button type="button" onclick="adminApp.removeTag('${tag}')">&times;</button>
+                ${escapeHtml(tag)}
+                <button type="button" data-action="remove" data-name="${escapeHtml(tag)}">&times;</button>
             </span>
         `).join('');
+
+        container.querySelectorAll('[data-action="remove"]').forEach(btn => {
+            btn.addEventListener('click', () => this.removeTag(btn.dataset.name));
+        });
 
         const suggestions = document.getElementById('tagsSuggestions');
         if (suggestions && currentTags.length < tags.length) {
             const available = tags.filter(t => !currentTags.includes(t));
-            if (available.length > 0) {
-                suggestions.innerHTML = available.slice(0, 5).map(t => `
-                    <button type="button" class="suggestion" onclick="adminApp.addExistingTag('${t}')">${t}</button>
-                `).join('');
-            } else {
-                suggestions.innerHTML = '';
-            }
+            suggestions.innerHTML = available.slice(0, 5).map(t => `
+                <button type="button" class="suggestion" data-name="${escapeHtml(t)}">${escapeHtml(t)}</button>
+            `).join('');
+            suggestions.querySelectorAll('.suggestion').forEach(btn => {
+                btn.addEventListener('click', () => this.addExistingTag(btn.dataset.name));
+            });
         }
     }
 
