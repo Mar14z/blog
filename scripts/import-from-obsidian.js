@@ -72,9 +72,22 @@ function slugify(filename) {
     return `post-${hash}`;
 }
 
+// 首屏指标，frontmatter 写法：
+//   metrics:
+//     - --fast 耗时 | 8.4s | 1.07s
+//     - 差分测试 | 3 个旧 bug
+function parseMetrics(list) {
+    if (!Array.isArray(list)) return [];
+    return list.map(item => {
+        const parts = String(item).split('|').map(s => s.trim()).filter(Boolean);
+        if (parts.length >= 3) return { label: parts[0], from: parts[1], to: parts[2] };
+        if (parts.length === 2) return { label: parts[0], to: parts[1] };
+        return { label: parts[0] || '' };
+    }).filter(m => m.label);
+}
+
 // 解析 01 - Blog 下的所有 md，返回文章对象数组（不写库）
-async function parseArticles() {
-    await fs.access(OBSIDIAN_BLOG_PATH);
+async function parseArticles() {    await fs.access(OBSIDIAN_BLOG_PATH);
 
     const files = (await fs.readdir(OBSIDIAN_BLOG_PATH)).filter(f => f.endsWith('.md'));
     const articles = [];
@@ -96,6 +109,7 @@ async function parseArticles() {
             title: metadata.title || file.replace(/\.md$/i, ''),
             category,
             tags: Array.isArray(metadata.tags) ? metadata.tags : [],
+            metrics: parseMetrics(metadata.metrics),
             content: body,
             excerpt,
             published: metadata.published !== 'false',
@@ -151,6 +165,7 @@ async function importFromObsidian() {
                 content: item.content,
                 category: item.category,
                 tags: item.tags,
+                metrics: item.metrics,
                 published: item.published,
                 readTime: item.readTime,
                 fromObsidian: true,

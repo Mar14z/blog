@@ -76,6 +76,7 @@ class BlogApp {
                 this.articles = data.data.articles || data.data;
                 // 统计总数用分页总量，而不是本次拉取的条数
                 this.total = data.data.pagination?.total ?? this.articles.length;
+                this.renderHero();
                 this.renderFeatured();
                 this.renderArticles();
                 this.updateStats();
@@ -87,11 +88,57 @@ class BlogApp {
         }
     }
 
+    // 首屏用最新一篇当门面：标题取冒号前主句，冒号后降为副标题
+    renderHero() {
+        const article = this.articles[0];
+        if (!article) return;
+
+        const [main, ...rest] = String(article.title || '').split('：');
+        const sub = rest.join('：').trim();
+        const titleEl = document.getElementById('heroTitle');
+        if (titleEl) {
+            titleEl.innerHTML = escapeHtml(main) +
+                (sub ? `<span class="hero-sub">${escapeHtml(sub)}</span>` : '');
+        }
+
+        const dateEl = document.getElementById('heroDate');
+        if (dateEl) dateEl.textContent = formatDate(article.publishedAt || article.createdAt);
+
+        const metaEl = document.getElementById('heroMeta');
+        if (metaEl) metaEl.textContent = `${article.category} · ${article.readTime || 5} min`;
+
+        const summaryEl = document.getElementById('heroSummary');
+        if (summaryEl) summaryEl.textContent = article.excerpt || '';
+
+        const readEl = document.getElementById('heroRead');
+        if (readEl) readEl.href = `/article?slug=${encodeURIComponent(article.slug)}`;
+
+        const moreEl = document.getElementById('heroMore');
+        if (moreEl) moreEl.textContent = `全部 ${this.total} 篇文章`;
+
+        const metricsEl = document.getElementById('heroMetrics');
+        if (metricsEl && Array.isArray(article.metrics) && article.metrics.length > 0) {
+            metricsEl.innerHTML = article.metrics.map(m => `
+                <div class="hero-metric">
+                    <div class="metric-label">${escapeHtml(m.label || '')}</div>
+                    <div class="metric-value">${m.from ? `<span class="metric-from">${escapeHtml(m.from)}</span><span class="metric-arrow">▸</span>` : ''}${escapeHtml(m.to || '')}</div>
+                </div>
+            `).join('');
+            metricsEl.hidden = false;
+        }
+    }
+
     renderFeatured() {
         const container = document.getElementById('featuredArticle');
-        if (!container || this.articles.length === 0) return;
+        if (!container) return;
 
-        const article = this.articles[0];
+        // 首屏已占用最新一篇，这里顺延到第二篇，避免同一篇文章出现两次
+        const article = this.articles[1];
+        if (!article) {
+            container.style.display = 'none';
+            return;
+        }
+
         container.style.display = 'grid';
         container.onclick = () => window.location.href = `/article?slug=${encodeURIComponent(article.slug)}`;
         container.innerHTML = `
@@ -99,7 +146,7 @@ class BlogApp {
                 <span class="featured-number">01</span>
             </div>
             <div class="featured-info">
-                <div class="featured-tag">精选</div>
+                <div class="featured-tag">近期</div>
                 <h3 class="featured-title">${escapeHtml(article.title)}</h3>
                 <p class="featured-excerpt">${escapeHtml(article.excerpt || '')}</p>
                 <div class="featured-meta">
@@ -115,12 +162,12 @@ class BlogApp {
         const grid = document.getElementById('articlesGrid');
         if (!grid) return;
 
-        if (this.articles.length <= 1) {
+        if (this.articles.length <= 2) {
             grid.innerHTML = '';
             return;
         }
 
-        const previewArticles = this.articles.slice(1, 7);
+        const previewArticles = this.articles.slice(2, 8);
 
         grid.innerHTML = previewArticles.map((article) => `
             <article class="article-card" data-slug="${escapeHtml(article.slug)}">
