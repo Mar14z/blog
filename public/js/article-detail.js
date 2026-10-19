@@ -222,9 +222,30 @@ class ArticleDetail {
                     const items = para.split('\n').map(l => `<li>${this.inline(l.replace(/^\d+\.\s+/, ''))}</li>`).join('');
                     return `<ol>${items}</ol>`;
                 }
+                if (this.isTable(para)) return this.table(para);
+
                 return `<p>${this.inline(para)}</p>`;
             })
             .join('');
+    }
+
+    isTable(block) {
+        const lines = block.split('\n');
+        return lines.length >= 2
+            && lines[0].trim().startsWith('|')
+            && lines[1].trim().includes('-')
+            && /^[\s|:-]+$/.test(lines[1].trim());
+    }
+
+    // 表格列数以表头为准，多余单元格丢弃、缺失补空，避免列错位撑宽
+    table(block) {
+        const splitRow = (row) => row.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
+        const lines = block.split('\n');
+        const head = splitRow(lines[0]);
+        const rows = lines.slice(2).map(splitRow);
+        const headHtml = `<thead><tr>${head.map(c => `<th>${this.inline(c)}</th>`).join('')}</tr></thead>`;
+        const bodyHtml = `<tbody>${rows.map(r => `<tr>${head.map((_, i) => `<td>${this.inline(r[i] || '')}</td>`).join('')}</tr>`).join('')}</tbody>`;
+        return `<div class="table-scroll"><table>${headHtml}${bodyHtml}</table></div>`;
     }
 
     // 行内 Markdown：先转义 HTML，再套用行内样式

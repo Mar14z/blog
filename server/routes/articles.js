@@ -84,7 +84,9 @@ router.get('/',
           .sort(sortObj)
           .skip(skip)
           .limit(limit)
-          .select('-__v'),
+          // 列表页只需要摘要，正文由 /:slug 详情接口单独取；
+          // content 是响应体的主要体积，obsidianPath 是服务器路径不必外泄
+          .select('-__v -content -obsidianPath'),
         Article.countDocuments(filter)
       ]);
 
