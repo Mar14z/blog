@@ -38,14 +38,15 @@
     <main class="page-content">
         <header class="page-header">
             <h1 class="page-title">作品集</h1>
-            <p class="page-subtitle">精选项目作品</p>
+            <p class="page-subtitle">在做的项目与当前进展</p>
         </header>
 
         <div class="portfolio-filters">
             <button class="filter-btn active" data-filter="all">全部</button>
-            <button class="filter-btn" data-filter="web">网站</button>
-            <button class="filter-btn" data-filter="app">应用</button>
-            <button class="filter-btn" data-filter="design">设计</button>
+            <button class="filter-btn" data-filter="web">Web</button>
+            <button class="filter-btn" data-filter="embedded">嵌入式</button>
+            <button class="filter-btn" data-filter="tool">工具</button>
+            <button class="filter-btn" data-filter="lab">实验</button>
         </div>
 
         <div class="portfolio-grid" id="portfolioGrid">
@@ -55,194 +56,160 @@
                 </div>
                 <div class="project-info">
                     <div class="project-meta">
-                        <span class="project-year">2024</span>
-                        <span class="project-type">网站</span>
+                        <span class="project-year">维护中</span>
+                        <span class="project-type">Web</span>
                     </div>
-                    <h3 class="project-title">静墨博客系统</h3>
+                    <h3 class="project-title">静墨博客</h3>
                     <p class="project-description">
-                        一个极简风格的个人博客系统，采用 Node.js + MongoDB 构建，
-                        支持 Markdown 写作和 Obsidian 双向同步。
+                        极简博客系统，Node.js + Express + MongoDB。文章从 Obsidian 笔记经 Git webhook 自动同步入库，前端原生 HTML/CSS/JS，PM2 + Nginx 部署在自己的服务器上。
                     </p>
                     <div class="project-tags">
                         <span class="project-tag">Node.js</span>
-                        <span class="project-tag">MongoDB</span>
                         <span class="project-tag">Express</span>
+                        <span class="project-tag">MongoDB</span>
+                        <span class="project-tag">Nginx</span>
                     </div>
                     <div class="project-links">
-                        <a href="https://github.com/Mar14z/blog" target="_blank" class="project-link">
+                        <a href="https://github.com/Mar14z/blog" target="_blank" rel="noopener noreferrer" class="project-link">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
                             </svg>
                             源码
                         </a>
-                        <a href="#" class="project-link">
+                        <a href="https://mar14z.xyz" target="_blank" rel="noopener noreferrer" class="project-link">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                                <polyline points="15 3 21 3 21 9"/>
-                                <line x1="10" y1="14" x2="21" y2="3"/>
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
                             </svg>
-                            演示
+                            线上
                         </a>
                     </div>
                 </div>
             </article>
 
-            <article class="project-card" data-category="web">
+            <article class="project-card" data-category="embedded">
                 <div class="project-cover">
                     <div class="project-placeholder">02</div>
                 </div>
                 <div class="project-info">
                     <div class="project-meta">
-                        <span class="project-year">2024</span>
-                        <span class="project-type">网站</span>
+                        <span class="project-year">进行中</span>
+                        <span class="project-type">具身智能</span>
                     </div>
-                    <h3 class="project-title">任务管理平台</h3>
+                    <h3 class="project-title">机械臂视觉抓取（单目空间认知）</h3>
                     <p class="project-description">
-                        团队协作任务管理工具，支持看板、甘特图、时间追踪，
-                        实时协作和进度可视化。
+                        RDK X5 + 单目 USB 相机 + PhantomX Pincher 五轴臂。把机械臂当作已知的尺子：关节角经 FK 得到 3D 关节 keypoints，与图像 2D keypoints 做 PnP 求相机位姿，再把目标像素反投影到桌面平面，得到基座系下的物体坐标。
                     </p>
                     <div class="project-tags">
-                        <span class="project-tag">React</span>
-                        <span class="project-tag">TypeScript</span>
-                        <span class="project-tag">Node.js</span>
+                        <span class="project-tag">RDK X5</span>
+                        <span class="project-tag">PnP</span>
+                        <span class="project-tag">PyBullet</span>
+                        <span class="project-tag">单目视觉</span>
                     </div>
                     <div class="project-links">
-                        <a href="#" class="project-link">
+                        <a href="/article?slug=spatial-reach-devlog-01" class="project-link">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                                <polyline points="15 3 21 3 21 9"/>
-                                <line x1="10" y1="14" x2="21" y2="3"/>
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
                             </svg>
-                            演示
+                            开发日志
                         </a>
                     </div>
                 </div>
             </article>
 
-            <article class="project-card" data-category="app">
+            <article class="project-card" data-category="embedded">
                 <div class="project-cover">
                     <div class="project-placeholder">03</div>
                 </div>
                 <div class="project-info">
                     <div class="project-meta">
-                        <span class="project-year">2023</span>
-                        <span class="project-type">应用</span>
+                        <span class="project-year">进行中</span>
+                        <span class="project-type">嵌入式 AI</span>
                     </div>
-                    <h3 class="project-title">命令行工具集</h3>
+                    <h3 class="project-title">YOLOv11 部署 RDK X5</h3>
                     <p class="project-description">
-                        一套高效的命令行工具，用于自动化日常开发流程，
-                        包括代码生成、构建优化、文档生成等。
+                        自训练 YOLOv11n（2.6M 参数）导出 ONNX 后，用 OE 天工开物做 PTQ 量化成 .bin，加载到 RDK X5 的 Bayes-e BPU 上推理。目标端到端 ≥30 FPS、mAP50 ≥0.65。
                     </p>
                     <div class="project-tags">
-                        <span class="project-tag">Node.js</span>
-                        <span class="project-tag">CLI</span>
-                        <span class="project-tag">Commander</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://github.com/Mar14z/cli-tools" target="_blank" class="project-link">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-                            </svg>
-                            源码
-                        </a>
+                        <span class="project-tag">YOLOv11</span>
+                        <span class="project-tag">ONNX</span>
+                        <span class="project-tag">BPU</span>
+                        <span class="project-tag">OE 工具链</span>
                     </div>
                 </div>
             </article>
 
-            <article class="project-card" data-category="design">
+            <article class="project-card" data-category="tool">
                 <div class="project-cover">
                     <div class="project-placeholder">04</div>
                 </div>
                 <div class="project-info">
                     <div class="project-meta">
-                        <span class="project-year">2023</span>
-                        <span class="project-type">设计</span>
+                        <span class="project-year">进行中</span>
+                        <span class="project-type">系统工具</span>
                     </div>
-                    <h3 class="project-title">设计系统组件库</h3>
+                    <h3 class="project-title">memaudit 内存对账</h3>
                     <p class="project-description">
-                        为团队创建的设计系统，包含 50+ 可复用组件，
-                        支持多主题和响应式布局。
+                        板端零依赖的 POSIX shell 采集器 + PC 端对账报告，用来排查「内存去哪了」。在一台 347 进程的 RDK X5 上把采集耗时从 8.4 s 压到 1.07 s，spawn 次数从 4666 降到 239。
                     </p>
                     <div class="project-tags">
-                        <span class="project-tag">Figma</span>
-                        <span class="project-tag">Storybook</span>
-                        <span class="project-tag">React</span>
+                        <span class="project-tag">POSIX shell</span>
+                        <span class="project-tag">busybox</span>
+                        <span class="project-tag">/proc</span>
+                        <span class="project-tag">性能优化</span>
                     </div>
                     <div class="project-links">
-                        <a href="#" class="project-link">
+                        <a href="/article?slug=spawn-is-the-bottleneck" class="project-link">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                                <polyline points="15 3 21 3 21 9"/>
-                                <line x1="10" y1="14" x2="21" y2="3"/>
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
                             </svg>
-                            预览
+                            优化过程
                         </a>
                     </div>
                 </div>
             </article>
 
-            <article class="project-card" data-category="web">
+            <article class="project-card" data-category="tool">
                 <div class="project-cover">
                     <div class="project-placeholder">05</div>
                 </div>
                 <div class="project-info">
                     <div class="project-meta">
-                        <span class="project-year">2023</span>
-                        <span class="project-type">网站</span>
+                        <span class="project-year">进行中</span>
+                        <span class="project-type">系统工具</span>
                     </div>
-                    <h3 class="project-title">数据可视化仪表盘</h3>
+                    <h3 class="project-title">SysMonitor</h3>
                     <p class="project-description">
-                        企业级数据可视化解决方案，支持多数据源接入，
-                        实时数据更新和自定义图表配置。
+                        用 C 写的 Linux 系统监控工具，用来练系统编程：自建 Makefile 增量构建，规划采集、缓存、告警与 TUI 几个模块。目前完成工程骨架。
                     </p>
                     <div class="project-tags">
-                        <span class="project-tag">Vue.js</span>
-                        <span class="project-tag">D3.js</span>
-                        <span class="project-tag">ECharts</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="#" class="project-link">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                                <polyline points="15 3 21 3 21 9"/>
-                                <line x1="10" y1="14" x2="21" y2="3"/>
-                            </svg>
-                            演示
-                        </a>
+                        <span class="project-tag">C</span>
+                        <span class="project-tag">Linux</span>
+                        <span class="project-tag">Makefile</span>
                     </div>
                 </div>
             </article>
 
-            <article class="project-card" data-category="app">
+            <article class="project-card" data-category="lab">
                 <div class="project-cover">
                     <div class="project-placeholder">06</div>
                 </div>
                 <div class="project-info">
                     <div class="project-meta">
-                        <span class="project-year">2022</span>
-                        <span class="project-type">应用</span>
+                        <span class="project-year">已完成</span>
+                        <span class="project-type">实验</span>
                     </div>
-                    <h3 class="project-title">跨平台笔记应用</h3>
+                    <h3 class="project-title">spiral-list</h3>
                     <p class="project-description">
-                        支持 Markdown 写作的双链笔记应用，
-                        类似 Roam Research 的块级引用和图谱视图。
+                        用纯 HTML + CSS 实现的 DNA 双螺旋列表布局实验。
                     </p>
                     <div class="project-tags">
-                        <span class="project-tag">Electron</span>
-                        <span class="project-tag">React</span>
-                        <span class="project-tag">SQLite</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="https://github.com/Mar14z/notes-app" target="_blank" rel="noopener noreferrer" class="project-link">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-                            </svg>
-                            源码
-                        </a>
+                        <span class="project-tag">HTML</span>
+                        <span class="project-tag">CSS</span>
                     </div>
                 </div>
             </article>
         </div>
+
     </main>
 
     <footer class="footer">
