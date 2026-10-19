@@ -37,6 +37,10 @@
             min-height: 100vh;
             padding: 100px 40px 60px;
             max-width: 800px;
+            /* body 是 flex column，flex item 默认不收缩到 min-content 以下，
+               长代码行会把整列撑宽并逼出横向滚动 */
+            width: 100%;
+            min-width: 0;
             margin: 0 auto;
         }
         
@@ -101,6 +105,7 @@
             font-size: 1.0625rem;
             line-height: 2;
             color: var(--text-secondary);
+            overflow-wrap: break-word;
         }
         
         .article-content p {
@@ -146,7 +151,9 @@
             padding: 20px;
             margin: 24px 0;
             border: 1px solid var(--border);
+            max-width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
             font-size: 0.875rem;
         }
         
@@ -163,7 +170,46 @@
             padding: 0;
             border: none;
         }
-        
+
+        /* 行内代码常是长路径（/proc/PID/smaps_rollup），不给断点会撑破列宽 */
+        .article-content :not(pre) > code {
+            overflow-wrap: anywhere;
+        }
+
+        .table-scroll {
+            margin: 32px 0;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .article-content table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9375rem;
+            line-height: 1.7;
+        }
+
+        .article-content th,
+        .article-content td {
+            padding: 12px 16px;
+            text-align: left;
+            vertical-align: top;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .article-content th {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+        }
+
+        .article-content tbody tr:last-child td {
+            border-bottom: none;
+        }
+
         .article-footer {
             margin-top: 64px;
             padding-top: 32px;
@@ -262,17 +308,50 @@
         
         @media (max-width: 640px) {
             .article-page {
-                padding: 80px 20px 48px;
+                padding: 72px 16px 40px;
             }
-            
+
+            /* 375px 屏扣掉边距只剩约 343px，17px 字一行不到 20 字，
+               降到 16px 并把行高收到 1.9，每行约 21 字更接近中文舒适区 */
+            .article-content {
+                font-size: 1rem;
+                line-height: 1.9;
+            }
+
+            .article-content h2 {
+                margin: 40px 0 16px;
+                padding-left: 12px;
+            }
+
+            .article-content pre {
+                padding: 14px;
+                font-size: 0.8125rem;
+                margin: 20px 0;
+            }
+
+            .article-content blockquote {
+                padding: 12px 16px;
+                margin: 24px 0;
+            }
+
+            .table-scroll {
+                margin: 24px 0;
+            }
+
+            .article-content th,
+            .article-content td {
+                padding: 10px 12px;
+                font-size: 0.875rem;
+            }
+
             .article-meta {
                 gap: 16px;
             }
-            
+
             .article-nav {
                 grid-template-columns: 1fr;
             }
-            
+
             .article-nav-item.next {
                 text-align: left;
             }
