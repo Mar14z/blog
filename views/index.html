@@ -34,163 +34,145 @@
         }
 
         .hero {
-            min-height: 100vh;
+            min-height: calc(100vh - 60px);
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: flex-start;
+            position: relative;
+            width: 100%;
+            min-width: 0;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: clamp(48px, 9vh, 120px) var(--content-padding);
+        }
+
+        .hero-eyebrow {
+            display: flex;
             align-items: center;
-            position: relative;
-            padding: 120px 4rem 4rem;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
-            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .hero-content {
-            text-align: center;
-            max-width: 800px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-label {
+            gap: 14px;
+            flex-wrap: wrap;
             font-family: var(--font-mono);
-            font-size: 0.75rem;
-            color: var(--accent);
-            letter-spacing: 8px;
-            margin-bottom: 2rem;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: var(--text-muted);
             text-transform: uppercase;
-            opacity: 0;
-            animation: fadeInUp 0.8s var(--transition-ease-out) forwards;
+            margin-bottom: clamp(22px, 3.4vh, 40px);
         }
+
+        .hero-eyebrow .hero-tag { color: var(--accent); }
+        .hero-eyebrow .hero-sep { width: 22px; height: 1px; background: var(--text-dim); }
 
         .hero-title {
             font-family: var(--font-sans);
-            font-size: clamp(3rem, 10vw, 6rem);
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 2rem;
-            letter-spacing: -0.03em;
-            opacity: 0;
-            animation: fadeInUp 0.8s var(--transition-ease-out) 0.15s forwards;
+            font-size: clamp(2.1rem, 6.2vw, 4.6rem);
+            font-weight: 800;
+            line-height: 1.12;
+            letter-spacing: -0.02em;
+            max-width: 19ch;
+            margin-bottom: clamp(18px, 2.6vh, 30px);
         }
 
-        .hero-subtitle {
-            font-family: var(--font-mono);
-            font-size: 0.875rem;
+        .hero-title .hero-sub {
+            display: block;
+            margin-top: 0.9em;
+            font-size: 0.46em;
+            font-weight: 500;
+            line-height: 1.5;
+            letter-spacing: 0;
             color: var(--text-muted);
-            letter-spacing: 2px;
-            max-width: 500px;
-            margin: 0 auto 3rem;
-            opacity: 0;
-            animation: fadeInUp 0.8s var(--transition-ease-out) 0.3s forwards;
         }
 
-        .hero-subtitle .cursor {
-            display: inline-block;
-            width: 2px;
-            height: 1em;
-            background: var(--accent);
-            margin-left: 4px;
-            vertical-align: text-bottom;
-            animation: blink 1s step-end infinite;
+        .hero-summary {
+            max-width: 46ch;
+            color: var(--text-secondary);
+            font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+            line-height: 1.95;
+            margin-bottom: clamp(30px, 4.6vh, 54px);
         }
 
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-
-        .hero-scroll {
-            position: absolute;
-            bottom: 3rem;
-            left: 50%;
-            transform: translateX(-50%);
+        .hero-metrics {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.75rem;
-            opacity: 0;
-            animation: fadeInUp 0.8s var(--transition-ease-out) 0.6s forwards;
-        }
-
-        .hero-scroll-text {
-            font-family: var(--font-mono);
-            font-size: 0.6rem;
-            color: var(--text-dim);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-
-        .hero-scroll-line {
-            width: 1px;
-            height: 40px;
-            background: linear-gradient(to bottom, var(--text-dim), transparent);
-            animation: scrollPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes scrollPulse {
-            0%, 100% { opacity: 0.3; transform: scaleY(1); }
-            50% { opacity: 1; transform: scaleY(1.2); }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .marquee-section {
-            padding: 1.5rem 0;
+            gap: clamp(28px, 4.5vw, 72px);
+            flex-wrap: wrap;
+            width: 100%;
+            padding: clamp(20px, 3vh, 30px) 0;
             border-top: 1px solid var(--border);
             border-bottom: 1px solid var(--border);
-            overflow: hidden;
-            position: relative;
+            margin-bottom: clamp(30px, 4.6vh, 54px);
         }
 
-        .marquee-track {
-            display: flex;
-            width: max-content;
-            animation: marqueeScroll 40s linear infinite;
-        }
+        .hero-metrics[hidden] { display: none; }
 
-        .marquee-track:hover {
-            animation-play-state: paused;
-        }
-
-        .marquee-item {
+        .hero-metric .metric-label {
             font-family: var(--font-mono);
-            font-size: 0.7rem;
-            color: var(--text-dim);
+            font-size: 0.62rem;
             letter-spacing: 2px;
+            color: var(--text-muted);
             text-transform: uppercase;
-            white-space: nowrap;
-            padding: 0 2rem;
+            margin-bottom: 10px;
+        }
+
+        .hero-metric .metric-value {
+            font-family: var(--font-mono);
+            font-size: clamp(1.15rem, 2.1vw, 1.55rem);
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
+        }
+
+        .hero-metric .metric-arrow {
+            color: var(--accent);
+            padding: 0 0.45em;
+            font-weight: 400;
+        }
+
+        .hero-metric .metric-from {
+            color: var(--text-muted);
+            text-decoration: line-through;
+            text-decoration-color: var(--text-dim);
+        }
+
+        .hero-actions {
             display: flex;
             align-items: center;
-            gap: 2rem;
+            gap: 28px;
+            flex-wrap: wrap;
         }
 
-        .marquee-item .dot {
-            width: 4px;
-            height: 4px;
-            background: var(--accent);
-            border-radius: 50%;
-            flex-shrink: 0;
+        .hero-read {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--accent);
+            padding-bottom: 9px;
+            transition: gap 0.25s ease, color 0.25s ease;
         }
 
-        @keyframes marqueeScroll {
-            from { transform: translateX(0); }
-            to { transform: translateX(-50%); }
+        .hero-read:hover { gap: 20px; color: var(--accent); }
+
+        .hero-more {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            transition: color 0.2s ease;
+        }
+
+        .hero-more:hover { color: var(--text-secondary); }
+
+        @media (max-width: 640px) {
+            .hero { min-height: auto; }
+            .hero-title { max-width: 100%; }
+            .hero-summary { max-width: 100%; }
+            .hero-metrics { gap: 22px 34px; }
+            .hero-metric { min-width: 44%; }
         }
 
         .quick-nav {
@@ -1116,43 +1098,28 @@
 
     <main id="main">
         <section class="hero" id="hero">
-            <div class="hero-content">
-                <div class="hero-label">静墨 / 博客</div>
-                <h1 class="hero-title">记录 · 思考 · 沉淀</h1>
-                <p class="hero-subtitle">在纷繁中寻找宁静，在文字里雕刻时光<span class="cursor"></span></p>
+            <div class="hero-eyebrow">
+                <span class="hero-tag">最近更新</span>
+                <span class="hero-sep"></span>
+                <span id="heroDate">—</span>
+                <span class="hero-sep"></span>
+                <span id="heroMeta">—</span>
             </div>
-            <div class="hero-scroll">
-                <span class="hero-scroll-text">scroll</span>
-                <div class="hero-scroll-line"></div>
-            </div>
-        </section>
 
-        <section class="marquee-section">
-            <div class="marquee-track">
-                <span class="marquee-item"><span class="dot"></span>JavaScript</span>
-                <span class="marquee-item"><span class="dot"></span>Node.js</span>
-                <span class="marquee-item"><span class="dot"></span>TypeScript</span>
-                <span class="marquee-item"><span class="dot"></span>React</span>
-                <span class="marquee-item"><span class="dot"></span>Vue.js</span>
-                <span class="marquee-item"><span class="dot"></span>MongoDB</span>
-                <span class="marquee-item"><span class="dot"></span>Docker</span>
-                <span class="marquee-item"><span class="dot"></span>Figma</span>
-                <span class="marquee-item"><span class="dot"></span>产品设计</span>
-                <span class="marquee-item"><span class="dot"></span>用户体验</span>
-                <span class="marquee-item"><span class="dot"></span>极简主义</span>
-                <span class="marquee-item"><span class="dot"></span>开源</span>
-                <span class="marquee-item"><span class="dot"></span>JavaScript</span>
-                <span class="marquee-item"><span class="dot"></span>Node.js</span>
-                <span class="marquee-item"><span class="dot"></span>TypeScript</span>
-                <span class="marquee-item"><span class="dot"></span>React</span>
-                <span class="marquee-item"><span class="dot"></span>Vue.js</span>
-                <span class="marquee-item"><span class="dot"></span>MongoDB</span>
-                <span class="marquee-item"><span class="dot"></span>Docker</span>
-                <span class="marquee-item"><span class="dot"></span>Figma</span>
-                <span class="marquee-item"><span class="dot"></span>产品设计</span>
-                <span class="marquee-item"><span class="dot"></span>用户体验</span>
-                <span class="marquee-item"><span class="dot"></span>极简主义</span>
-                <span class="marquee-item"><span class="dot"></span>开源</span>
+            <h1 class="hero-title" id="heroTitle">
+                静墨
+                <span class="hero-sub">边缘 AI · 系统编程 · 工程笔记</span>
+            </h1>
+
+            <p class="hero-summary" id="heroSummary">
+                在 RDK X5 与昇腾上做端侧部署，把遇到的问题和排查过程写下来。
+            </p>
+
+            <div class="hero-metrics" id="heroMetrics" hidden></div>
+
+            <div class="hero-actions">
+                <a href="/articles" class="hero-read" id="heroRead">阅读最新文章 <span aria-hidden="true">→</span></a>
+                <a href="/articles" class="hero-more" id="heroMore">全部文章</a>
             </div>
         </section>
 

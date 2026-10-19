@@ -1,5 +1,12 @@
 const mongoose = require('mongoose');
 
+// 首屏指标：如 { label: '--fast 耗时', from: '8.4s', to: '1.07s' }
+const metricSchema = new mongoose.Schema({
+  label: { type: String, trim: true },
+  from: { type: String, trim: true },
+  to: { type: String, trim: true }
+}, { _id: false });
+
 const articleSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -40,6 +47,10 @@ const articleSchema = new mongoose.Schema({
     type: String,
     trim: true
   }],
+  metrics: {
+    type: [metricSchema],
+    default: undefined
+  },
   readTime: {
     type: Number,
     default: 5,
