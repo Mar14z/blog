@@ -10,7 +10,7 @@ const BLOG_DIR = process.env.OBSIDIAN_BLOG_DIR || '01 - Blog';
 const OBSIDIAN_BLOG_PATH = path.join(VAULT_PATH, BLOG_DIR);
 
 // Article 模型允许的分类，超出范围的兜底为「其他」
-const VALID_CATEGORIES = ['设计', '技术', '生活', '随笔', '编程', '产品', '读书', '其他'];
+const VALID_CATEGORIES = ['设计', '技术', '生活', '随笔', '编程', '项目', '产品', '读书', '其他'];
 
 function stripQuotes(str) {
     return String(str).replace(/^['"]|['"]$/g, '').trim();

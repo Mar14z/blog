@@ -32,7 +32,7 @@ const articleSchema = new mongoose.Schema({
     type: String,
     required: [true, '文章分类不能为空'],
     enum: {
-      values: ['设计', '技术', '生活', '随笔', '编程', '产品', '读书', '其他'],
+      values: ['设计', '技术', '生活', '随笔', '编程', '项目', '产品', '读书', '其他'],
       message: '分类 "{VALUE}" 不在可选范围内'
     }
   },
