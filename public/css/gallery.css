@@ -61,17 +61,14 @@ body {
     height: 24px;
     line-height: 24px;
     opacity: 0.35;
-    transition: color 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+    transition: color 0.4s ease, opacity 0.4s ease;
 }
 
+/* 不再横向位移：容器为做垂直视窗加了 overflow:hidden，
+   横移会被裁掉，看起来就是文字显示不全 */
 .dna-text.highlight {
     color: var(--text-primary);
     opacity: 1;
-    transform: translateX(10px);
-}
-
-.dna-right .dna-text.highlight {
-    transform: translateX(-10px);
 }
 
 .image-wrapper {
