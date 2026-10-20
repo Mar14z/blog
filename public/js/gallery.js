@@ -16,8 +16,10 @@ const dnaLeft = document.getElementById('dnaLeft');
 const dnaRight = document.getElementById('dnaRight');
 const imageSkeleton = document.getElementById('imageSkeleton');
 
-const dnaTextsLeft = ['影像', '记忆', '光影', '瞬间', '时光', '风景', '故事', '印记'];
-const dnaTextsRight = ['2024', '03', '15', '自然', '风光', '人文', '建筑', '静物'];
+// 左列显示地点（图片标题），右列显示时间，随相册数据生成
+let dnaTextsLeft = [];
+let dnaTextsRight = [];
+let dialOffset = 0;
 
 async function fetchGallery() {
     try {
@@ -56,15 +58,17 @@ function showEmpty() {
 }
 
 function initGallery() {
+    buildDNATexts();
+    dialOffset = totalImages;
+
     if (totalImages === 0) {
         showEmpty();
-        renderDNA();
         ready = true;
         return;
     }
     renderDNA();
     updateInfo(0);
-    updateDNA();
+    updateDNA(false);
 
     // 同步置为就绪：rAF 在后台标签页会被节流，会导致导航一直失效
     ready = true;
@@ -113,8 +117,12 @@ function renderThumbnails() {
 const DNA_STEP = 44;
 const DNA_WINDOW = 220;
 const DNA_ITEM_HEIGHT = 24;
-const DNA_CENTER_SLOT = 2;
 const DNA_COPIES = 3;
+
+function buildDNATexts() {
+    dnaTextsLeft = galleryData.map(item => item.title || '未命名');
+    dnaTextsRight = galleryData.map(item => item.date || '—');
+}
 
 function renderStrand(el, texts) {
     if (!el || texts.length === 0) return;
@@ -130,13 +138,20 @@ function renderStrand(el, texts) {
     setTimeout(() => { el.style.transition = ''; }, 50);
 }
 
-function updateStrand(el, count, index) {
+function updateStrand(el, count, offset, animate = true) {
     if (!el || count === 0) return;
-    const target = count + index + DNA_CENTER_SLOT;
-    const shift = target * DNA_STEP - (DNA_WINDOW - DNA_ITEM_HEIGHT) / 2;
-    el.style.transform = `translateY(${-shift}px)`;
+    const shift = offset * DNA_STEP - (DNA_WINDOW - DNA_ITEM_HEIGHT) / 2;
+    if (!animate) {
+        // 先在无过渡状态下落到新位置并强制回流，下一步动画才不会跨副本跳动
+        el.style.transition = 'none';
+        el.style.transform = `translateY(${-shift}px)`;
+        void el.offsetHeight;
+        el.style.transition = '';
+    } else {
+        el.style.transform = `translateY(${-shift}px)`;
+    }
     el.querySelectorAll('.dna-text').forEach(text => {
-        text.classList.toggle('highlight', Number(text.dataset.pos) === target);
+        text.classList.toggle('highlight', Number(text.dataset.pos) === offset);
     });
 }
 
@@ -145,9 +160,20 @@ function renderDNA() {
     renderStrand(dnaRight, dnaTextsRight);
 }
 
-function updateDNA() {
-    updateStrand(dnaLeft, dnaTextsLeft.length, currentIndex);
-    updateStrand(dnaRight, dnaTextsRight.length, currentIndex);
+function updateDNA(animate = true) {
+    updateStrand(dnaLeft, dnaTextsLeft.length, dialOffset, animate);
+    updateStrand(dnaRight, dnaTextsRight.length, dialOffset, animate);
+}
+
+// 环的位置用连续偏移量表示；越出中间副本时先等值平移回中间，视觉无变化
+function stepDial(delta) {
+    const count = totalImages;
+    if (count === 0) return;
+    if (dialOffset < count * 0.5 || dialOffset > count * 1.5) {
+        dialOffset += dialOffset < count * 0.5 ? count : -count;
+        updateDNA(false);
+    }
+    dialOffset += delta;
 }
 
 function updateInfo(index) {
@@ -209,22 +235,31 @@ function updateThumbnails(index) {
 }
 
 function navigateTo(index) {
-    if (index === currentIndex || isAnimating || !ready) return;
+    if (index === currentIndex || isAnimating || !ready || totalImages === 0) return;
     isAnimating = true;
     // 图片加载慢或失败时也要解锁，否则导航会永久卡住
     clearTimeout(animationTimer);
     animationTimer = setTimeout(() => { isAnimating = false; }, 1200);
-    const direction = index > currentIndex ? 'up' : 'down';
+
+    // 循环导航取最短路径：7→0 视为前进 1 步
+    let delta = index - currentIndex;
+    if (delta > totalImages / 2) delta -= totalImages;
+    else if (delta < -totalImages / 2) delta += totalImages;
+
+    const direction = delta > 0 ? 'up' : 'down';
+    stepDial(delta);
     currentIndex = index;
     loadImage(index, direction);
 }
 
 function prevImage() {
-    if (currentIndex > 0) navigateTo(currentIndex - 1);
+    if (totalImages === 0) return;
+    navigateTo((currentIndex - 1 + totalImages) % totalImages);
 }
 
 function nextImage() {
-    if (currentIndex < totalImages - 1) navigateTo(currentIndex + 1);
+    if (totalImages === 0) return;
+    navigateTo((currentIndex + 1) % totalImages);
 }
 
 if (prevBtn) prevBtn.addEventListener('click', prevImage);
