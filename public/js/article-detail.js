@@ -99,6 +99,12 @@ class ArticleDetail {
                 this.renderNavigation(data.data.prevArticle, data.data.nextArticle);
                 document.title = `${this.article.title} - 静墨`;
 
+                // canonical / og:url 在模板里是固定的 /article，
+                // 不按 slug 改写会让所有文章在搜索引擎里变成同一个 URL
+                const canonicalUrl = `https://mar14z.xyz/article?slug=${encodeURIComponent(this.article.slug)}`;
+                document.querySelector('link[rel="canonical"]')?.setAttribute('href', canonicalUrl);
+                document.querySelector('meta[property="og:url"]')?.setAttribute('content', canonicalUrl);
+
                 const jsonld = document.getElementById('article-jsonld');
                 if (jsonld && this.article) {
                     const ldData = JSON.parse(jsonld.textContent);
@@ -106,7 +112,7 @@ class ArticleDetail {
                     ldData.description = this.article.excerpt || '';
                     ldData.datePublished = this.article.publishedAt || this.article.createdAt;
                     ldData.dateModified = this.article.updatedAt || this.article.createdAt;
-                    ldData.url = `https://mar14z.xyz/article?slug=${this.article.slug}`;
+                    ldData.url = canonicalUrl;
                     jsonld.textContent = JSON.stringify(ldData);
                 }
 
