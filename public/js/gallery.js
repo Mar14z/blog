@@ -1,6 +1,7 @@
 let galleryData = [];
 let currentIndex = 0;
 let isAnimating = false;
+let animationTimer = null;
 let ready = false;
 let totalImages = 0;
 
@@ -65,9 +66,8 @@ function initGallery() {
     updateInfo(0);
     updateDNA();
 
-    requestAnimationFrame(() => {
-        ready = true;
-    });
+    // 同步置为就绪：rAF 在后台标签页会被节流，会导致导航一直失效
+    ready = true;
 
     loadImage(0);
 
@@ -108,24 +108,46 @@ function renderThumbnails() {
     });
 }
 
+// 拨动环：每列文字重复三份，通过 translateY 滚动，始终把当前项转进视窗中央。
+// DNA_STEP 必须等于 .dna-text 的高度(24) + gap(20)；DNA_WINDOW 必须等于 .dna-container 高度。
+const DNA_STEP = 44;
+const DNA_WINDOW = 220;
+const DNA_ITEM_HEIGHT = 24;
+const DNA_CENTER_SLOT = 2;
+const DNA_COPIES = 3;
+
+function renderStrand(el, texts) {
+    if (!el || texts.length === 0) return;
+    const items = [];
+    for (let copy = 0; copy < DNA_COPIES; copy++) {
+        for (let i = 0; i < texts.length; i++) {
+            items.push(`<div class="dna-text" data-pos="${copy * texts.length + i}">${texts[i]}</div>`);
+        }
+    }
+    el.innerHTML = items.join('');
+    // 首帧不要动画，否则会从初始位置滑进来
+    el.style.transition = 'none';
+    setTimeout(() => { el.style.transition = ''; }, 50);
+}
+
+function updateStrand(el, count, index) {
+    if (!el || count === 0) return;
+    const target = count + index + DNA_CENTER_SLOT;
+    const shift = target * DNA_STEP - (DNA_WINDOW - DNA_ITEM_HEIGHT) / 2;
+    el.style.transform = `translateY(${-shift}px)`;
+    el.querySelectorAll('.dna-text').forEach(text => {
+        text.classList.toggle('highlight', Number(text.dataset.pos) === target);
+    });
+}
+
 function renderDNA() {
-    if (!dnaLeft || !dnaRight) return;
-    dnaLeft.innerHTML = dnaTextsLeft.map((text, i) =>
-        `<div class="dna-text" data-index="${i}">${text}</div>`
-    ).join('');
-    dnaRight.innerHTML = dnaTextsRight.map((text, i) =>
-        `<div class="dna-text" data-index="${i}">${text}</div>`
-    ).join('');
+    renderStrand(dnaLeft, dnaTextsLeft);
+    renderStrand(dnaRight, dnaTextsRight);
 }
 
 function updateDNA() {
-    if (!dnaLeft || !dnaRight) return;
-    dnaLeft.querySelectorAll('.dna-text').forEach((text, i) => {
-        text.classList.toggle('highlight', (i + currentIndex) % 2 === 0);
-    });
-    dnaRight.querySelectorAll('.dna-text').forEach((text, i) => {
-        text.classList.toggle('highlight', (i + currentIndex) % 3 === 0);
-    });
+    updateStrand(dnaLeft, dnaTextsLeft.length, currentIndex);
+    updateStrand(dnaRight, dnaTextsRight.length, currentIndex);
 }
 
 function updateInfo(index) {
@@ -133,7 +155,7 @@ function updateInfo(index) {
     if (!item) return;
     if (imageIndex) imageIndex.textContent = `${String(index + 1).padStart(2, '0')} / ${String(totalImages).padStart(2, '0')}`;
     if (infoTitle) infoTitle.textContent = item.title;
-    if (infoDesc) infoDesc.textContent = item.date;
+    if (infoDesc) infoDesc.textContent = item.desc || item.date;
 }
 
 function loadImage(index, direction = null) {
@@ -189,6 +211,9 @@ function updateThumbnails(index) {
 function navigateTo(index) {
     if (index === currentIndex || isAnimating || !ready) return;
     isAnimating = true;
+    // 图片加载慢或失败时也要解锁，否则导航会永久卡住
+    clearTimeout(animationTimer);
+    animationTimer = setTimeout(() => { isAnimating = false; }, 1200);
     const direction = index > currentIndex ? 'up' : 'down';
     currentIndex = index;
     loadImage(index, direction);

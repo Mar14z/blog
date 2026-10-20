@@ -30,37 +30,7 @@
             min-height: 100vh;
         }
 
-        .page-header {
-            margin-bottom: 4rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .page-number {
-            font-family: var(--font-mono);
-            font-size: var(--text-xs);
-            color: var(--accent);
-            letter-spacing: 4px;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-        }
-
-        .page-title {
-            font-family: var(--font-serif);
-            font-size: var(--text-2xl);
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            line-height: 1.1;
-            margin-bottom: 1rem;
-        }
-
-        .page-desc {
-            font-family: var(--font-mono);
-            font-size: var(--text-sm);
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            max-width: 500px;
-        }
+        /* 头部样式与其他页面统一由 components.css 提供 */
 
         .articles-toolbar {
             display: flex;
@@ -339,9 +309,8 @@
 
     <main class="articles-page">
         <header class="page-header">
-            <div class="page-number">02 / 文章</div>
             <h1 class="page-title">全部文章</h1>
-            <p class="page-desc">记录技术思考、产品感悟与生活点滴</p>
+            <p class="page-subtitle">记录技术思考、产品感悟与生活点滴</p>
         </header>
 
         <div class="articles-toolbar">
