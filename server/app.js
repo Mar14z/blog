@@ -127,7 +127,11 @@ app.get('/api/health', (req, res) => {
 app.use(errorHandler);
 
 app.use((req, res) => {
-  res.status(404).json({ code: 404, message: '接口不存在' });
+  // 接口仍然返回 JSON；页面地址手滑时给一个正常的 HTML 404
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ code: 404, message: '接口不存在' });
+  }
+  res.status(404).sendFile(path.join(__dirname, '..', 'views', '404.html'));
 });
 
 const PORT = process.env.PORT || 3000;
