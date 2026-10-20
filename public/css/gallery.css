@@ -1,14 +1,4 @@
-:root {
-    --bg-primary: #000000;
-    --text-primary: #ffffff;
-    --text-secondary: rgba(255, 255, 255, 0.6);
-    --text-muted: rgba(255, 255, 255, 0.4);
-    --text-dim: rgba(255, 255, 255, 0.3);
-    --accent: #D32F2F;
-    --border: rgba(255, 255, 255, 0.1);
-    --font-mono: 'JetBrains Mono', monospace;
-    --font-sans: 'Noto Sans SC', sans-serif;
-}
+/* 配色与字体统一由 variables.css 提供，此处不再重复定义 */
 
 html, body {
     height: 100%;
@@ -40,8 +30,13 @@ body {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+    /* 拨动环视窗：高度需与 JS 的 DNA_WINDOW 对应 */
+    height: 220px;
+    overflow: hidden;
     pointer-events: none;
     z-index: 1;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
 }
 
 .dna-left { left: 3vw; }
@@ -51,6 +46,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    transition: transform 0.55s var(--transition-ease-out);
+    will-change: transform;
 }
 
 .dna-text {
@@ -60,11 +57,16 @@ body {
     letter-spacing: 3px;
     text-transform: uppercase;
     white-space: nowrap;
-    transition: all 0.5s ease;
+    /* 高度 + gap 必须与 JS 的 DNA_STEP 一致 */
+    height: 24px;
+    line-height: 24px;
+    opacity: 0.35;
+    transition: color 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
 }
 
 .dna-text.highlight {
     color: var(--text-primary);
+    opacity: 1;
     transform: translateX(10px);
 }
 
@@ -173,10 +175,13 @@ body {
     bottom: 15%;
     display: flex;
     gap: 2rem;
+    /* 图片层 z-index:2，按钮必须更高，否则点不到 */
+    z-index: 3;
 }
 
-.gallery-nav.prev { left: 25vw; }
-.gallery-nav.next { right: 25vw; }
+/* 图片宽 55vw（上限 700px），按钮放在图片外侧留 24px */
+.gallery-nav.prev { left: calc(50% - min(27.5vw, 350px) - 72px); }
+.gallery-nav.next { right: calc(50% - min(27.5vw, 350px) - 72px); }
 
 .nav-btn {
     width: 48px;
