@@ -1,14 +1,14 @@
 /* 区块标题 */
 .section-tag {
-    font-family: var(--font-pixel);
-    font-size: 0.625rem;
+    font-family: var(--font-serif);
+    font-size: var(--text-xs);
     color: var(--text-muted);
     margin-bottom: 16px;
 }
 
 .section-title {
-    font-family: var(--font-pixel);
-    font-size: 0.875rem;
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
     color: var(--text-primary);
     margin-bottom: 24px;
 }
@@ -62,8 +62,8 @@
 }
 
 .link-name {
-    font-family: var(--font-pixel);
-    font-size: 0.625rem;
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
     color: var(--text-primary);
     margin-bottom: 8px;
     white-space: nowrap;
@@ -72,7 +72,7 @@
 }
 
 .link-description {
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     color: var(--text-secondary);
     white-space: nowrap;
     overflow: hidden;
@@ -118,7 +118,7 @@
 }
 
 .apply-info > p {
-    font-size: 1rem;
+    font-size: var(--text-base);
     color: var(--text-secondary);
     margin-bottom: 20px;
 }
@@ -131,7 +131,7 @@
 .apply-rules li {
     position: relative;
     padding-left: 24px;
-    font-size: 0.9375rem;
+    font-size: var(--text-base);
     color: var(--text-secondary);
     margin-bottom: 12px;
     list-style: none;
@@ -163,15 +163,15 @@
 .info-label {
     flex-shrink: 0;
     width: 80px;
-    font-family: var(--font-pixel);
-    font-size: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
     color: var(--text-muted);
     text-transform: uppercase;
 }
 
 .info-value {
     font-family: var(--font-mono);
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     color: var(--text-primary);
     word-break: break-all;
 }
@@ -200,7 +200,8 @@
         gap: 4px;
     }
 
-    .info-label {
+.info-label {
+    font-family: var(--font-mono);
         width: auto;
     }
 }
