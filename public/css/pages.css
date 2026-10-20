@@ -59,7 +59,7 @@
 .scroll-hint-text {
     font-family: var(--font-mono);
     font-size: var(--text-xs);
-    color: var(--text-dim);
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 3px;
 }
@@ -175,7 +175,7 @@
 
 .card-date {
     font-size: var(--text-sm);
-    color: var(--text-dim);
+    color: var(--text-muted);
 }
 
 .card-tag {
@@ -218,7 +218,7 @@
 
 .read-time {
     font-size: var(--text-sm);
-    color: var(--text-dim);
+    color: var(--text-muted);
 }
 
 .card-arrow {
@@ -251,7 +251,7 @@
     grid-column: 1 / -1;
     text-align: center;
     padding: 80px 20px;
-    color: var(--text-dim);
+    color: var(--text-muted);
 }
 
 .empty-state-icon {
@@ -299,7 +299,7 @@
 
 .stat-label {
     font-size: var(--text-sm);
-    color: var(--text-dim);
+    color: var(--text-muted);
 }
 
 .contact-section {

@@ -316,7 +316,7 @@
     left: 0;
     top: 16px;
     font-size: var(--text-base);
-    color: var(--text-dim);
+    color: var(--text-muted);
     pointer-events: none;
     transition: all 0.3s var(--transition-smooth);
 }
