@@ -121,25 +121,49 @@
                 </div>
                 <div class="project-info">
                     <div class="project-meta">
-                        <span class="project-year">进行中</span>
+                        <span class="project-year">2025.03–06</span>
                         <span class="project-type">嵌入式 AI</span>
                     </div>
-                    <h3 class="project-title">YOLOv11 部署 RDK X5</h3>
+                    <h3 class="project-title">海胆检测与移动端部署</h3>
                     <p class="project-description">
-                        自训练 YOLOv11n（2.6M 参数）导出 ONNX 后，用 OE 天工开物做 PTQ 量化成 .bin，加载到 RDK X5 的 Bayes-e BPU 上推理。目标端到端 ≥30 FPS、mAP50 ≥0.65。
+                        基于 YOLOv11 从零到部署：Backbone 常规卷积替换为 IDC 模块，增强低分辨率图像和小目标的特征表达；损失函数由 CIoU 换成 SIoU，提升检测框回归精度。剪枝加 FP32→INT8 量化后模型体积压缩 35%，mAP@0.5 从 86% 提升到 92.27%，集成进 Android 应用，在养殖箱场景做实时计数。
                     </p>
                     <div class="project-tags">
                         <span class="project-tag">YOLOv11</span>
-                        <span class="project-tag">ONNX</span>
-                        <span class="project-tag">BPU</span>
-                        <span class="project-tag">OE 工具链</span>
+                        <span class="project-tag">IDC</span>
+                        <span class="project-tag">SIoU</span>
+                        <span class="project-tag">INT8 量化</span>
+                        <span class="project-tag">Android</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card" data-category="embedded">
+                <div class="project-cover">
+                    <div class="project-placeholder">04</div>
+                </div>
+                <div class="project-info">
+                    <div class="project-meta">
+                        <span class="project-year">2024.09–11</span>
+                        <span class="project-type">低功耗 IoT</span>
+                    </div>
+                    <h3 class="project-title">野生动物检测识别系统</h3>
+                    <p class="project-description">
+                        独立完成 ESP32 端程序、服务端与 Web 前端。设备用深度睡眠配合 Rd-03 传感器中断唤醒，压低平均功耗并缩短冷启动；按网络条件双协议上传，WiFi 下走 HTTP 传图、4G 下用 MQTT 传状态。服务端用 PHP 接收并按时间归档，Nginx 反向代理，前端提供基于 YOLOv8 的识别界面。
+                    </p>
+                    <div class="project-tags">
+                        <span class="project-tag">ESP32</span>
+                        <span class="project-tag">Rd-03</span>
+                        <span class="project-tag">MQTT</span>
+                        <span class="project-tag">PHP</span>
+                        <span class="project-tag">YOLOv8</span>
                     </div>
                 </div>
             </article>
 
             <article class="project-card" data-category="tool">
                 <div class="project-cover">
-                    <div class="project-placeholder">04</div>
+                    <div class="project-placeholder">05</div>
                 </div>
                 <div class="project-info">
                     <div class="project-meta">
@@ -169,7 +193,7 @@
 
             <article class="project-card" data-category="tool">
                 <div class="project-cover">
-                    <div class="project-placeholder">05</div>
+                    <div class="project-placeholder">06</div>
                 </div>
                 <div class="project-info">
                     <div class="project-meta">
