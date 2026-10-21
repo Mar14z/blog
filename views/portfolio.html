@@ -126,7 +126,7 @@
                     </div>
                     <h3 class="project-title">海胆检测与移动端部署</h3>
                     <p class="project-description">
-                        基于 YOLOv11 从零到部署：Backbone 常规卷积替换为 IDC 模块，增强低分辨率图像和小目标的特征表达；损失函数由 CIoU 换成 SIoU，提升检测框回归精度。剪枝加 FP32→INT8 量化后模型体积压缩 35%，mAP@0.5 从 86% 提升到 92.27%，集成进 Android 应用，在养殖箱场景做实时计数。
+                        基于 YOLOv11n 在海胆数据集上做改进：Backbone 常规卷积替换为 IDC 模块，增强低分辨率图像和小目标的特征表达；损失函数由 CIoU 换成 SIoU，提升检测框回归精度。mAP@0.5 从 90.95% 提升到 92.27%，参数量 2.591M、GFLOPs 6.47；为部署到 Android，对模型做剪枝与 FP32→INT8 量化，体积压缩 35%。应用支持拍照与相册输入、框选可视化和数量统计，联调测试识别准确率 90% 以上。
                     </p>
                     <div class="project-tags">
                         <span class="project-tag">YOLOv11</span>
@@ -186,6 +186,12 @@
                                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
                             </svg>
                             优化过程
+                        </a>
+                        <a href="https://github.com/Mar14z/rdk-memaudit" target="_blank" rel="noopener noreferrer" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                            源码
                         </a>
                     </div>
                 </div>
