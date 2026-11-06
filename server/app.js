@@ -15,6 +15,7 @@ const galleryRoutes = require('./routes/gallery');
 const webhookRoutes = require('./routes/webhook');
 const feed = require('./routes/feed');
 const sitemap = require('./routes/sitemap');
+const statsRoutes = require('./routes/stats');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -119,6 +120,7 @@ app.use('/api/gallery', galleryRoutes);
 app.use('/api/webhook', webhookRoutes);
 app.use(feed);
 app.use(sitemap);
+app.use('/api/stats', statsRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ code: 200, message: '服务运行正常', timestamp: Date.now() });

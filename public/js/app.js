@@ -10,6 +10,7 @@ class BlogApp {
     init() {
         this.initScrollProgress();
         this.initContactForm();
+        this.loadStats();
         this.loadArticles();
     }
 
@@ -62,7 +63,11 @@ class BlogApp {
                     showToast('请填写完整信息', 'error');
                     return;
                 }
-                showToast('消息已发送，感谢您的留言！', 'success');
+                // 没有后端收件箱，直接唤起邮件客户端，避免"提交成功但没人收到"
+                const subject = encodeURIComponent(`来自 ${name} 的留言`);
+                const body = encodeURIComponent(`姓名：${name}\n邮箱：${email}\n\n${message}`);
+                window.location.href = `mailto:w1661331096@2925.com?subject=${subject}&body=${body}`;
+                showToast('已打开邮件客户端，发送后即可送达', 'success');
                 form.reset();
             });
         }
@@ -203,6 +208,25 @@ class BlogApp {
         const statEl = document.getElementById('statArticles');
         if (statEl) {
             statEl.textContent = this.total;
+        }
+    }
+
+    // 三个数字都来自真实数据：文章数、从首篇发布算起的天数、总阅读量
+    async loadStats() {
+        try {
+            const res = await fetch(`${API_BASE}/stats?t=${Date.now()}`);
+            const json = await res.json();
+            if (json.code !== 200) return;
+            const { articles, days, views } = json.data;
+            const set = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val;
+            };
+            set('statArticles', articles);
+            set('statDays', days);
+            set('statViews', views);
+        } catch (error) {
+            console.error('加载统计失败:', error);
         }
     }
 }
