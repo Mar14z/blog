@@ -114,3 +114,12 @@ function $(selector, context = document) {
 function $$(selector, context = document) {
     return Array.from(context.querySelectorAll(selector));
 }
+
+// 所有页面共用：滚动后给导航加背景，避免正文从导航下面穿过
+document.addEventListener('DOMContentLoaded', () => {
+    const nav = document.querySelector('.nav');
+    if (!nav) return;
+    const sync = () => nav.classList.toggle('scrolled', window.scrollY > 16);
+    window.addEventListener('scroll', sync, { passive: true });
+    sync();
+});
