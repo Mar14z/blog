@@ -80,7 +80,7 @@ const initializeDefaultData = async () => {
         },
         contacts: [
           { type: 'phone', label: 'Phone', value: '+86 138 0000 0000' },
-          { type: 'email', label: '邮箱', value: 'hello@mar14z.xyz' },
+          { type: 'email', label: '邮箱', value: 'w1661331096@2925.com' },
           { type: 'github', label: 'GitHub', value: '@Mar14z' }
         ]
       });
