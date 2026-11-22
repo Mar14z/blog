@@ -37,6 +37,13 @@ function inline(text) {
     .replace(/\n/g, '<br>');
 }
 
+// 图表附件：![说明](diagram:文件名) 独占一段时，内嵌 public/diagrams 下的整页图表
+const DIAGRAM_PATTERN = /^!\[([^\]]*)\]\(diagram:([a-zA-Z0-9_-]+)\)$/;
+
+function renderDiagram(alt, name) {
+  return `<figure class="diagram-embed"><iframe src="/diagrams/${name}.html" title="${escapeHtml(alt || '结构示意图')}" loading="lazy"></iframe></figure>`;
+}
+
 function isTable(block) {
   const lines = block.split('\n');
   return lines.length >= 2
@@ -74,6 +81,9 @@ function renderMarkdown(rawContent) {
 
       const placeholder = para.match(/^@@CODE(\d+)@@$/);
       if (placeholder) return codeBlocks[Number(placeholder[1])];
+
+      const diagram = para.match(DIAGRAM_PATTERN);
+      if (diagram) return renderDiagram(diagram[1], diagram[2]);
 
       if (para.startsWith('### ')) return `<h3>${inline(para.slice(4))}</h3>`;
       if (para.startsWith('## ')) return `<h2>${inline(para.slice(3))}</h2>`;

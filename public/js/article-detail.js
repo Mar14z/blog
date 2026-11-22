@@ -212,6 +212,9 @@ class ArticleDetail {
                 const placeholder = para.match(/^@@CODE(\d+)@@$/);
                 if (placeholder) return codeBlocks[Number(placeholder[1])];
 
+                const diagram = para.match(/^!\[([^\]]*)\]\(diagram:([a-zA-Z0-9_-]+)\)$/);
+                if (diagram) return this.renderDiagram(diagram[1], diagram[2]);
+
                 if (para.startsWith('### ')) return `<h3>${this.inline(para.slice(4))}</h3>`;
                 if (para.startsWith('## ')) return `<h2>${this.inline(para.slice(3))}</h2>`;
                 if (para.startsWith('# ')) return `<h1>${this.inline(para.slice(2))}</h1>`;
@@ -233,6 +236,10 @@ class ArticleDetail {
                 return `<p>${this.inline(para)}</p>`;
             })
             .join('');
+    }
+
+    renderDiagram(alt, name) {
+        return `<figure class="diagram-embed"><iframe src="/diagrams/${name}.html" title="${escapeHtml(alt || '结构示意图')}" loading="lazy"></iframe></figure>`;
     }
 
     isTable(block) {
@@ -366,6 +373,17 @@ function copyLink() {
         showToast('复制失败，请手动复制', 'error');
     });
 }
+
+// 图表页会上报自身高度，父页面据此调整 iframe，避免出现内外双滚动条
+window.addEventListener('message', (event) => {
+    const data = event.data;
+    if (!data || data.type !== 'diagram-height' || !Number.isFinite(data.height)) return;
+    document.querySelectorAll('.diagram-embed iframe').forEach(frame => {
+        if (frame.contentWindow === event.source) {
+            frame.style.height = `${data.height}px`;
+        }
+    });
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     new ArticleDetail();
