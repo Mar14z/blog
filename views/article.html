@@ -160,14 +160,23 @@
             line-height: 1.6;
         }
 
+        /* 链接行与当前行都用同一个 flex 容器，序号和标题才会在一行对齐 */
         .series-link,
-        .series-current {
+        .series-item.current {
             display: flex;
             gap: 12px;
             padding: 8px 20px;
+        }
+
+        .series-link {
             color: var(--text-secondary);
             text-decoration: none;
             transition: all 0.2s ease;
+        }
+
+        .series-item.current {
+            color: var(--accent);
+            font-weight: 600;
         }
 
         .series-link:hover {
@@ -181,11 +190,6 @@
             font-size: var(--text-xs);
             color: var(--text-dim);
             padding-top: 2px;
-        }
-
-        .series-item.current .series-current {
-            color: var(--accent);
-            font-weight: 600;
         }
 
         .series-item.current .series-num {
