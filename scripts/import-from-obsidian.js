@@ -103,12 +103,18 @@ async function parseArticles() {    await fs.access(OBSIDIAN_BLOG_PATH);
             || metadata.title
             || file).slice(0, 500);
 
+        // 连载字段：series 为系列名，series_order（兼容 seriesOrder）为序号
+        const series = typeof metadata.series === 'string' ? metadata.series.trim() : '';
+        const parsedOrder = parseInt(metadata.series_order ?? metadata.seriesOrder, 10);
+
         articles.push({
             file,
             filePath,
             title: metadata.title || file.replace(/\.md$/i, ''),
             category,
             tags: Array.isArray(metadata.tags) ? metadata.tags : [],
+            series,
+            seriesOrder: Number.isFinite(parsedOrder) && parsedOrder >= 0 ? parsedOrder : 0,
             metrics: parseMetrics(metadata.metrics),
             content: body,
             excerpt,
@@ -165,6 +171,8 @@ async function importFromObsidian() {
                 content: item.content,
                 category: item.category,
                 tags: item.tags,
+                series: item.series,
+                seriesOrder: item.seriesOrder,
                 metrics: item.metrics,
                 published: item.published,
                 readTime: item.readTime,

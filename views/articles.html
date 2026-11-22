@@ -4,13 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="文章列表 - 静墨博客的所有文章">
+    <meta name="robots" content="index, follow">
+    <meta property="og:site_name" content="静墨">
+    <meta property="og:locale" content="zh_CN">
     <meta property="og:title" content="文章 - 静墨">
     <meta property="og:description" content="文章列表 - 静墨博客的所有文章">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mar14z.xyz/articles">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="文章 - 静墨">
+    <meta name="twitter:description" content="文章列表 - 静墨博客的所有文章">
     <link rel="canonical" href="https://mar14z.xyz/articles">
+    <link rel="alternate" hreflang="zh-CN" href="https://mar14z.xyz/articles">
+    <link rel="alternate" hreflang="x-default" href="https://mar14z.xyz/articles">
+    <link rel="alternate" type="application/rss+xml" title="静墨博客 RSS" href="https://mar14z.xyz/feed.xml">
     <title>文章 - 静墨</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin>
@@ -169,6 +176,14 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .row-series {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--accent);
+            letter-spacing: 1px;
+            margin-bottom: 0.25rem;
         }
 
         .row-excerpt {
@@ -332,9 +347,9 @@
             </div>
         </div>
 
-        <div class="article-count" id="articleCount"></div>
+        <div class="article-count" id="articleCount">{{ARTICLE_COUNT}}</div>
 
-        <div class="articles-list" id="articlesList"></div>
+        <div class="articles-list" id="articlesList">{{ARTICLE_ROWS}}</div>
 
         <div class="load-more" id="loadMore" style="display:none;">
             <button class="load-more-btn" id="loadMoreBtn">加载更多</button>
@@ -457,6 +472,7 @@
                     <div class="article-row" data-slug="${escapeHtml(article.slug)}">
                         <span class="row-index">${String(index + 1).padStart(2, '0')}</span>
                         <div class="row-content">
+                            ${article.series ? `<div class="row-series">连载 · ${escapeHtml(article.series)}</div>` : ''}
                             <div class="row-title">${escapeHtml(article.title)}</div>
                             <div class="row-excerpt">${escapeHtml(article.excerpt || '')}</div>
                         </div>

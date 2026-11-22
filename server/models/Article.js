@@ -47,6 +47,18 @@ const articleSchema = new mongoose.Schema({
     type: String,
     trim: true
   }],
+  // 连载系列名，空字符串表示不属于任何系列
+  series: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  // 系列内序号，数字越小越靠前
+  seriesOrder: {
+    type: Number,
+    default: 0,
+    min: [0, '系列序号不能为负数']
+  },
   metrics: {
     type: [metricSchema],
     default: undefined
@@ -94,6 +106,7 @@ articleSchema.index({ title: 'text', content: 'text', excerpt: 'text' });
 articleSchema.index({ published: 1, createdAt: -1 });
 articleSchema.index({ category: 1 });
 articleSchema.index({ tags: 1 });
+articleSchema.index({ series: 1, seriesOrder: 1 });
 
 articleSchema.virtual('isPublished').get(function() {
   return this.published;

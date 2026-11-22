@@ -4,15 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta name="description" content="静墨博客的技术文章，涵盖编程、产品、设计等领域的深度思考与实践分享。">
-    <meta property="og:title" content="文章 - 静墨">
-    <meta property="og:description" content="静墨博客文章">
+    <meta name="description" content="{{DESCRIPTION}}">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta property="og:site_name" content="静墨">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:title" content="{{TITLE}}">
+    <meta property="og:description" content="{{DESCRIPTION}}">
     <meta property="og:type" content="article">
-    <meta property="og:url" content="https://mar14z.xyz/article">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="文章 - 静墨">
-    <link rel="canonical" href="https://mar14z.xyz/article">
-    <title>文章详情 - 静墨</title>
+    <meta property="og:url" content="{{CANONICAL}}">
+{{OG_IMAGE}}{{ARTICLE_META}}
+    <meta name="twitter:card" content="{{TWITTER_CARD}}">
+    <meta name="twitter:title" content="{{TITLE}}">
+    <meta name="twitter:description" content="{{DESCRIPTION}}">
+    <link rel="canonical" href="{{CANONICAL}}">
+    <link rel="alternate" hreflang="zh-CN" href="{{CANONICAL}}">
+    <link rel="alternate" hreflang="x-default" href="{{CANONICAL}}">
+    <title>{{TITLE}} - 静墨</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin>
     <link href="/css/fonts.css" rel="stylesheet">
@@ -100,6 +107,89 @@
             width: 100%;
             height: auto;
             display: block;
+        }
+
+        .series-box {
+            margin: 32px 0;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+        }
+
+        .series-head {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .series-label {
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 2px 8px;
+            letter-spacing: 1px;
+        }
+
+        .series-name {
+            font-family: var(--font-serif);
+            font-size: var(--text-base);
+            color: var(--text-primary);
+        }
+
+        .series-progress {
+            margin-left: auto;
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .series-list {
+            list-style: none;
+            margin: 0;
+            padding: 8px 0;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .series-item {
+            font-size: var(--text-sm);
+            line-height: 1.6;
+        }
+
+        .series-link,
+        .series-current {
+            display: flex;
+            gap: 12px;
+            padding: 8px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .series-link:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .series-num {
+            flex-shrink: 0;
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            color: var(--text-dim);
+            padding-top: 2px;
+        }
+
+        .series-item.current .series-current {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .series-item.current .series-num {
+            color: var(--accent);
         }
         
         .article-content {
@@ -312,6 +402,14 @@
                 padding: 72px 16px 40px;
             }
 
+            .series-head {
+                gap: 8px;
+            }
+
+            .series-progress {
+                margin-left: 0;
+            }
+
             /* 375px 屏扣掉边距只剩约 343px，17px 字一行不到 20 字，
                降到 16px 并把行高收到 1.9，每行约 21 字更接近中文舒适区 */
             .article-content {
@@ -463,21 +561,7 @@
             .related-grid { grid-template-columns: 1fr; }
         }
     </style>
-    <script type="application/ld+json" id="article-jsonld">
-{
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "",
-    "author": {
-        "@type": "Person",
-        "name": "静墨"
-    },
-    "publisher": {
-        "@type": "Person",
-        "name": "静墨"
-    }
-}
-</script>
+    <script type="application/ld+json" id="article-jsonld">{{JSON_LD}}</script>
 </head>
 <body>
     <div class="reading-progress" id="readingProgress"></div>
@@ -497,8 +581,8 @@
 
     <main class="article-page">
         <header class="article-header">
-            <div class="article-category" id="articleCategory">分类</div>
-            <h1 class="article-title" id="articleTitle">文章标题</h1>
+            <div class="article-category" id="articleCategory">{{CATEGORY}}</div>
+            <h1 class="article-title" id="articleTitle">{{TITLE}}</h1>
             <div class="article-meta">
                 <div class="article-meta-item">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -507,33 +591,32 @@
                         <line x1="8" y1="2" x2="8" y2="6"/>
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
-                    <span id="articleDate">2024年1月1日</span>
+                    <span id="articleDate">{{DATE_TEXT}}</span>
                 </div>
                 <div class="article-meta-item">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <circle cx="12" cy="12" r="10"/>
                         <polyline points="12,6 12,12 16,14"/>
                     </svg>
-                    <span id="articleReadTime">5 分钟</span>
+                    <span id="articleReadTime">{{READ_TIME}} 分钟</span>
                 </div>
                 <div class="article-meta-item">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                         <circle cx="12" cy="12" r="3"/>
                     </svg>
-                    <span id="articleViews">0 次阅读</span>
+                    <span id="articleViews">{{VIEWS}} 次</span>
                 </div>
             </div>
         </header>
 
-        <div class="article-cover" id="articleCover"></div>
+        {{SERIES_HTML}}
+        <div class="article-cover" id="articleCover">{{COVER_HTML}}</div>
 
-        <div class="article-content" id="articleContent">
-            <p>正在加载文章内容...</p>
-        </div>
+        <div class="article-content" id="articleContent">{{CONTENT_HTML}}</div>
 
         <footer class="article-footer">
-            <div class="article-tags" id="articleTags"></div>
+            <div class="article-tags" id="articleTags">{{TAGS_HTML}}</div>
 
             <div class="article-share">
                 <button class="share-btn" title="分享到微博" aria-label="分享到微博" onclick="shareToWeibo()">
@@ -552,13 +635,13 @@
             </div>
 
             <nav class="article-nav">
-                <a href="#" class="article-nav-item prev" id="prevArticle">
+                <a href="{{PREV_HREF}}" class="article-nav-item prev" id="prevArticle"{{PREV_HIDDEN}}>
                     <div class="article-nav-label">← 上一篇</div>
-                    <div class="article-nav-title" id="prevTitle">加载中...</div>
+                    <div class="article-nav-title" id="prevTitle">{{PREV_TITLE}}</div>
                 </a>
-                <a href="#" class="article-nav-item next" id="nextArticle">
+                <a href="{{NEXT_HREF}}" class="article-nav-item next" id="nextArticle"{{NEXT_HIDDEN}}>
                     <div class="article-nav-label">下一篇 →</div>
-                    <div class="article-nav-title" id="nextTitle">加载中...</div>
+                    <div class="article-nav-title" id="nextTitle">{{NEXT_TITLE}}</div>
                 </a>
             </nav>
         </footer>

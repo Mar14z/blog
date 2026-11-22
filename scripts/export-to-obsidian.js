@@ -27,12 +27,16 @@ async function exportToObsidian(articles = []) {
         const filename = `${article.slug || article.title}.md`;
         const filepath = path.join(OBSIDIAN_BLOG_PATH, filename);
 
+        const seriesLines = article.series
+            ? `series: ${article.series}\nseries_order: ${article.seriesOrder || 0}\n`
+            : '';
+
         const frontmatter = `---
 title: ${article.title}
 category: ${article.category || '未分类'}
 tags:
 ${(article.tags || []).map(t => `  - ${t}`).join('\n')}
-date: ${new Date(article.createdAt).toISOString().split('T')[0]}
+${seriesLines}date: ${new Date(article.createdAt).toISOString().split('T')[0]}
 published: ${article.published !== false}
 ---
 

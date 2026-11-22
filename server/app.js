@@ -16,6 +16,7 @@ const webhookRoutes = require('./routes/webhook');
 const feed = require('./routes/feed');
 const sitemap = require('./routes/sitemap');
 const statsRoutes = require('./routes/stats');
+const pageRoutes = require('./routes/pages');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -54,6 +55,11 @@ app.use(express.static(path.join(__dirname, '..', 'public'), {
     maxAge: process.env.NODE_ENV === 'production' ? '5m' : 0,
     etag: true
 }));
+app.use('/admin', (req, res, next) => {
+  // 后台不参与搜索收录
+  res.set('X-Robots-Tag', 'noindex, nofollow');
+  next();
+});
 app.use('/admin', express.static(path.join(__dirname, '..', 'admin'), {
     maxAge: process.env.NODE_ENV === 'production' ? '5m' : 0,
     etag: true
@@ -71,13 +77,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'views', 'index.html'));
 });
 
-app.get('/articles', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'views', 'articles.html'));
-});
-
-app.get('/article', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'views', 'article.html'));
-});
+// 文章页和列表页需要服务端输出正文与内链，交给 pages 路由渲染
+app.use(pageRoutes);
 
 app.get('/about', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'views', 'about.html'));

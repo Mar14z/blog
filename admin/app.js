@@ -652,6 +652,8 @@ class AdminApp {
             document.getElementById('articleCategory').value = article.category;
             document.getElementById('articleCover').value = article.coverImage || '';
             document.getElementById('articleReadTime').value = article.readTime || 5;
+            document.getElementById('articleSeries').value = article.series || '';
+            document.getElementById('articleSeriesOrder').value = article.seriesOrder || '';
             document.getElementById('articlePublished').value = article.published;
             this.setStatus(article.published ? 'published' : 'draft');
             document.getElementById('articleFeatured').checked = article.featured || false;
@@ -870,6 +872,8 @@ class AdminApp {
             content: document.getElementById('articleContent').value,
             category: document.getElementById('articleCategory').value,
             tags: currentTags,
+            series: document.getElementById('articleSeries').value.trim(),
+            seriesOrder: parseInt(document.getElementById('articleSeriesOrder').value, 10) || 0,
             coverImage: document.getElementById('articleCover').value,
             readTime: parseInt(document.getElementById('articleReadTime').value) || 5,
             published: published,

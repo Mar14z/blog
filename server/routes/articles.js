@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Article = require('../models/Article');
+const { loadSeries } = require('../lib/series');
 const { protect, adminOnly, optionalAuth } = require('../middleware/auth');
 const { body, param, query } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
@@ -32,7 +33,7 @@ const cleanSlug = (value) => String(value || '')
 const normalizeSlug = (slug, title) => cleanSlug(slug) || cleanSlug(title) || `post-${Date.now()}`;
 
 // 后台允许更新的字段白名单
-const UPDATABLE_FIELDS = ['title', 'slug', 'excerpt', 'content', 'category', 'tags', 'coverImage', 'readTime', 'published', 'featured'];
+const UPDATABLE_FIELDS = ['title', 'slug', 'excerpt', 'content', 'category', 'tags', 'series', 'seriesOrder', 'coverImage', 'readTime', 'published', 'featured'];
 
 router.get('/',
   [
@@ -175,29 +176,45 @@ router.get('/:slug', async (req, res, next) => {
     await Article.updateOne({ _id: article._id }, { $inc: { viewCount: 1 } });
     article.viewCount = (article.viewCount || 0) + 1;
 
-    const [prevArticle, nextArticle] = await Promise.all([
-      Article.findOne({ 
-        createdAt: { $lt: article.createdAt },
-        published: true 
-      })
-        .sort({ createdAt: -1 })
-        .select('title slug category')
-        .lean(),
-      Article.findOne({ 
-        createdAt: { $gt: article.createdAt },
-        published: true 
-      })
-        .sort({ createdAt: 1 })
-        .select('title slug category')
-        .lean()
-    ]);
+    // 属于连载时，上下篇优先在系列内跳转，阅读顺序才连贯
+    const series = await loadSeries(article);
+    let prevArticle = null;
+    let nextArticle = null;
+
+    if (series) {
+      prevArticle = series.prev;
+      nextArticle = series.next;
+    } else {
+      [prevArticle, nextArticle] = await Promise.all([
+        Article.findOne({ 
+          createdAt: { $lt: article.createdAt },
+          published: true 
+        })
+          .sort({ createdAt: -1 })
+          .select('title slug category')
+          .lean(),
+        Article.findOne({ 
+          createdAt: { $gt: article.createdAt },
+          published: true 
+        })
+          .sort({ createdAt: 1 })
+          .select('title slug category')
+          .lean()
+      ]);
+    }
 
     res.json({
       code: 200,
       data: { 
         article,
         prevArticle: prevArticle || null,
-        nextArticle: nextArticle || null
+        nextArticle: nextArticle || null,
+        series: series ? {
+          name: series.name,
+          index: series.index,
+          total: series.total,
+          articles: series.articles
+        } : null
       }
     });
   } catch (error) {
@@ -237,6 +254,8 @@ router.post('/',
     body('content').notEmpty().withMessage('内容不能为空'),
     body('category').notEmpty().trim().withMessage('分类不能为空'),
     body('tags').optional().isArray().withMessage('标签必须是数组'),
+    body('series').optional().isString().trim().withMessage('连载系列格式不正确'),
+    body('seriesOrder').optional().isInt({ min: 0 }).toInt().withMessage('系列序号必须是非负整数'),
     body('coverImage').optional().isString().trim().withMessage('封面图片格式不正确'),
     body('published').optional().isBoolean().withMessage('发布状态必须是布尔值'),
     body('featured').optional().isBoolean().withMessage('推荐状态必须是布尔值'),
@@ -278,7 +297,9 @@ router.put('/:id',
     body('slug').optional().isString().trim().withMessage('URL别名格式不正确'),
     body('excerpt').optional().notEmpty().trim().withMessage('摘要不能为空'),
     body('content').optional().notEmpty().withMessage('内容不能为空'),
-    body('category').optional().isString().trim().withMessage('分类格式不正确')
+    body('category').optional().isString().trim().withMessage('分类格式不正确'),
+    body('series').optional().isString().trim().withMessage('连载系列格式不正确'),
+    body('seriesOrder').optional().isInt({ min: 0 }).toInt().withMessage('系列序号必须是非负整数')
   ],
   handleValidationErrors,
   async (req, res, next) => {

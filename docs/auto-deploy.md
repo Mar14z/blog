@@ -130,7 +130,11 @@ GIT_SSH_COMMAND="ssh -i ~/.ssh/blog_deploy_key -o StrictHostKeyChecking=yes" \
 ```powershell
 # 本地
 git push origin master
-scp <changed files> ubuntu@161.33.26.40:/opt/blog/...
-ssh ubuntu@161.33.26.40 "pm2 restart blog"
+
+# 需要手动拷文件时（本机已在 ~/.ssh/config 配好别名 blog）
+scp <changed files> blog:/opt/blog/...
+
+# 远程重启
+ssh blog "pm2 restart blog"
 ```
 
