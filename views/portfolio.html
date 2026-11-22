@@ -56,13 +56,143 @@
         </div>
 
         <div class="portfolio-grid" id="portfolioGrid">
-            <article class="project-card" data-category="web">
+            <article class="project-card" data-category="embedded">
                 <div class="project-cover">
                     <div class="project-placeholder">01</div>
                 </div>
                 <div class="project-info">
                     <div class="project-meta">
-                        <span class="project-year">维护中</span>
+                        <span class="project-year">2026.11 起 · 进行中</span>
+                        <span class="project-type">具身智能</span>
+                    </div>
+                    <h3 class="project-title">空间记忆引擎</h3>
+                    <p class="project-description">
+                        给机器人做一套「记忆」：它不该每次看见杯子都像第一次看见。核心是一层对象级空间记忆存储，用 3D 场景图组织数据——物体是节点，空间关系是边，带首次/最后观测时间，回答「在哪、十分钟前在哪、还是不是上次那个」。C++20 自研索引，跑在 Orange Pi AIpro（昇腾 310B、8 GB）上，10 万实体占 16.6 MB，半径查询 P99 47.3 µs。
+                    </p>
+                    <div class="project-tags">
+                        <span class="project-tag">C++20</span>
+                        <span class="project-tag">3DSG</span>
+                        <span class="project-tag">空间索引</span>
+                        <span class="project-tag">WAL</span>
+                        <span class="project-tag">昇腾 310B</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="/article?slug=spatial-memory-origin" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                            开发日志
+                        </a>
+                        <a href="https://github.com/Mar14z/spatial-memory" target="_blank" rel="noopener noreferrer" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                            源码
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card" data-category="tool">
+                <div class="project-cover">
+                    <div class="project-placeholder">02</div>
+                </div>
+                <div class="project-info">
+                    <div class="project-meta">
+                        <span class="project-year">2026.10 起 · 进行中</span>
+                        <span class="project-type">系统工具</span>
+                    </div>
+                    <h3 class="project-title">memaudit 内存对账</h3>
+                    <p class="project-description">
+                        板端零依赖的 POSIX shell 采集器 + PC 端对账报告，用来排查「内存去哪了」。在一台 347 进程的 RDK X5 上把采集耗时从 8.4 s 压到 1.07 s，spawn 次数从 4666 降到 239。
+                    </p>
+                    <div class="project-tags">
+                        <span class="project-tag">POSIX shell</span>
+                        <span class="project-tag">busybox</span>
+                        <span class="project-tag">/proc</span>
+                        <span class="project-tag">性能优化</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="/article?slug=spawn-is-the-bottleneck" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                            优化过程
+                        </a>
+                        <a href="https://github.com/Mar14z/rdk-memaudit" target="_blank" rel="noopener noreferrer" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                            源码
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card" data-category="embedded">
+                <div class="project-cover">
+                    <div class="project-placeholder">03</div>
+                </div>
+                <div class="project-info">
+                    <div class="project-meta">
+                        <span class="project-year">2026.10 起 · 进行中</span>
+                        <span class="project-type">具身智能</span>
+                    </div>
+                    <h3 class="project-title">机械臂视觉抓取（单目空间认知）</h3>
+                    <p class="project-description">
+                        RDK X5 + 单目 USB 相机 + PhantomX Pincher 五轴臂。把机械臂当作已知的尺子：关节角经 FK 得到 3D 关节 keypoints，与图像 2D keypoints 做 PnP 求相机位姿，再把目标像素反投影到桌面平面，得到基座系下的物体坐标。
+                    </p>
+                    <div class="project-tags">
+                        <span class="project-tag">RDK X5</span>
+                        <span class="project-tag">PnP</span>
+                        <span class="project-tag">PyBullet</span>
+                        <span class="project-tag">单目视觉</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="/article?slug=spatial-reach-devlog-01" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                            开发日志
+                        </a>
+                        <a href="https://github.com/Mar14z/spatial-reach" target="_blank" rel="noopener noreferrer" class="project-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                            源码
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card" data-category="tool">
+                <div class="project-cover">
+                    <div class="project-placeholder">04</div>
+                </div>
+                <div class="project-info">
+                    <div class="project-meta">
+                        <span class="project-year">2026.05 起 · 进行中</span>
+                        <span class="project-type">系统工具</span>
+                    </div>
+                    <h3 class="project-title">SysMonitor</h3>
+                    <p class="project-description">
+                        用 C 写的 Linux 系统监控工具，用来练系统编程：自建 Makefile 增量构建，规划采集、缓存、告警与 TUI 几个模块。目前完成工程骨架。
+                    </p>
+                    <div class="project-tags">
+                        <span class="project-tag">C</span>
+                        <span class="project-tag">Linux</span>
+                        <span class="project-tag">Makefile</span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="project-card" data-category="web">
+                <div class="project-cover">
+                    <div class="project-placeholder">05</div>
+                </div>
+                <div class="project-info">
+                    <div class="project-meta">
+                        <span class="project-year">2026.05 起 · 维护中</span>
                         <span class="project-type">Web</span>
                     </div>
                     <h3 class="project-title">静墨博客</h3>
@@ -94,37 +224,7 @@
 
             <article class="project-card" data-category="embedded">
                 <div class="project-cover">
-                    <div class="project-placeholder">02</div>
-                </div>
-                <div class="project-info">
-                    <div class="project-meta">
-                        <span class="project-year">进行中</span>
-                        <span class="project-type">具身智能</span>
-                    </div>
-                    <h3 class="project-title">机械臂视觉抓取（单目空间认知）</h3>
-                    <p class="project-description">
-                        RDK X5 + 单目 USB 相机 + PhantomX Pincher 五轴臂。把机械臂当作已知的尺子：关节角经 FK 得到 3D 关节 keypoints，与图像 2D keypoints 做 PnP 求相机位姿，再把目标像素反投影到桌面平面，得到基座系下的物体坐标。
-                    </p>
-                    <div class="project-tags">
-                        <span class="project-tag">RDK X5</span>
-                        <span class="project-tag">PnP</span>
-                        <span class="project-tag">PyBullet</span>
-                        <span class="project-tag">单目视觉</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="/article?slug=spatial-reach-devlog-01" class="project-link">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                            </svg>
-                            开发日志
-                        </a>
-                    </div>
-                </div>
-            </article>
-
-            <article class="project-card" data-category="embedded">
-                <div class="project-cover">
-                    <div class="project-placeholder">03</div>
+                    <div class="project-placeholder">06</div>
                 </div>
                 <div class="project-info">
                     <div class="project-meta">
@@ -147,7 +247,7 @@
 
             <article class="project-card" data-category="embedded">
                 <div class="project-cover">
-                    <div class="project-placeholder">04</div>
+                    <div class="project-placeholder">07</div>
                 </div>
                 <div class="project-info">
                     <div class="project-meta">
@@ -164,63 +264,6 @@
                         <span class="project-tag">MQTT</span>
                         <span class="project-tag">PHP</span>
                         <span class="project-tag">YOLOv8</span>
-                    </div>
-                </div>
-            </article>
-
-            <article class="project-card" data-category="tool">
-                <div class="project-cover">
-                    <div class="project-placeholder">05</div>
-                </div>
-                <div class="project-info">
-                    <div class="project-meta">
-                        <span class="project-year">进行中</span>
-                        <span class="project-type">系统工具</span>
-                    </div>
-                    <h3 class="project-title">memaudit 内存对账</h3>
-                    <p class="project-description">
-                        板端零依赖的 POSIX shell 采集器 + PC 端对账报告，用来排查「内存去哪了」。在一台 347 进程的 RDK X5 上把采集耗时从 8.4 s 压到 1.07 s，spawn 次数从 4666 降到 239。
-                    </p>
-                    <div class="project-tags">
-                        <span class="project-tag">POSIX shell</span>
-                        <span class="project-tag">busybox</span>
-                        <span class="project-tag">/proc</span>
-                        <span class="project-tag">性能优化</span>
-                    </div>
-                    <div class="project-links">
-                        <a href="/article?slug=spawn-is-the-bottleneck" class="project-link">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                            </svg>
-                            优化过程
-                        </a>
-                        <a href="https://github.com/Mar14z/rdk-memaudit" target="_blank" rel="noopener noreferrer" class="project-link">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
-                            </svg>
-                            源码
-                        </a>
-                    </div>
-                </div>
-            </article>
-
-            <article class="project-card" data-category="tool">
-                <div class="project-cover">
-                    <div class="project-placeholder">06</div>
-                </div>
-                <div class="project-info">
-                    <div class="project-meta">
-                        <span class="project-year">进行中</span>
-                        <span class="project-type">系统工具</span>
-                    </div>
-                    <h3 class="project-title">SysMonitor</h3>
-                    <p class="project-description">
-                        用 C 写的 Linux 系统监控工具，用来练系统编程：自建 Makefile 增量构建，规划采集、缓存、告警与 TUI 几个模块。目前完成工程骨架。
-                    </p>
-                    <div class="project-tags">
-                        <span class="project-tag">C</span>
-                        <span class="project-tag">Linux</span>
-                        <span class="project-tag">Makefile</span>
                     </div>
                 </div>
             </article>
