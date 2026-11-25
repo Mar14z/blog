@@ -53,24 +53,43 @@ class BlogApp {
 
     initContactForm() {
         const form = document.getElementById('contactForm');
-        if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const name = document.getElementById('contactName')?.value;
-                const email = document.getElementById('contactEmail')?.value;
-                const message = document.getElementById('contactMessage')?.value;
-                if (!name || !email || !message) {
-                    showToast('请填写完整信息', 'error');
-                    return;
+        if (!form) return;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = (document.getElementById('contactName')?.value || '').trim();
+            const email = (document.getElementById('contactEmail')?.value || '').trim();
+            const message = (document.getElementById('contactMessage')?.value || '').trim();
+            if (!name || !email || !message) {
+                showToast('请填写完整信息', 'error');
+                return;
+            }
+
+            const btn = form.querySelector('.btn-submit');
+            if (btn) btn.disabled = true;
+
+            try {
+                // 留言写入数据库，后台「留言」页查看；不再依赖访客本机邮件客户端
+                const response = await fetch(`${API_BASE}/contact`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, message })
+                });
+                const data = await response.json();
+
+                if (response.ok && data.code === 201) {
+                    showToast('留言已提交，我会尽快回复', 'success');
+                    form.reset();
+                } else {
+                    const detail = Array.isArray(data.errors) && data.errors.length ? data.errors[0] : data.message;
+                    showToast(detail || '提交失败，请稍后重试', 'error');
                 }
-                // 没有后端收件箱，直接唤起邮件客户端，避免"提交成功但没人收到"
-                const subject = encodeURIComponent(`来自 ${name} 的留言`);
-                const body = encodeURIComponent(`姓名：${name}\n邮箱：${email}\n\n${message}`);
-                window.location.href = `mailto:w1661331096@2925.com?subject=${subject}&body=${body}`;
-                showToast('已打开邮件客户端，发送后即可送达', 'success');
-                form.reset();
-            });
-        }
+            } catch (error) {
+                showToast('提交失败，请检查网络后重试', 'error');
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        });
     }
 
     async loadArticles() {

@@ -159,6 +159,12 @@ class AdminApp {
                 this.loadTaxonomy();
                 this.loadArticles();
                 break;
+            case 'messages':
+                document.getElementById('messagesPage').classList.remove('hidden');
+                if (window.messagesAdmin && typeof window.messagesAdmin.load === 'function') {
+                    window.messagesAdmin.load(true);
+                }
+                break;
             case 'taxonomy':
                 document.getElementById('taxonomyPage').classList.remove('hidden');
                 this.loadTaxonomy();
@@ -186,6 +192,7 @@ class AdminApp {
         document.getElementById('loginPage').classList.remove('hidden');
         document.getElementById('dashboardPage').classList.add('hidden');
         document.getElementById('articlesPage').classList.add('hidden');
+        document.getElementById('messagesPage').classList.add('hidden');
         document.getElementById('taxonomyPage').classList.add('hidden');
         document.getElementById('settingsPage').classList.add('hidden');
         document.getElementById('profilePage').classList.add('hidden');

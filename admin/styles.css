@@ -1374,3 +1374,81 @@ body {
     outline: none;
     border-color: var(--text-primary);
 }
+
+/* ===== 留言 ===== */
+.messages-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.message-item {
+    padding: 16px 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+}
+
+.message-item.unread {
+    border-left: 2px solid var(--danger);
+}
+
+.message-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.message-from {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.message-from strong {
+    font-size: 0.95rem;
+}
+
+.message-from a {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+.message-from a:hover {
+    color: var(--text-primary);
+}
+
+.message-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+.message-badge {
+    padding: 1px 6px;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    font-size: 11px;
+}
+
+.message-body {
+    margin-bottom: 12px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.message-actions {
+    display: flex;
+    gap: 8px;
+}
+
