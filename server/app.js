@@ -22,6 +22,9 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
+// 部署在 Nginx 反向代理之后，信任一层代理才能拿到真实访客 IP
+app.set('trust proxy', 1);
+
 app.use(helmet({
   contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false
